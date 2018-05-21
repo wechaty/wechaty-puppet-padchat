@@ -1,0 +1,8 @@
+# Dependency directory
+node_modules
+
+# img
+demo.jpg
+
+# test file
+test*
