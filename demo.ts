@@ -52,8 +52,7 @@ const init = {
   "userId": userId,
   "msgId":  msgId,
   "apiName": "init",
-  "param": 
-  []
+  "param": []
 }
 
 const WXInitialize = {
@@ -103,7 +102,7 @@ const WXGenerateWxDat = {
 let WXLoadWxDat = {
   "userId": userId,
   "msgId":  msgId,
-  "apiName": "WXGetLoginToken",
+  "apiName": "WXLoadWxDat",
   "param": []
 }
 
@@ -115,9 +114,34 @@ const WXGetLoginToken = {
   "param": []
 }
 
+// 断线重连
+const WXAutoLogin = {
+  "userId": userId,
+  "msgId":  msgId,
+  "apiName": "WXAutoLogin",
+  "param": []
+}
+
+// 二次登陆
+const WXLoginRequest = {
+  "userId": userId,
+  "msgId":  msgId,
+  "apiName": "WXLoginRequest",
+  "param": []
+}
+
+// 发送文本消息
+let WXSendMsg = {
+  "userId": userId,
+  "msgId":  msgId,
+  "apiName": "WXSendMsg",
+  "param": []
+}
+
 let botWs
 
 let user_name
+let nick_name
 let password
 
 let contactSync = false
@@ -125,6 +149,8 @@ let contactSync = false
 let autoData = {
   wxData: '',
   token: '',
+  user_name: '',
+  nick_name: ''
 }
 
 let IpadContactRawPayloadMap = new Map<string, IpadContactRawPayload>()
@@ -139,13 +165,24 @@ const connect = async function() {
       botWs.send(JSON.stringify(WXInitialize))
 
       // 判断存62 的地方有没有62，如果有 WXLoadWxDat，加载，如果没有，就算了
-      // TODO ? 
       if (autoData.wxData) {
-        WXLoadWxDat.param = [autoData.wxData, autoData.wxData.length]
+        console.log(`$$$$$$$$$$ 发现的62数据 $$$$$$$$$$`)
+        WXLoadWxDat.param = [encodeURIComponent(autoData.wxData)]
         botWs.send(JSON.stringify(WXLoadWxDat))
       }
+      
+      if (autoData.token) {
+        console.log(`$$$$$$$$$$ 发现${autoData.nick_name} token $$$$$$$$$$`)
+        // 断线重连
+        console.log('尝试断线重连')
+        WXAutoLogin.param = [encodeURIComponent(autoData.token)]
+        console.log(encodeURIComponent(autoData.token))
+        botWs.send(JSON.stringify(WXAutoLogin))
 
-      botWs.send(JSON.stringify(WXGetQRCode))
+      } else {
+        botWs.send(JSON.stringify(WXGetQRCode))
+      }
+
     } catch (error) {
       console.error(error)
       throw (error)
@@ -153,12 +190,48 @@ const connect = async function() {
   })
   
   botWs.on("message", async function incoming(data) {
+    
     let allData = JSON.parse(data)
     console.log('========== New Message ==========')
 
     console.log(allData)
     console.log(allData.apiName)
     console.log(decodeURIComponent(allData.data))
+
+    // 断线重连
+    if (allData.apiName === 'WXAutoLogin') {
+      if (!allData.data) {
+        console.log('获取WXAutoLogin 的data 是空')
+        botWs.send(JSON.stringify(WXGetQRCode))
+        return
+      }
+
+      const decodeData = JSON.parse(decodeURIComponent(allData.data))
+      if (decodeData.status === 0) {
+        console.log(`${autoData.nick_name} 断线重连成功`)
+        user_name = decodeData.user_name
+
+        // 登陆成功
+        loginSucceed()
+
+      } else {
+        // 二次登陆, token 有效
+        WXLoginRequest.param = [encodeURIComponent(autoData.token)]
+        botWs.send(JSON.stringify(WXLoginRequest))
+      }
+    }
+
+    if (allData.apiName === 'WXLoginRequest') {
+      const decodeData = JSON.parse(decodeURIComponent(allData.data))
+      
+      if (decodeData.status === 0) {
+        // 判断是否点击确定登陆
+        console.log('二次登陆判断二维码状态')
+        checkQrcode(allData)
+      } else {
+        botWs.send(JSON.stringify(WXGetQRCode))
+      }
+    }
 
     if (allData.apiName === 'WXGetQRCode') {
       const decodeData = decodeURIComponent(allData.data)
@@ -170,6 +243,7 @@ const connect = async function() {
       })
     }
 
+    // 判断扫码状态
     if (allData.apiName === 'WXCheckQRCode') {
       const qrcodeStatus = JSON.parse(decodeURIComponent(allData.data))
       if (qrcodeStatus.status === 0) {
@@ -191,12 +265,13 @@ const connect = async function() {
       if (qrcodeStatus.status === 2) {
         console.log('正在登陆中。。。')
         user_name = qrcodeStatus.user_name
+        nick_name = qrcodeStatus.nick_name
         password = qrcodeStatus.password
         const WXQRCodeLogin = {
           "userId": userId,
           "msgId":  msgId,
           "apiName": "WXQRCodeLogin",
-          "param": [user_name, password]
+          "param": [encodeURIComponent(user_name), encodeURIComponent(password)]
         }
         botWs.send(JSON.stringify(WXQRCodeLogin))
         return
@@ -215,26 +290,33 @@ const connect = async function() {
       }
     }
 
+    if (allData.apiName === 'WXGetLoginToken') {
+      const tokenObj = JSON.parse(decodeURIComponent(allData.data))
+      if (tokenObj.token && tokenObj.status === 0) {
+        console.log('录入token' + tokenObj.token)
+        autoData.token = tokenObj.token
+      }
+    }
+
+    if (allData.apiName === 'WXGenerateWxDat') {
+      const wxDataObj = JSON.parse(decodeURIComponent(allData.data))
+      if (wxDataObj.data && wxDataObj.status === 0) {
+        console.log('录入62数据' + wxDataObj.data)
+        autoData.wxData = wxDataObj.data
+      }
+    }
+
     if (allData.apiName === 'WXQRCodeLogin') {
       const qrcodeStatus = JSON.parse(decodeURIComponent(allData.data))
       // 还有其他的，看报错原因，比如-3是账号密码错误
       if (qrcodeStatus.status === 0) {
         console.log('登陆成功！')
+        user_name = qrcodeStatus.user_name
+        nick_name = qrcodeStatus.nick_name
 
-        // 设置心跳
-        botWs.send(JSON.stringify(WXHeartBeat))
-        botWs.send(JSON.stringify(WXGetLoginToken))
+        // 登陆成功
+        loginSucceed()
 
-        // 判断是否有62，如果没有，就调用
-        if (autoData.wxData) {
-          WXLoadWxDat.param = [autoData.wxData, autoData.wxData.length]
-          botWs.send(JSON.stringify(WXLoadWxDat))
-        } else {
-          botWs.send(JSON.stringify(WXGenerateWxDat))
-        }
-
-        // 加载通讯录
-        botWs.send(JSON.stringify(WXSyncContact))
         return
       }
 
@@ -244,7 +326,7 @@ const connect = async function() {
           "userId": userId,
           "msgId":  msgId,
           "apiName": "WXQRCodeLogin",
-          "param": [user_name, password]
+          "param": [encodeURIComponent(user_name), encodeURIComponent(password)]
         }
         botWs.send(JSON.stringify(WXQRCodeLogin))
         return
@@ -257,6 +339,8 @@ const connect = async function() {
       if (!allData.data) {
         console.log('allData 没有data 了, 加载完成')
         contactSync = true
+        WXSendMsg.param = [encodeURIComponent(user_name), encodeURIComponent('通讯录同步完成'), '']
+        botWs.send(JSON.stringify(WXSendMsg))
         return
       }
 
@@ -269,6 +353,8 @@ const connect = async function() {
             contactSync = true
             saveToJson(IpadContactRawPayloadMap)
             console.log('continue 为0 加载完成')
+            WXSendMsg.param = [encodeURIComponent(user_name), encodeURIComponent('通讯录同步完成'), '']
+            botWs.send(JSON.stringify(WXSendMsg))
             return
           }
 
@@ -368,4 +454,40 @@ function saveToJson(rawPayload: Map<string, IpadContactRawPayload>) {
 
   fs.writeFileSync('./contact.json', JSON.stringify(rawPayloadJson, null, 2))
   console.log('已写入json file 中')
+}
+
+function saveConfig(){
+  if (autoData.wxData && autoData.token) {
+    fs.writeFileSync('./config.json', JSON.stringify(autoData, null, 2))
+    console.log('已写入config file 中')
+  } else {
+    console.log('数据不全，稍后重新录入')
+    console.log(autoData)
+    setTimeout(saveConfig, 2 * 1000)
+  }
+}
+
+function loginSucceed() {
+  // 设置心跳
+  botWs.send(JSON.stringify(WXHeartBeat))
+  autoData.token = ''
+  botWs.send(JSON.stringify(WXGetLoginToken))
+  WXSendMsg.param = [encodeURIComponent(user_name), encodeURIComponent('ding'), '']
+  botWs.send(JSON.stringify(WXSendMsg))
+
+  // 判断是否有62，如果没有，就调用。 第一次调用的时候，在这里存62数据
+  if (!autoData.wxData || autoData.user_name !== user_name) {
+    console.log('没有62数据，或者62数据和wxid 不符合')
+    autoData.user_name = user_name
+    autoData.nick_name = nick_name
+    botWs.send(JSON.stringify(WXGenerateWxDat))
+  }
+
+  saveConfig()
+
+  WXSendMsg.param = [encodeURIComponent(user_name), encodeURIComponent('我上线了'), '']
+  botWs.send(JSON.stringify(WXSendMsg))
+
+  // 同步通讯录
+  botWs.send(JSON.stringify(WXSyncContact))
 }

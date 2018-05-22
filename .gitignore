@@ -1,8 +1,16 @@
 # Dependency directory
 node_modules
+package.json-lock.json
 
 # img
 demo.jpg
 
 # test file
 test*
+
+# config
+config.json
+
+# log file
+log*
+contact1.json
