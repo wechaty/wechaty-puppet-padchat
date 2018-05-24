@@ -1,10 +1,6 @@
 const webSocket = require('ws')
 const fs = require("fs")
-
-const parseJson = require('parse-json')
-
-// const piBuff = fs.readFileSync('./pic/intro.jpeg')
-// const imgBuff = new Buffer(piBuff).toString('base64')
+import * as uuidV4        from 'uuid/v4'
 
 // user_name 作为唯一识别码，这个Object 中获取不到微信号，比如能获取到李佳芮的是`qq512436430`,但是获取不到微信号 `ruirui_0914`
 export interface IpadContactRawPayload {
@@ -50,42 +46,42 @@ const msgId = 'abc231923912983'
 
 const init = {
   "userId": userId,
-  "msgId":  msgId,
+  "msgId":  uuidV4(),
   "apiName": "init",
   "param": []
 }
 
 const WXInitialize = {
   "userId": userId,
-  "msgId":  msgId,
+  "msgId":  uuidV4(),
   "apiName": "WXInitialize",
   "param": []
 }
 
 const WXGetQRCode = {
   "userId": userId,
-  "msgId":  msgId,
+  "msgId":  uuidV4(),
   "apiName": "WXGetQRCode",
   "param": []
 }
 
 const WXCheckQRCode = {
   "userId": userId,
-  "msgId":  msgId,
+  "msgId":  uuidV4(),
   "apiName": "WXCheckQRCode",
   "param": []
 }
 
 const WXHeartBeat = {
   "userId": userId,
-  "msgId":  msgId,
+  "msgId":  uuidV4(),
   "apiName": "WXHeartBeat",
   "param": []
 }
 
 const WXSyncContact = {
   "userId": userId,
-  "msgId":  msgId,
+  "msgId":  uuidV4(),
   "apiName": "WXSyncContact",
   "param": []
 }
@@ -93,7 +89,7 @@ const WXSyncContact = {
 // 生成62
 const WXGenerateWxDat = {
   "userId": userId,
-  "msgId":  msgId,
+  "msgId":  uuidV4(),
   "apiName": "WXGenerateWxDat",
   "param": []
 }
@@ -101,7 +97,7 @@ const WXGenerateWxDat = {
 // 加载62
 let WXLoadWxDat = {
   "userId": userId,
-  "msgId":  msgId,
+  "msgId":  uuidV4(),
   "apiName": "WXLoadWxDat",
   "param": []
 }
@@ -109,7 +105,7 @@ let WXLoadWxDat = {
 // 获取登陆token
 const WXGetLoginToken = {
   "userId": userId,
-  "msgId":  msgId,
+  "msgId":  uuidV4(),
   "apiName": "WXGetLoginToken",
   "param": []
 }
@@ -117,7 +113,7 @@ const WXGetLoginToken = {
 // 断线重连
 const WXAutoLogin = {
   "userId": userId,
-  "msgId":  msgId,
+  "msgId":  uuidV4(),
   "apiName": "WXAutoLogin",
   "param": []
 }
@@ -125,7 +121,7 @@ const WXAutoLogin = {
 // 二次登陆
 const WXLoginRequest = {
   "userId": userId,
-  "msgId":  msgId,
+  "msgId":  uuidV4(),
   "apiName": "WXLoginRequest",
   "param": []
 }
@@ -133,8 +129,24 @@ const WXLoginRequest = {
 // 发送文本消息
 let WXSendMsg = {
   "userId": userId,
-  "msgId":  msgId,
+  "msgId":  uuidV4(),
   "apiName": "WXSendMsg",
+  "param": []
+}
+
+// 获取联系人信息
+let WXGetContact = {
+  "userId": userId,
+  "msgId":  uuidV4(),
+  "apiName": "WXGetContact",
+  "param": []
+}
+
+// 获取联系人信息
+let WXSearchContact = {
+  "userId": userId,
+  "msgId":  uuidV4(),
+  "apiName": "WXSearchContact",
   "param": []
 }
 
@@ -162,13 +174,19 @@ const connect = async function() {
   botWs.on("open", function open() {
     try {
       botWs.send(JSON.stringify(init))
+      console.log('SEND: ' + JSON.stringify(init))
+
       botWs.send(JSON.stringify(WXInitialize))
+      console.log('SEND: ' + JSON.stringify(WXInitialize))
+
 
       // 判断存62 的地方有没有62，如果有 WXLoadWxDat，加载，如果没有，就算了
       if (autoData.wxData) {
         console.log(`$$$$$$$$$$ 发现的62数据 $$$$$$$$$$`)
         WXLoadWxDat.param = [encodeURIComponent(autoData.wxData)]
+        
         botWs.send(JSON.stringify(WXLoadWxDat))
+        console.log('SEND: ' + JSON.stringify(WXLoadWxDat))
       }
       
       if (autoData.token) {
@@ -178,9 +196,11 @@ const connect = async function() {
         WXAutoLogin.param = [encodeURIComponent(autoData.token)]
         console.log(encodeURIComponent(autoData.token))
         botWs.send(JSON.stringify(WXAutoLogin))
+        console.log('SEND: ' + JSON.stringify(WXAutoLogin))
 
       } else {
         botWs.send(JSON.stringify(WXGetQRCode))
+        console.log('SEND: ' + JSON.stringify(WXGetQRCode))
       }
 
     } catch (error) {
@@ -202,7 +222,10 @@ const connect = async function() {
     if (allData.apiName === 'WXAutoLogin') {
       if (!allData.data) {
         console.log('获取WXAutoLogin 的data 是空')
+
         botWs.send(JSON.stringify(WXGetQRCode))
+        console.log('SEND: ' + JSON.stringify(WXGetQRCode))
+
         return
       }
 
@@ -218,10 +241,18 @@ const connect = async function() {
         // 二次登陆, token 有效
         WXLoginRequest.param = [encodeURIComponent(autoData.token)]
         botWs.send(JSON.stringify(WXLoginRequest))
+        console.log('SEND: ' + JSON.stringify(WXLoginRequest))
       }
     }
 
     if (allData.apiName === 'WXLoginRequest') {
+      if (!allData.data) {
+        console.log('no WXLoginRequest data, token 过期')
+
+        botWs.send(JSON.stringify(WXGetQRCode))
+        console.log('SEND: ' + JSON.stringify(WXGetQRCode))
+        return
+      }
       const decodeData = JSON.parse(decodeURIComponent(allData.data))
       
       if (decodeData.status === 0) {
@@ -230,12 +261,23 @@ const connect = async function() {
         checkQrcode(allData)
       } else {
         botWs.send(JSON.stringify(WXGetQRCode))
+        console.log('SEND: ' + JSON.stringify(WXGetQRCode))
       }
     }
 
     if (allData.apiName === 'WXGetQRCode') {
+      if (!allData.data) {
+        console.log('cannot get WXGetQRCode')
+
+        botWs.send(JSON.stringify(WXInitialize))
+        console.log('SEND: ' + JSON.stringify(WXInitialize))
+
+        botWs.send(JSON.stringify(WXGetQRCode))
+        console.log('SEND: ' + JSON.stringify(WXGetQRCode))
+        return
+      }
       const decodeData = decodeURIComponent(allData.data)
-      const qrcode = parseJson(decodeData)
+      const qrcode = JSON.parse(decodeData)
       console.log('get qrcode')
       checkQrcode(allData)
       fs.writeFile("demo.jpg", qrcode.qr_code, "base64", async function (err, data) {
@@ -250,6 +292,7 @@ const connect = async function() {
         console.log('尚未扫码！')
         setTimeout(() => {
           botWs.send(JSON.stringify(WXCheckQRCode))
+          console.log('SEND: ' + JSON.stringify(WXCheckQRCode))
         }, 3 * 1000)
         return
       }
@@ -258,6 +301,7 @@ const connect = async function() {
         console.log('已扫码，尚未登陆')
         setTimeout(() => {
           botWs.send(JSON.stringify(WXCheckQRCode))
+          console.log('SEND: ' + JSON.stringify(WXCheckQRCode))
         }, 3 * 1000)
         return
       }
@@ -274,6 +318,7 @@ const connect = async function() {
           "param": [encodeURIComponent(user_name), encodeURIComponent(password)]
         }
         botWs.send(JSON.stringify(WXQRCodeLogin))
+        console.log('SEND: ' + JSON.stringify(WXQRCodeLogin))
         return
       }
 
@@ -329,6 +374,7 @@ const connect = async function() {
           "param": [encodeURIComponent(user_name), encodeURIComponent(password)]
         }
         botWs.send(JSON.stringify(WXQRCodeLogin))
+        console.log('SEND: ' + JSON.stringify())
         return
       }
       
@@ -341,6 +387,7 @@ const connect = async function() {
         contactSync = true
         WXSendMsg.param = [encodeURIComponent(user_name), encodeURIComponent('通讯录同步完成'), '']
         botWs.send(JSON.stringify(WXSendMsg))
+        console.log('SEND: ' + JSON.stringify(WXSendMsg))
         return
       }
 
@@ -355,6 +402,7 @@ const connect = async function() {
             console.log('continue 为0 加载完成')
             WXSendMsg.param = [encodeURIComponent(user_name), encodeURIComponent('通讯录同步完成'), '']
             botWs.send(JSON.stringify(WXSendMsg))
+            console.log('SEND: ' + JSON.stringify(WXSendMsg))
             return
           }
 
@@ -369,6 +417,7 @@ const connect = async function() {
         console.log('############### 继续加载 ###############')
         setTimeout(function() {
           botWs.send(JSON.stringify(WXSyncContact))
+          console.log('SEND: ' + JSON.stringify(WXSyncContact))
         }, 3 * 1000)
 
 
@@ -376,6 +425,7 @@ const connect = async function() {
         console.log('出错啦! contactStatus 不是数组')
         setTimeout(function() {
           botWs.send(JSON.stringify(WXSyncContact))
+          console.log('SEND: ' + JSON.stringify(WXSyncContact))
         }, 3 * 1000)
       }
     }
@@ -418,10 +468,13 @@ async function initConfig() {
 function checkQrcode(allData) {
   console.log('begin to checkQrcode')
   botWs.send(JSON.stringify(WXCheckQRCode))
+  console.log('SEND: ' + JSON.stringify(WXCheckQRCode))
+
   if (allData.status === 0) {
     console.log('尚未扫码！')
     setTimeout(() => {
       botWs.send(JSON.stringify(WXCheckQRCode))
+      console.log('SEND: ' + JSON.stringify(WXCheckQRCode))
     }, 1000)
     return
   }
@@ -429,6 +482,7 @@ function checkQrcode(allData) {
     console.log('已扫码，尚未登陆')
     setTimeout(() => {
       botWs.send(JSON.stringify(WXCheckQRCode))
+      console.log('SEND: ' + JSON.stringify(WXCheckQRCode))
     }, 1000)
     return
   }
@@ -470,10 +524,15 @@ function saveConfig(){
 function loginSucceed() {
   // 设置心跳
   botWs.send(JSON.stringify(WXHeartBeat))
+  console.log('SEND: ' + JSON.stringify(WXHeartBeat))
+
   autoData.token = ''
   botWs.send(JSON.stringify(WXGetLoginToken))
+  console.log('SEND: ' + JSON.stringify(WXGetLoginToken))
+
   WXSendMsg.param = [encodeURIComponent(user_name), encodeURIComponent('ding'), '']
   botWs.send(JSON.stringify(WXSendMsg))
+  console.log('SEND: ' + JSON.stringify(WXSendMsg))
 
   // 判断是否有62，如果没有，就调用。 第一次调用的时候，在这里存62数据
   if (!autoData.wxData || autoData.user_name !== user_name) {
@@ -481,13 +540,37 @@ function loginSucceed() {
     autoData.user_name = user_name
     autoData.nick_name = nick_name
     botWs.send(JSON.stringify(WXGenerateWxDat))
+    console.log('SEND: ' + JSON.stringify(WXGenerateWxDat))
+
   }
 
   saveConfig()
 
   WXSendMsg.param = [encodeURIComponent(user_name), encodeURIComponent('我上线了'), '']
   botWs.send(JSON.stringify(WXSendMsg))
+  console.log('SEND: ' + JSON.stringify(WXSendMsg))
 
   // 同步通讯录
   botWs.send(JSON.stringify(WXSyncContact))
+  console.log('SEND: ' + JSON.stringify(WXSyncContact))
+
+  // console.log(' WXGetContact done !!!! qq512436430')
+  // WXGetContact.param = [encodeURIComponent('qq512436430')]
+  // botWs.send(JSON.stringify(WXGetContact))
+  // console.log('SEND: ' + JSON.stringify(WXGetContact))
+
+  // console.log(' WXGetContact done !!!! fake 11111')
+  // WXGetContact.param = [encodeURIComponent('11111')]
+  // botWs.send(JSON.stringify(WXGetContact))
+  // console.log('SEND: ' + JSON.stringify(WXGetContact))
+
+  // console.log(' WXSearchContact done !!!! qq512436430')
+  // WXSearchContact.param = [encodeURIComponent('qq512436430')]
+  // botWs.send(JSON.stringify(WXSearchContact))
+  // console.log('SEND: ' + JSON.stringify(WXSearchContact))
+
+  // console.log(' WXSearchContact done !!!! fake 11111')
+  // WXSearchContact.param = [encodeURIComponent('11111')]
+  // botWs.send(JSON.stringify(WXSearchContact))
+  // console.log('SEND: ' + JSON.stringify(WXSearchContact))
 }
