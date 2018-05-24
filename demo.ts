@@ -374,7 +374,7 @@ const connect = async function() {
           "param": [encodeURIComponent(user_name), encodeURIComponent(password)]
         }
         botWs.send(JSON.stringify(WXQRCodeLogin))
-        console.log('SEND: ' + JSON.stringify())
+        console.log('SEND: ' + JSON.stringify(WXQRCodeLogin))
         return
       }
       
