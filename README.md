@@ -1,9 +1,11 @@
-# test-ipad-puppet
+# WECHATY-PUPPET-PADCHAT
 
 ## RUN
-```
-ts-node demo.ts
+
+```shell
+$ npm install wechaty@next
+
+$ WECHATY_PUPPET=padchat WECHATY_PUPPET_PADCHAT_TOKEN=YOUR_PUPPET_PADCHAT_TOKEN ts-node wechaty-bot.ts
 ```
 
-## DOC REFERENCE
-https://ymiao.oss-cn-shanghai.aliyuncs.com/apifile.txt#
+Currently you can apply a Alpha Testing Padchat Token at here: [Wechaty v0.15 Alpha Testing](https://github.com/Chatie/wechaty/issues/1296)
