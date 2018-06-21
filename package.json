@@ -10,7 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^10.1.1",
+    "file-box": "^0.8.22",
+    "qrcode-terminal": "^0.12.0",
     "uuid": "^3.2.1",
+    "wechaty": "^0.17.1",
     "ws": "^5.1.1"
   }
 }

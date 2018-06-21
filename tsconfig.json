@@ -1,27 +1,45 @@
 {
-    "compilerOptions": {
-        "target": "es6",
-        "module": "commonjs",
-        "outDir": "dist",
-        "declaration": true,
-        "sourceMap": true,
-        "noEmitOnError": true,
-        "noUnusedLocals": false,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "strictNullChecks": true,
-        "noImplicitAny": false,
-        "noUnusedParameters": false,
-        "noImplicitThis": false,
-        "allowUnusedLabels": true,
-        "allowJs": true
-    },
-    "exclude": [
-        "node_modules",
-        "dist"
-    ],
-    "include": [
-        "src/**/*.ts",
-        "bot/**/*.ts"
+  "compilerOptions": {
+      "target": "es6"
+
+    , "module"          : "commonjs"
+    , "outDir"          : "dist"
+    , "traceResolution" : false
+    , "noLib"           : false
+    , "declaration"     : true
+    , "sourceMap"       : true
+    , "skipLibCheck"    : true
+    , "esModuleInterop" : true
+
+    , "emitDecoratorMetadata"  : true
+    , "experimentalDecorators" : true
+
+    , "lib": [
+      "esnext"
     ]
+
+    , "strict"                     : true
+    , "noEmitOnError"              : true
+    , "noUnusedLocals"             : true
+    , "noImplicitReturns"          : true
+    , "noFallthroughCasesInSwitch" : true
+    , "strictNullChecks"           : true
+    , "noImplicitAny"              : true
+    , "noUnusedParameters"         : true
+    , "noImplicitThis"             : true
+  }
+  , "exclude": [
+      "node_modules/"
+    , "dist/"
+    , "tests/fixtures/"
+  ]
+  , "include": [
+       "app/**/*.ts"
+     , "bin/*.ts"
+     , "bot/**/*.ts"
+     , "examples/**/*.ts"
+     , "scripts/**/*.ts"
+     , "src/**/*.ts"
+     , "tests/**/*.spec.ts"
+  ]
 }
