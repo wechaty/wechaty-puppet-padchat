@@ -1,11 +1,18 @@
+// tslint:disable:no-reference
+
+/// <reference path="./typings.d.ts" />
+
+import promiseRetry = require('promise-retry')
+import { WrapOptions } from 'retry'
+
 import {
   log,
 }             from 'brolog'
 
-export const WECHATY_PUPPET_PADCHAT_ENDPOINT = process.env['WECHATY_PUPPET_PADCHAT_ENDPOINT']  || 'ws://54.223.36.77:8080/wx'
+export const WECHATY_PUPPET_PADCHAT_ENDPOINT = process.env.WECHATY_PUPPET_PADCHAT_ENDPOINT || 'ws://54.223.36.77:8080/wx'
 
-function padchatToken() {
-  const token = process.env['WECHATY_PUPPET_PADCHAT_TOKEN'] as string
+function padchatToken () {
+  const token = process.env.WECHATY_PUPPET_PADCHAT_TOKEN as string
   if (!token) {
     log.error('PuppetPadchatConfig', `
 
@@ -23,6 +30,35 @@ function padchatToken() {
   return token
 }
 
+export async function retry<T> (
+  retryableFn: (
+    retry: (error: Error) => never,
+    attempt: number,
+  ) => Promise<T>,
+): Promise<T> {
+  /**
+   * 60 seconds: (to be confirmed)
+   *  factor: 3
+   *  minTimeout: 10
+   *  maxTimeout: 20 * 1000
+   *  retries: 9
+   */
+  const factor     = 3
+  const minTimeout = 10
+  const maxTimeout = 20 * 1000
+  const retries    = 9
+  // const unref      = true
+
+  const retryOptions: WrapOptions = {
+    factor,
+    maxTimeout,
+    minTimeout,
+    retries,
+  }
+  return promiseRetry(retryOptions, retryableFn)
+}
+
 export {
+  log,
   padchatToken,
 }

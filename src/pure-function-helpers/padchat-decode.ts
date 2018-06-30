@@ -1,5 +1,5 @@
 // https://stackoverflow.com/a/24417399/1123955
-export function padchatDecode<T = Object>(encodedText: string): T {
+export function padchatDecode<T = object>(encodedText: string): T {
   if (!encodedText) {
     throw new Error('no encodedText')
   }

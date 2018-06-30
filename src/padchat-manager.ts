@@ -1,25 +1,18 @@
-import path   from 'path'
-import os     from 'os'
 import fs     from 'fs-extra'
+import os     from 'os'
+import path   from 'path'
 
-import { MemoryCard }     from 'memory-card'
-import { StateSwitch }    from 'state-switch'
-import { FlashStoreSync } from 'flash-store'
-import {
-  Subscription,
-}                         from 'rxjs'
-import {
-  DelayQueueExector,
-}                         from 'rx-queue'
-import { FileBox }        from 'file-box'
-
-import Misc           from '../misc'
+import { FileBox }            from 'file-box'
+import { FlashStoreSync }     from 'flash-store'
+import { MemoryCard }         from 'memory-card'
+import { DelayQueueExector }  from 'rx-queue'
+import { Subscription }       from 'rxjs'
+import { StateSwitch }        from 'state-switch'
 
 import {
-  PadchatContinue,
-
   PadchatContactMsgType,
   PadchatContactPayload,
+  PadchatContinue,
 
   PadchatRoomMemberPayload,
   PadchatRoomPayload,
@@ -42,7 +35,8 @@ import {
 
 import {
   log,
-}           from '../config'
+  retry,
+}           from './config'
 
 const MEMORY_SLOT_NAME = 'WECHATY_PUPPET_PADCHAT'
 
@@ -83,7 +77,7 @@ export class PadchatManager extends PadchatRpc {
 
   private syncContactAndRoomTimer?: NodeJS.Timer
 
-  constructor(
+  constructor (
     public options: ManagerOptions,
   ) {
     super(options.endpoint, options.token)
@@ -103,7 +97,7 @@ export class PadchatManager extends PadchatRpc {
 
   }
 
-  protected async initCache(
+  protected async initCache (
     token  : string,
     userId : string,
   ): Promise<void> {
@@ -158,7 +152,7 @@ export class PadchatManager extends PadchatRpc {
               )
   }
 
-  protected async releaseCache(): Promise<void> {
+  protected async releaseCache (): Promise<void> {
     log.verbose('PuppetPadchatManager', 'releaseCache()')
 
     if (   this.cacheContactRawPayload
@@ -183,7 +177,7 @@ export class PadchatManager extends PadchatRpc {
     }
   }
 
-  public async start(): Promise<void> {
+  public async start (): Promise<void> {
     log.verbose('PuppetPadchatManager', `start()`)
 
     if (this.userId) {
@@ -232,7 +226,7 @@ export class PadchatManager extends PadchatRpc {
     this.state.on(true)
   }
 
-  public async stop(): Promise<void> {
+  public async stop (): Promise<void> {
     log.verbose('PuppetPadchatManager', `stop()`)
 
     this.state.off('pending')
@@ -260,7 +254,7 @@ export class PadchatManager extends PadchatRpc {
     this.state.off(true)
   }
 
-  protected async onLogin(userId: string): Promise<void> {
+  protected async onLogin (userId: string): Promise<void> {
     log.verbose('PuppetPadchatManager', `login(%s)`, userId)
 
     if (this.userId) {
@@ -296,7 +290,7 @@ export class PadchatManager extends PadchatRpc {
     this.emit('login', this.userId)
   }
 
-  public async logout(): Promise<void> {
+  public async logout (): Promise<void> {
     log.verbose('PuppetPadchatManager', `logout()`)
 
     if (!this.userId) {
@@ -310,7 +304,7 @@ export class PadchatManager extends PadchatRpc {
     await this.startCheckScan()
   }
 
-  protected async stopCheckScan(): Promise<void> {
+  protected async stopCheckScan (): Promise<void> {
     log.verbose('PuppetPadchatManager', `stopCheckScan()`)
 
     if (this.loginScanTimer) {
@@ -321,7 +315,7 @@ export class PadchatManager extends PadchatRpc {
     this.loginScanStatus = undefined
   }
 
-  protected async startCheckScan(): Promise<void> {
+  protected async startCheckScan (): Promise<void> {
     log.verbose('PuppetPadchatManager', `startCheckScan()`)
 
     if (this.userId) {
@@ -445,7 +439,7 @@ export class PadchatManager extends PadchatRpc {
    * Offline, then relogin
    * emit qrcode or send login request to the user.
    */
-  protected async tryAutoLogin(memorySlot: PadchatMemorySlot): Promise<boolean> {
+  protected async tryAutoLogin (memorySlot: PadchatMemorySlot): Promise<boolean> {
     log.verbose('PuppetPadchatManager', `tryAutoLogin(%s)`, memorySlot.currentUserId)
 
     const currentUserId = memorySlot.currentUserId
@@ -555,7 +549,7 @@ export class PadchatManager extends PadchatRpc {
     return false
   }
 
-  protected async emitLoginQrcode(): Promise<void> {
+  protected async emitLoginQrcode (): Promise<void> {
     log.verbose('PuppetPadchatManager', `emitLoginQrCode()`)
 
     if (this.loginScanQrcode) {
@@ -570,7 +564,8 @@ export class PadchatManager extends PadchatRpc {
 
       // wait 1 second and try again
       await new Promise(r => setTimeout(r, 1000))
-      return await this.emitLoginQrcode()
+      await this.emitLoginQrcode()
+      return
     }
 
     const fileBox = FileBox.fromBase64(result.qr_code, 'qrcode.jpg')
@@ -586,7 +581,7 @@ export class PadchatManager extends PadchatRpc {
     )
   }
 
-  protected async refreshMemorySlotData(
+  protected async refreshMemorySlotData (
     memorySlot: PadchatMemorySlot,
     userId   : string,
   ): Promise<PadchatMemorySlot> {
@@ -648,7 +643,7 @@ export class PadchatManager extends PadchatRpc {
      * 4. New user login, generate 62data for it
      */
     // Build a new code block to make tslint happy: no-shadow-variable
-    if (true) {
+    {
       log.verbose('PuppetPadchatManager', 'refresh62Data() user switch detected: from "%s" to "%s"',
                                           memorySlot.currentUserId,
                                           userId,
@@ -667,7 +662,7 @@ export class PadchatManager extends PadchatRpc {
     }
   }
 
-  protected async tryLoad62Data(): Promise<void> {
+  protected async tryLoad62Data (): Promise<void> {
     log.verbose('PuppetPadchatManager', `tryLoad62Data()`)
 
     const deviceUserId   = this.memorySlot.currentUserId
@@ -688,7 +683,7 @@ export class PadchatManager extends PadchatRpc {
     }
   }
 
-  public getContactIdList(): string[] {
+  public getContactIdList (): string[] {
     log.verbose('PuppetPadchatManager', 'getContactIdList()')
     if (!this.cacheContactRawPayload) {
       throw new Error('cache not inited' )
@@ -698,7 +693,7 @@ export class PadchatManager extends PadchatRpc {
     return contactIdList
   }
 
-  public getRoomIdList(): string[] {
+  public getRoomIdList (): string[] {
     log.verbose('PuppetPadchatManager', 'getRoomIdList()')
     if (!this.cacheRoomRawPayload) {
       throw new Error('cache not inited' )
@@ -708,23 +703,23 @@ export class PadchatManager extends PadchatRpc {
     return roomIdList
   }
 
-  public roomMemberRawPayloadDirty(
+  public roomMemberRawPayloadDirty (
     roomId: string,
   ): void {
     log.verbose('PuppetPadchatManager', 'roomMemberRawPayloadDirty(%d)', roomId)
     if (!this.cacheRoomMemberRawPayload) {
-      throw new Error('cache not inited' )
+      throw new Error('cache not inited')
     }
     this.cacheRoomMemberRawPayload.delete(roomId)
   }
 
-  public async getRoomMemberIdList(
+  public async getRoomMemberIdList (
     roomId: string,
     dirty = false,
   ): Promise<string[]> {
     log.verbose('PuppetPadchatManager', 'getRoomMemberIdList(%d)', roomId)
     if (!this.cacheRoomMemberRawPayload) {
-      throw new Error('cache not inited' )
+      throw new Error('cache not inited')
     }
 
     if (dirty) {
@@ -746,7 +741,7 @@ export class PadchatManager extends PadchatRpc {
     return memberIdList
   }
 
-  public roomRawPayloadDirty(
+  public roomRawPayloadDirty (
     roomId: string,
   ): void {
     log.verbose('PuppetPadchatManager', 'roomRawPayloadDirty(%d)', roomId)
@@ -756,7 +751,7 @@ export class PadchatManager extends PadchatRpc {
     this.cacheRoomRawPayload.delete(roomId)
   }
 
-  public async roomMemberRawPayload(roomId: string): Promise<{ [contactId: string]: PadchatRoomMemberPayload }> {
+  public async roomMemberRawPayload (roomId: string): Promise<{ [contactId: string]: PadchatRoomMemberPayload }> {
     log.verbose('PuppetPadchatManager', 'roomMemberRawPayload(%s)', roomId)
 
     if (!this.cacheRoomMemberRawPayload) {
@@ -773,7 +768,7 @@ export class PadchatManager extends PadchatRpc {
     return memberRawPayloadDict
   }
 
-  public async syncRoomMember(
+  public async syncRoomMember (
     roomId: string,
   ): Promise<{ [contactId: string]: PadchatRoomMemberPayload }> {
     log.silly('PuppetPadchatManager', 'syncRoomMember(%s)', roomId)
@@ -818,7 +813,7 @@ export class PadchatManager extends PadchatRpc {
     return newMemberDict
   }
 
-  public async syncContactsAndRooms(): Promise<void> {
+  public async syncContactsAndRooms (): Promise<void> {
     log.verbose('PuppetPadchatManager', `syncContactsAndRooms()`)
 
     let cont = true
@@ -920,7 +915,7 @@ export class PadchatManager extends PadchatRpc {
 
   }
 
-  public contactRawPayloadDirty(
+  public contactRawPayloadDirty (
     contactId: string,
   ): void {
     log.verbose('PuppetPadchatManager', 'contactRawPayloadDirty(%d)', contactId)
@@ -930,10 +925,10 @@ export class PadchatManager extends PadchatRpc {
     this.cacheContactRawPayload.delete(contactId)
   }
 
-  public async contactRawPayload(contactId: string): Promise<PadchatContactPayload> {
+  public async contactRawPayload (contactId: string): Promise<PadchatContactPayload> {
     log.silly('PuppetPadchatManager', 'contactRawPayload(%s)', contactId)
 
-    const rawPayload = await Misc.retry(async (retry, attempt) => {
+    const rawPayload = await retry(async (retryException, attempt) => {
       log.silly('PuppetPadchatManager', 'contactRawPayload(%s) retry() attempt=%d', contactId, attempt)
 
       if (!this.cacheContactRawPayload) {
@@ -952,7 +947,7 @@ export class PadchatManager extends PadchatRpc {
         this.cacheContactRawPayload.set(contactId, tryRawPayload)
         return tryRawPayload
       }
-      return retry(new Error('tryRawPayload empty'))
+      return retryException(new Error('tryRawPayload empty'))
     })
 
     if (!rawPayload) {
@@ -961,10 +956,10 @@ export class PadchatManager extends PadchatRpc {
     return rawPayload
   }
 
-  public async roomRawPayload(id: string): Promise<PadchatRoomPayload> {
+  public async roomRawPayload (id: string): Promise<PadchatRoomPayload> {
     log.verbose('PuppetPadchatManager', 'roomRawPayload(%s)', id)
 
-    const rawPayload = await Misc.retry(async (retry, attempt) => {
+    const rawPayload = await retry(async (retryException, attempt) => {
       log.silly('PuppetPadchatManager', 'roomRawPayload(%s) retry() attempt=%d', id, attempt)
 
       if (!this.cacheRoomRawPayload) {
@@ -983,7 +978,7 @@ export class PadchatManager extends PadchatRpc {
         this.cacheRoomRawPayload.set(id, tryRawPayload)
         return tryRawPayload
       }
-      return retry(new Error('tryRawPayload empty'))
+      return retryException(new Error('tryRawPayload empty'))
     })
 
     if (!rawPayload) {
@@ -992,7 +987,7 @@ export class PadchatManager extends PadchatRpc {
     return rawPayload
   }
 
-  public ding(data?: string): void {
+  public ding (data?: string): void {
     log.verbose('PuppetPadchatManager', 'ding(%s)', data || '')
     // TODO: healthy check
     this.emit('dong')

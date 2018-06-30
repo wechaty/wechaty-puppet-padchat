@@ -1,15 +1,15 @@
 import { EventEmitter } from 'events'
 
 // import cuid        from 'cuid'
-import WebSocket        from 'ws'
-import { Subscription } from 'rxjs'
 import Peer, {
   parse,
 }                       from 'json-rpc-peer'
+import { Subscription } from 'rxjs'
+import WebSocket        from 'ws'
 
 import {
-  ThrottleQueue,
   DebounceQueue,
+  ThrottleQueue,
 }                       from 'rx-queue'
 
 // , {
@@ -24,44 +24,36 @@ import {
 // }                                   from 'json-rpc-peer'
 
 import {
-  // PadchatContinue,
-  // PadchatMsgType,
-  // PadchatStatus,
-
+  PadchatContactPayload,
+  PadchatMessagePayload,
   PadchatPayload,
   PadchatPayloadType,
 
-  // PadchatContactMsgType,
-  PadchatContactPayload,
-
-  PadchatMessagePayload,
-
-  PadchatRoomMemberPayload,
   PadchatRoomMemberListPayload,
+  PadchatRoomMemberPayload,
   PadchatRoomPayload,
 }                             from './padchat-schemas'
 
 import {
-  // AutoDataType,
-  PadchatRpcRequest,
   InitType,
-  WXGenerateWxDatType,
-  WXGetQRCodeType,
-  WXInitializeType,
-  WXCheckQRCodePayload,
-  WXHeartBeatType,
-  WXGetLoginTokenType,
-  WXAutoLoginType,
-  WXLoginRequestType,
-  WXSendMsgType,
-  WXLoadWxDatType,
-  WXQRCodeLoginType,
+  PadchatRpcRequest,
   StandardType,
   WXAddChatRoomMemberType,
+  WXAutoLoginType,
+  WXCheckQRCodePayload,
+  WXGenerateWxDatType,
+  WXGetLoginTokenType,
+  WXGetQRCodeType,
+  WXHeartBeatType,
+  WXInitializeType,
+  WXLoadWxDatType,
+  WXLoginRequestType,
   WXLogoutType,
+  WXQRCodeLoginType,
+  WXRoomAddTypeStatus,
   WXSearchContactType,
   WXSearchContactTypeStatus,
-  WXRoomAddTypeStatus,
+  WXSendMsgType,
 }                             from './padchat-rpc.type'
 
 import {
@@ -71,7 +63,7 @@ import {
   stripBugChatroomId,
 }                       from './pure-function-helpers/'
 
-import { log }          from '../config'
+import { log }          from './config'
 
 let HEART_BEAT_COUNTER = 0
 
@@ -87,7 +79,7 @@ export class PadchatRpc extends EventEmitter {
   private debounceSubscription?       : Subscription
   private logoutThrottleSubscription? : Subscription
 
-  constructor(
+  constructor (
     protected endpoint : string,
     protected token    : string,
   ) {
@@ -97,7 +89,7 @@ export class PadchatRpc extends EventEmitter {
     this.jsonRpc = new Peer()
   }
 
-  public async start(): Promise<void> {
+  public async start (): Promise<void> {
     log.verbose('PadchatRpc', 'start()')
 
     await this.initWebSocket()
@@ -110,7 +102,7 @@ export class PadchatRpc extends EventEmitter {
 
   }
 
-  protected async initJsonRpc(): Promise<void> {
+  protected async initJsonRpc (): Promise<void> {
     log.verbose('PadchatRpc', 'initJsonRpc()')
 
     if (!this.socket) {
@@ -142,10 +134,10 @@ export class PadchatRpc extends EventEmitter {
       const encodedParam = payload.params.map(encodeURIComponent)
 
       const message: PadchatRpcRequest = {
-        userId  : this.token,
-        msgId   : payload.id,
         apiName : payload.method,
+        msgId   : payload.id,
         param   : encodedParam,
+        userId  : this.token,
       }
 
       // log.silly('PadchatRpc', 'initJsonRpc() jsonRpc.on(data) converted to padchat payload="%s"', JSON.stringify(message))
@@ -154,7 +146,7 @@ export class PadchatRpc extends EventEmitter {
     })
   }
 
-  protected async initWebSocket(): Promise<void> {
+  protected async initWebSocket (): Promise<void> {
     log.verbose('PadchatRpc', 'initWebSocket()')
 
     if (this.socket) {
@@ -256,7 +248,7 @@ export class PadchatRpc extends EventEmitter {
 
   }
 
-  private initHeartbeat(): void {
+  private initHeartbeat (): void {
     log.verbose('PadchatRpc', 'initHeartbeat()')
 
     if (!this.throttleQueue || !this.debounceQueue) {
@@ -292,7 +284,7 @@ export class PadchatRpc extends EventEmitter {
 
   }
 
-  protected reset(reason = 'unknown reason'): void {
+  protected reset (reason = 'unknown reason'): void {
     log.verbose('PadchatRpc', 'reset(%s)', reason)
 
     // no need to stop() at here. the high layer will do this.
@@ -306,7 +298,7 @@ export class PadchatRpc extends EventEmitter {
     this.emit('reset', reason)
   }
 
-  public stop(): void {
+  public stop (): void {
     log.verbose('PadchatRpc', 'stop()')
 
     this.stopQueues()
@@ -325,7 +317,7 @@ export class PadchatRpc extends EventEmitter {
     }
   }
 
-  private startQueues() {
+  private startQueues () {
     log.verbose('PadchatRpc', 'startQueues()')
 
     /**
@@ -355,7 +347,7 @@ export class PadchatRpc extends EventEmitter {
     }
   }
 
-  private stopQueues() {
+  private stopQueues () {
     log.verbose('PadchatRpc', 'stopQueues()')
 
     if (   this.throttleSubscription
@@ -392,15 +384,15 @@ export class PadchatRpc extends EventEmitter {
     }
   }
 
-  private async rpcCall(
+  private async rpcCall (
     apiName   : string,
-    ...params : (number | string)[]
+    ...params : Array<number | string>
   ): Promise<any> {
     log.silly('PadchatRpc', 'rpcCall(%s, %s)', apiName, JSON.stringify(params).substr(0, 500))
-    return await this.jsonRpc.request(apiName, params)
+    return this.jsonRpc.request(apiName, params)
   }
 
-  protected onSocket(payload: PadchatPayload) {
+  protected onSocket (payload: PadchatPayload) {
     // log.silly('PadchatRpc', 'onSocket(payload.length=%d)',
     //                           JSON.stringify(payload).length,
     //             )
@@ -466,7 +458,7 @@ export class PadchatRpc extends EventEmitter {
     }
   }
 
-  protected onSocketPadchat(padchatPayload: PadchatPayload): void {
+  protected onSocketPadchat (padchatPayload: PadchatPayload): void {
     // log.verbose('PadchatRpc', 'onSocketPadchat({apiName="%s", msgId="%s", ...})',
     //                                     padchatPayload.apiName,
     //                                     padchatPayload.msgId,
@@ -486,7 +478,7 @@ export class PadchatRpc extends EventEmitter {
     const jsonRpcResponse = {
       id      : padchatPayload.msgId,
       jsonrpc : '2.0',
-      result  : result,
+      result,
       type    : 'response',
     }
 
@@ -496,7 +488,7 @@ export class PadchatRpc extends EventEmitter {
     this.jsonRpc.write(responseText)
   }
 
-  protected onSocketTencent(messagePayloadList: PadchatMessagePayload[]) {
+  protected onSocketTencent (messagePayloadList: PadchatMessagePayload[]) {
     // console.log('tencent messagePayloadList:', messagePayloadList)
 
     for (const messagePayload of messagePayloadList) {
@@ -516,7 +508,7 @@ export class PadchatRpc extends EventEmitter {
   /**
    * Init with WebSocket Server
    */
-  protected async init(): Promise<InitType> {
+  protected async init (): Promise<InitType> {
     const result: InitType = await this.rpcCall('init')
     log.silly('PadchatRpc', 'init result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -528,7 +520,7 @@ export class PadchatRpc extends EventEmitter {
   /**
    * Get WX block memory
    */
-  protected async WXInitialize(): Promise<WXInitializeType> {
+  protected async WXInitialize (): Promise<WXInitializeType> {
     log.verbose('PadchatRpc', 'WXInitialize()')
 
     const result = await this.rpcCall('WXInitialize')
@@ -540,12 +532,12 @@ export class PadchatRpc extends EventEmitter {
     return result
   }
 
-  protected async WXGetQRCode(): Promise<WXGetQRCodeType> {
+  protected async WXGetQRCode (): Promise<WXGetQRCodeType> {
     const result = await this.rpcCall('WXGetQRCode')
     return result
   }
 
-  public async WXCheckQRCode(): Promise<WXCheckQRCodePayload> {
+  public async WXCheckQRCode (): Promise<WXCheckQRCodePayload> {
     const result = await this.rpcCall('WXCheckQRCode')
     log.silly('PadchatRpc', 'WXCheckQRCode result: %s', JSON.stringify(result))
     if (!result) {
@@ -554,7 +546,7 @@ export class PadchatRpc extends EventEmitter {
     return result
   }
 
-  public async WXHeartBeat(): Promise<WXHeartBeatType> {
+  public async WXHeartBeat (): Promise<WXHeartBeatType> {
     const result = await this.rpcCall('WXHeartBeat')
     log.silly('PadchatRpc', 'WXHeartBeat result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -568,7 +560,7 @@ export class PadchatRpc extends EventEmitter {
    * see issue https://github.com/lijiarui/wechaty-puppet-padchat/issues/39
    * @returns {Promise<(PadchatRoomPayload | PadchatContactPayload)[]>}
    */
-  public async WXSyncContact(): Promise<(PadchatRoomPayload | PadchatContactPayload)[]> {
+  public async WXSyncContact (): Promise<Array<PadchatRoomPayload | PadchatContactPayload>> {
     const result = await this.rpcCall('WXSyncContact')
     if (!result) {
       throw Error('WXSyncContact error! canot get result from websocket server')
@@ -582,7 +574,7 @@ export class PadchatRpc extends EventEmitter {
    * 1. Call multiple times in the same session, will return the same data
    * 2. Call multiple times between sessions with the same token, will return the same data
    */
-  public async WXGenerateWxDat(): Promise<string> {
+  public async WXGenerateWxDat (): Promise<string> {
     const result: WXGenerateWxDatType = await this.rpcCall('WXGenerateWxDat')
     log.silly('PadchatRpc', 'WXGenerateWxDat result: %s', JSON.stringify(result))
     if (!result || !(result.data) || result.status !== 0) {
@@ -595,7 +587,7 @@ export class PadchatRpc extends EventEmitter {
    * Load 62 data
    * @param {string} wxData     autoData.wxData
    */
-  public async WXLoadWxDat(wxData: string): Promise<WXLoadWxDatType> {
+  public async WXLoadWxDat (wxData: string): Promise<WXLoadWxDatType> {
     const result = await this.rpcCall('WXLoadWxDat', wxData)
     if (!result || result.status !== 0) {
       throw Error('WXLoadWxDat error! canot get result from websocket server')
@@ -603,7 +595,7 @@ export class PadchatRpc extends EventEmitter {
     return result
   }
 
-  public async WXGetLoginToken(): Promise<string> {
+  public async WXGetLoginToken (): Promise<string> {
     const result: WXGetLoginTokenType = await this.rpcCall('WXGetLoginToken')
     log.silly('PadchatRpc', 'WXGetLoginToken result: %s', JSON.stringify(result))
     if (!result || !result.token || result.status !== 0) {
@@ -617,7 +609,7 @@ export class PadchatRpc extends EventEmitter {
    * @param {string} token    autoData.token
    * @returns {string} user_name | ''
    */
-  public async WXAutoLogin(token: string): Promise<undefined | WXAutoLoginType> {
+  public async WXAutoLogin (token: string): Promise<undefined | WXAutoLoginType> {
     const result = await this.rpcCall('WXAutoLogin', token)
     log.silly('PadchatRpc', 'WXAutoLogin result: %s, type: %s', JSON.stringify(result), typeof result)
     return result
@@ -627,7 +619,7 @@ export class PadchatRpc extends EventEmitter {
    * Login with QRcode
    * @param {string} token    autoData.token
    */
-  public async WXLoginRequest(token: string): Promise<undefined | WXLoginRequestType> {
+  public async WXLoginRequest (token: string): Promise<undefined | WXLoginRequestType> {
     const result = await this.rpcCall('WXLoginRequest', token)
     log.silly('PadchatRpc', 'WXLoginRequest result: %s, type: %s', JSON.stringify(result), typeof result)
     return result
@@ -638,7 +630,7 @@ export class PadchatRpc extends EventEmitter {
    * @param {string} to       user_name
    * @param {string} content  text
    */
-  public async WXSendMsg(to: string, content: string, at = ''): Promise<WXSendMsgType> {
+  public async WXSendMsg (to: string, content: string, at = ''): Promise<WXSendMsgType> {
     if (to) {
       const result = await this.rpcCall('WXSendMsg', to, content, at)
       if (!result || result.status !== 0) {
@@ -654,7 +646,7 @@ export class PadchatRpc extends EventEmitter {
    * @param {string} to     user_name
    * @param {string} data   image_data
    */
-  public async WXSendImage(to: string, data: string): Promise<void> {
+  public async WXSendImage (to: string, data: string): Promise<void> {
     await this.rpcCall('WXSendImage', to, data)
   }
 
@@ -662,7 +654,7 @@ export class PadchatRpc extends EventEmitter {
    * Get contact by contact id
    * @param {any} id        user_name
    */
-  public async WXGetContact(id: string): Promise<any> {
+  public async WXGetContact (id: string): Promise<any> {
     const result = await this.rpcCall('WXGetContact', id)
 
     if (!result) {
@@ -681,7 +673,7 @@ export class PadchatRpc extends EventEmitter {
    * Get contact by contact id
    * @param {any} id        user_name
    */
-  public async WXGetContactPayload(id: string): Promise<PadchatContactPayload> {
+  public async WXGetContactPayload (id: string): Promise<PadchatContactPayload> {
     if (!isContactId(id)) { // /@chatroom$/.test(id)) {
       throw Error(`should use WXGetRoomPayload because get a room id :${id}`)
     }
@@ -693,7 +685,7 @@ export class PadchatRpc extends EventEmitter {
    * Get contact by contact id
    * @param {any} id        user_name
    */
-  public async WXGetRoomPayload(id: string): Promise<PadchatRoomPayload> {
+  public async WXGetRoomPayload (id: string): Promise<PadchatRoomPayload> {
     if (!isRoomId(id)) { // (/@chatroom$/.test(id))) {
       throw Error(`should use WXGetContactPayload because get a contact id :${id}`)
     }
