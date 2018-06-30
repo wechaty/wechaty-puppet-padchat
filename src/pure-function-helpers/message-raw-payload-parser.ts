@@ -172,16 +172,16 @@ export function messageRawPayloadParser (
       ...payloadBase,
       fromId,
       roomId,
-      toId,
       text,
+      toId,
     }
   } else if (roomId) {
     payload = {
       ...payloadBase,
       fromId,
       roomId,
-      toId,
       text,
+      toId,
     }
   } else {
     throw new Error('neither toId nor roomId')

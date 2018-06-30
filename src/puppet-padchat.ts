@@ -26,8 +26,6 @@ import {
   FileBox,
 }               from 'file-box'
 
-import Misc from '../misc'
-
 import {
   ContactGender,
 
@@ -35,6 +33,7 @@ import {
   ContactType,
 
   FriendshipPayload,
+  FriendshipPayloadReceive,
 
   MessagePayload,
   MessageType,
@@ -74,6 +73,7 @@ import {
   log,
   padchatToken,
   qrCodeForChatie,
+  retry,
   WECHATY_PUPPET_PADCHAT_ENDPOINT,
 }                   from './config'
 
@@ -359,7 +359,7 @@ export class PuppetPadchat extends Puppet {
       const roomId          = roomJoinEvent.roomId
       log.silly('PuppetPadchat', 'onPadchatMessageRoomEventJoin() roomJoinEvent="%s"', JSON.stringify(roomJoinEvent))
 
-      const inviteeIdList = await Misc.retry(async (retry, attempt) => {
+      const inviteeIdList = await retry(async (retryException, attempt) => {
         log.verbose('PuppetPadchat', 'onPadchatMessageRoomEvent({id=%s}) roomJoin retry(attempt=%d)', attempt)
 
         const tryIdList = flatten<string>(
@@ -383,7 +383,7 @@ export class PuppetPadchat extends Puppet {
          */
         await this.roomMemberPayloadDirty(roomId)
 
-        return retry(new Error('roomMemberSearch() not found'))
+        return retryException(new Error('roomMemberSearch() not found'))
 
       }).catch(e => {
         log.warn('PuppetPadchat', 'onPadchatMessageRoomEvent({id=%s}) roomJoin retry() fail: %s', e.message)
@@ -774,9 +774,9 @@ export class PuppetPadchat extends Puppet {
 
           const payload: ContactPayload = {
             avatar : roomMemberPayload.avatar,
-            name   : roomMemberPayload.name,
-            id     : roomMemberPayload.id,
             gender : ContactGender.Unknown,
+            id     : roomMemberPayload.id,
+            name   : roomMemberPayload.name,
             type   : ContactType.Personal,
           }
 
@@ -1010,11 +1010,11 @@ export class PuppetPadchat extends Puppet {
     log.silly('PuppetPadchat', 'roomMemberRawPayloadParser(%s)', rawPayload)
 
     const payload: RoomMemberPayload = {
+      avatar    : rawPayload.big_head,
       id        : rawPayload.user_name,
       inviterId : rawPayload.invited_by,
-      roomAlias : rawPayload.chatroom_nick_name,
-      avatar    : rawPayload.big_head,
       name      : rawPayload.nick_name,
+      roomAlias : rawPayload.chatroom_nick_name,
     }
 
     return payload
@@ -1303,7 +1303,7 @@ export class PuppetPadchat extends Puppet {
   ): Promise<void> {
     log.verbose('PuppetPadchat', 'friendshipAccept(%s)', friendshipId)
 
-    const payload = await this.friendshipPayload(friendshipId)
+    const payload = await this.friendshipPayload(friendshipId) as any as FriendshipPayloadReceive
 
     if (!payload.ticket) {
       throw new Error('no ticket')

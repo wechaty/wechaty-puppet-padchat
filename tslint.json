@@ -2,6 +2,8 @@
   "extends": ["tslint:recommended", "tslint-config-standard"],
   "rules": {
     "interface-name": [true, "never-prefix"],
+    "no-floating-promises": true,
+    "await-promise": false,
     "trailing-comma": true,
     "import-spacing": false,
     "no-multi-spaces": false,

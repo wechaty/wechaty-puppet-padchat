@@ -24,9 +24,9 @@ test('friendshipRawPayloadParser()', async t => {
   const TENCENT_PAYLOAD_LIST: PadchatMessagePayload[] = padchatDecode(DATA)
   const PADCHAT_MESSAGE_PAYLOAD = TENCENT_PAYLOAD_LIST[0]
   const EXPECTED_FRIEND_REQUEST_PAYLOAD = {
-    id        : '2957327798149218888',
     contactId : 'lizhuohuan',
     hello     : 'xixixi',
+    id        : '2957327798149218888',
     stranger  : 'v1_cf269def9b946093f9d131a5e733ba169351013c95e46a860cddecaf485c4b10@stranger',
     ticket    : 'v2_1a0d2cf325e64b6f74bed09e944529e7cc7a7580cb323475050664566dd0302d89b8e2ed95b596b459cf762d94a0ce606da39babbae0dc26b18a62e079bfc120@stranger',
     type      : FriendshipType.Receive,

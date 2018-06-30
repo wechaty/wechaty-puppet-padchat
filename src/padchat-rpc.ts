@@ -728,7 +728,7 @@ export class PadchatRpc extends EventEmitter {
     // 00:40:44 SILL PadchatRpc WXGetChatRoomMember() result: {"chatroom_id":0,"count":0,"member":"null\n","message":"","status":0,"user_name":""}
 
     try {
-      const tryMemberList: null | PadchatRoomMemberPayload[] = padchatDecode(result.member)
+      const tryMemberList: undefined | null | PadchatRoomMemberPayload[] = padchatDecode(result.member)
 
       if (Array.isArray(tryMemberList)) {
         result.member = tryMemberList

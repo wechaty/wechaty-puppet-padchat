@@ -11,9 +11,9 @@ export function roomRawPayloadParser (
 ): RoomPayload {
   const payload: RoomPayload = {
     id           : rawPayload.user_name,
-    topic        : rawPayload.nick_name,
-    ownerId      : rawPayload.chatroom_owner,
     memberIdList : rawPayload.member || [],
+    ownerId      : rawPayload.chatroom_owner,
+    topic        : rawPayload.nick_name,
   }
 
   return payload

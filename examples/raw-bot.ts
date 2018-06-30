@@ -1,6 +1,8 @@
-const webSocket = require('ws')
+// tslint:disable
+
+import WebSocket from 'ws'
 const fs = require('fs')
-import * as uuidV4        from 'uuid/v4'
+import cuid from 'cuid'
 
 // userName 作为唯一识别码，这个Object 中获取不到微信号，比如能获取到李佳芮的是`qq512436430`,但是获取不到微信号 `ruirui_0914`
 export interface IpadContactRawPayload {
@@ -46,42 +48,42 @@ const msgId = 'abc231923912983'
 
 const init = {
   userId,
-  msgId:  uuidV4(),
+  msgId:  cuid(),
   apiName: 'init',
   param: [],
 }
 
 const wXInitialize = {
   userId,
-  msgId:  uuidV4(),
+  msgId:  cuid(),
   apiName: 'wXInitialize',
   param: [],
 }
 
 const wXGetQRCode = {
   userId,
-  msgId:  uuidV4(),
+  msgId:  cuid(),
   apiName: 'wXGetQRCode',
   param: [],
 }
 
 const wXCheckQRCode = {
   userId,
-  msgId:  uuidV4(),
+  msgId:  cuid(),
   apiName: 'wXCheckQRCode',
   param: [],
 }
 
 const wXHeartBeat = {
   userId,
-  msgId:  uuidV4(),
+  msgId:  cuid(),
   apiName: 'wXHeartBeat',
   param: [],
 }
 
 const wXSyncContact = {
   userId,
-  msgId:  uuidV4(),
+  msgId:  cuid(),
   apiName: 'wXSyncContact',
   param: [],
 }
@@ -89,7 +91,7 @@ const wXSyncContact = {
 // 生成62
 const wXGenerateWxDat = {
   userId,
-  msgId:  uuidV4(),
+  msgId:  cuid(),
   apiName: 'wXGenerateWxDat',
   param: [],
 }
@@ -97,15 +99,15 @@ const wXGenerateWxDat = {
 // 加载62
 const wXLoadWxDat = {
   userId,
-  msgId:  uuidV4(),
+  msgId:  cuid(),
   apiName: 'wXLoadWxDat',
-  param: [],
+  param: [] as string[],
 }
 
 // 获取登陆token
 const wXGetLoginToken = {
   userId,
-  msgId:  uuidV4(),
+  msgId:  cuid(),
   apiName: 'wXGetLoginToken',
   param: [],
 }
@@ -113,31 +115,31 @@ const wXGetLoginToken = {
 // 断线重连
 const wXAutoLogin = {
   userId,
-  msgId:  uuidV4(),
+  msgId:  cuid(),
   apiName: 'wXAutoLogin',
-  param: [],
+  param: [] as string[],
 }
 
 // 二次登陆
 const wXLoginRequest = {
   userId,
-  msgId:  uuidV4(),
+  msgId:  cuid(),
   apiName: 'wXLoginRequest',
-  param: [],
+  param: [] as string[],
 }
 
 // 发送文本消息
 const wXSendMsg = {
   userId,
-  msgId:  uuidV4(),
+  msgId:  cuid(),
   apiName: 'wXSendMsg',
-  param: [],
+  param: [] as string[],
 }
 
 // 获取联系人信息
 const wXGetContact = {
   userId,
-  msgId:  uuidV4(),
+  msgId:  cuid(),
   apiName: 'wXGetContact',
   param: [],
 }
@@ -145,16 +147,16 @@ const wXGetContact = {
 // 获取联系人信息
 const wXSearchContact = {
   userId,
-  msgId:  uuidV4(),
+  msgId:  cuid(),
   apiName: 'wXSearchContact',
   param: [],
 }
 
-let botWs
+let botWs: WebSocket
 
-let userName
-let nickName
-let password
+let userName: string
+let nickName: string
+let password: string
 
 let contactSync = false
 
@@ -169,7 +171,7 @@ const ipadContactRawPayloadMap = new Map<string, IpadContactRawPayload>()
 
 const connect = async function () {
   await initConfig()
-  botWs = new webSocket('ws://101.132.129.155:9091/wx', { perMessageDeflate: true })
+  botWs = new WebSocket('ws://101.132.129.155:9091/wx', { perMessageDeflate: true })
 
   botWs.on('open', function open () {
     try {
@@ -210,7 +212,7 @@ const connect = async function () {
 
   botWs.on('message', async function incoming (data) {
 
-    const allData = JSON.parse(data)
+    const allData = JSON.parse(String(data))
     console.log('========== New Message ==========')
 
     console.log(allData)
@@ -279,7 +281,7 @@ const connect = async function () {
       const qrcode = JSON.parse(decodeData)
       console.log('get qrcode')
       checkQrcode(allData)
-      fs.writeFile('demo.jpg', qrcode.qr_code, 'base64', async function (err) {
+      fs.writeFile('demo.jpg', qrcode.qr_code, 'base64', async function (err: any) {
         if (err) throw err
       })
     }
@@ -433,7 +435,7 @@ const connect = async function () {
   botWs.on('error', async (error) => {
     console.error('============= detect error =============')
     await connect()
-    throw Error(error)
+    throw error
   })
 
   botWs.on('close', async () => {
@@ -465,7 +467,7 @@ async function initConfig () {
   }
 }
 
-function checkQrcode (allData) {
+function checkQrcode (allData: any) {
   console.log('begin to checkQrcode')
   botWs.send(JSON.stringify(wXCheckQRCode))
   console.log('SEND: ' + JSON.stringify(wXCheckQRCode))
@@ -500,7 +502,7 @@ function checkQrcode (allData) {
 }
 
 function saveToJson (rawPayload: Map<string, IpadContactRawPayload>) {
-  const rawPayloadJson = {}
+  const rawPayloadJson = {} as { [idx: string]: any }
   rawPayload.forEach((value , key) => {
     rawPayloadJson[key] = value
   })

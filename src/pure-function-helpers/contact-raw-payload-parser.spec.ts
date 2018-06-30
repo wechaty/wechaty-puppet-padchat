@@ -23,14 +23,13 @@ import { contactRawPayloadParser } from './contact-raw-payload-parser'
 
 test('contactRawPayloadParser', async t => {
   const PADCHAT_CONTACT_PAYLOAD_PERSONAL: PadchatContactPayload = {
-    msg_type          : PadchatContactMsgType.Contact,
-    continue          : PadchatContinue.Done,
-    ticket            : '',
     big_head          : 'http://wx.qlogo.cn/mmhead/ver_1/xfCMmibHH74xGLoyeDFJadrZXX3eOEznPefiaCa3iczxZGMwPtDuSbRQKx3Xdm18un303mf0NFia3USY2nO2VEYILw/0',
     city              : 'Haidian',
+    continue          : PadchatContinue.Done,
     country           : 'CN',
     intro             : '',
     label             : '1',
+    msg_type          : PadchatContactMsgType.Contact,
     nick_name         : '梦君君',
     provincia         : 'Beijing',
     py_initial        : 'LJR',
@@ -42,6 +41,7 @@ test('contactRawPayloadParser', async t => {
     small_head        : 'http://wx.qlogo.cn/mmhead/ver_1/xfCMmibHH74xGLoyeDFJadrZXX3eOEznPefiaCa3iczxZGMwPtDuSbRQKx3Xdm18un303mf0NFia3USY2nO2VEYILw/132',
     status            : PadchatContactRoomStatus.Get,
     stranger          : 'v1_0468f2cd3f0efe7ca2589d57c3f9ba952a3789e41b6e78ee00ed53d1e6096b88@stranger',
+    ticket            : '',
     user_name         : 'mengjunjun001',
   }
 
@@ -69,27 +69,27 @@ test('contactRawPayloadParser', async t => {
   }
 
   const EXPECTED_CONTACT_PAYLOAD_PERSONAL: ContactPayload = {
-    id        : 'mengjunjun001',
-    gender    : ContactGender.Female,
-    type      : ContactType.Personal,
     alias     : '女儿',
     avatar    : 'http://wx.qlogo.cn/mmhead/ver_1/xfCMmibHH74xGLoyeDFJadrZXX3eOEznPefiaCa3iczxZGMwPtDuSbRQKx3Xdm18un303mf0NFia3USY2nO2VEYILw/0',
     city      : 'Haidian',
+    gender    : ContactGender.Female,
+    id        : 'mengjunjun001',
     name      : '梦君君',
     province  : 'Beijing',
     signature : 'Stay Foolish',
+    type      : ContactType.Personal,
   }
 
   const EXPECTED_CONTACT_PAYLOAD_OFFICIAL: ContactPayload = {
-    id        : 'gh_59d7c8ad720c',
-    gender    : ContactGender.Unknown,
-    type      : ContactType.Official,
     alias     : '',
     avatar    : 'http://wx.qlogo.cn/mmhead/ver_1/TR8EDh3MgMsu20pxjrDPBpaGySuEAGf3MUuoeUOV2LiaqvZxeMqb1U7hgiciaQZBC8LYN0boVLCKOIYg71pxdl1fQabiaxsn7CnNeGWVrK3jSIY/0',
     city      : 'Haidian',
+    gender    : ContactGender.Unknown,
+    id        : 'gh_59d7c8ad720c',
     name      : '李卓桓',
     province  : 'Beijing',
     signature : 'CARPE DIEM+-+if+not+us,+who?+if+not+now,+when?',
+    type      : ContactType.Official,
   }
 
   const resultPersonal = contactRawPayloadParser(PADCHAT_CONTACT_PAYLOAD_PERSONAL)

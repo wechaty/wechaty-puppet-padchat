@@ -50,8 +50,8 @@ function friendshipRawPayloadParserConfirm (
   rawPayload: PadchatMessagePayload,
 ): FriendshipPayload {
   const payload: FriendshipPayloadConfirm = {
-    id        : rawPayload.msg_id,
     contactId : rawPayload.from_user,
+    id        : rawPayload.msg_id,
     type      : FriendshipType.Confirm,
   }
   return payload
@@ -61,8 +61,8 @@ function friendshipRawPayloadParserVerify (
   rawPayload: PadchatMessagePayload,
 ): FriendshipPayload {
   const payload: FriendshipPayloadVerify = {
-    id        : rawPayload.msg_id,
     contactId : rawPayload.from_user,
+    id        : rawPayload.msg_id,
     type      : FriendshipType.Verify,
   }
   return payload
@@ -85,9 +85,9 @@ function friendshipRawPayloadParserReceive (
   const padchatFriendshipPayload: PadchatFriendshipPayload = jsonPayload.msg
 
   const friendshipPayload: FriendshipPayloadReceive = {
-    id        : rawPayload.msg_id,
     contactId : padchatFriendshipPayload.fromusername,
     hello     : padchatFriendshipPayload.content,
+    id        : rawPayload.msg_id,
     stranger  : padchatFriendshipPayload.encryptusername,
     ticket    : padchatFriendshipPayload.ticket,
     type      : FriendshipType.Receive,

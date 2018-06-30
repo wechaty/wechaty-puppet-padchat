@@ -24,14 +24,14 @@ function main (): void {
 
   const wss = new WebSocket.Server({ server })
 
-  wss.on('connection', function (ws) {
+  wss.on('connection', (ws) => {
     console.log('new connection')
 
     proxyWs(ws)
   })
 
   server.on('request', app)
-  server.listen(8788, function () {
+  server.listen(8788, () => {
     console.log('Listening on http://0.0.0.0:8788')
   })
 
@@ -73,7 +73,7 @@ function proxyWs (downStream: WebSocket): void {
     }
   })
 
-  downStream.on('close', function () {
+  downStream.on('close', () => {
     console.log('downStream connection closed')
     upStream.close()
   })
@@ -107,11 +107,11 @@ function proxyWs (downStream: WebSocket): void {
 }
 
 const VALID_TOKEN_DICT = {
+  'padchat-token-lijiarui'           : '@lijiarui',
   'padchat-token-zixia'              : '@zixia',
   'padchat-token-zixia-c9'           : '@zixia',
   'padchat-token-zixia-mac'          : '@zixia',
   'padchat-token-zixia-mvp-zixia008' : '@zixia',
-  'padchat-token-lijiarui'           : '@lijiarui',
 }
 
 function validToken (token: string) {

@@ -12,11 +12,11 @@ import {
 }                 from 'memory-card'
 
 import {
-  PuppetMock,
-}                 from 'wechaty-puppet-mock'
+  PuppetPadchat,
+}                 from 'wechaty-puppet-padchat'
 
 async function main () {
-  const puppet = new PuppetMock({ memory: new MemoryCard() })
+  const puppet = new PuppetPadchat({ memory: new MemoryCard() })
   console.log(`Puppet v${puppet.version()} smoking test passed.`)
   return 0
 }

@@ -29,9 +29,9 @@ class PadchatManagerTest extends PadchatManager {
 
 test('PadchatManager() cache should be release and can be re-init again.', async t => {
   const manager = new PadchatManagerTest({
+    endpoint : WECHATY_PUPPET_PADCHAT_ENDPOINT,
     memory   : new MemoryCard(),
     token    : 'mock token',
-    endpoint : WECHATY_PUPPET_PADCHAT_ENDPOINT,
   })
   try {
     for (let i = 0; i < 3; i++) {
@@ -51,9 +51,9 @@ test('PadchatManager() cache release 10 instances for the same time', async t =>
 
   for (let i = 0; i < MAX_NUM; i++ ) {
     const manager = new PadchatManagerTest({
+      endpoint : WECHATY_PUPPET_PADCHAT_ENDPOINT,
       memory   : new MemoryCard(),
       token    : 'mock token',
-      endpoint : WECHATY_PUPPET_PADCHAT_ENDPOINT,
     })
     await manager.initCache('test-fake-token-' + i, 'fake-self-id-' + i)
 
@@ -76,9 +76,9 @@ test('PadchatManager() should can be able to restart() many times for one instan
   const MAX_NUM = 3
 
   const manager = new PadchatManager({
+    endpoint : WECHATY_PUPPET_PADCHAT_ENDPOINT,
     memory   : new MemoryCard(),
     token    : 'test-mock-token',
-    endpoint : WECHATY_PUPPET_PADCHAT_ENDPOINT,
   })
   try {
     for (let i = 0; i < MAX_NUM; i++) {
@@ -101,9 +101,9 @@ test('PadchatManager() stop many instances for the same time', async t => {
 
   for (let i = 0; i < MAX_NUM; i++ ) {
     const manager = new PadchatManagerTest({
+      endpoint : WECHATY_PUPPET_PADCHAT_ENDPOINT,
       memory   : new MemoryCard(),
       token    : 'mock token',
-      endpoint : WECHATY_PUPPET_PADCHAT_ENDPOINT,
     })
     await manager.start()
 
