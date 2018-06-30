@@ -14,3 +14,7 @@ config.json
 # log file
 log*
 contact1.json
+/*.png
+/*.memory-card.json
+/dist/
+/package-lock.json

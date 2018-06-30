@@ -1,19 +1,31 @@
 {
-  "name": "rui",
-  "version": "1.0.0",
-  "description": "",
+  "name": "wechaty-puppet-padchat",
+  "version": "0.2.0",
+  "description": "Padchat Puppet for Wechaty",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "directories": {
+    "example": "examples"
   },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@types/node": "^10.1.1",
-    "file-box": "^0.8.22",
-    "qrcode-terminal": "^0.12.0",
-    "uuid": "^3.2.1",
-    "wechaty": "^0.17.1",
-    "ws": "^5.1.1"
-  }
+  "scripts": {
+    "test": "echo test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lijiarui/wechaty-puppet-padchat.git"
+  },
+  "keywords": [
+    "chatie",
+    "wechaty",
+    "puppet",
+    "padchat",
+    "wechat",
+    "chatbot",
+    "sdk"
+  ],
+  "author": "Rui LI <ruiruibupt@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/lijiarui/wechaty-puppet-padchat/issues"
+  },
+  "homepage": "https://github.com/lijiarui/wechaty-puppet-padchat#readme"
 }

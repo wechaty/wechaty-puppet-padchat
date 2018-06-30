@@ -1,44 +1,26 @@
 {
   "compilerOptions": {
-      "target": "es6"
-
-    , "module"          : "commonjs"
-    , "outDir"          : "dist"
-    , "traceResolution" : false
-    , "noLib"           : false
-    , "declaration"     : true
-    , "sourceMap"       : true
-    , "skipLibCheck"    : true
+    "target": "es6"
+    , "module": "commonjs"
+    , "outDir": "dist"
+    , "declaration": true
+    , "sourceMap": true
+    , "strict": true
+    , "traceResolution": false
     , "esModuleInterop" : true
-
-    , "emitDecoratorMetadata"  : true
-    , "experimentalDecorators" : true
-
+    , "resolveJsonModule": true
     , "lib": [
-      "esnext"
+        "esnext"
     ]
-
-    , "strict"                     : true
-    , "noEmitOnError"              : true
-    , "noUnusedLocals"             : true
-    , "noImplicitReturns"          : true
-    , "noFallthroughCasesInSwitch" : true
-    , "strictNullChecks"           : true
-    , "noImplicitAny"              : true
-    , "noUnusedParameters"         : true
-    , "noImplicitThis"             : true
   }
   , "exclude": [
       "node_modules/"
     , "dist/"
-    , "tests/fixtures/"
   ]
   , "include": [
-       "app/**/*.ts"
-     , "bin/*.ts"
-     , "bot/**/*.ts"
-     , "examples/**/*.ts"
+       "bin/*.ts"
      , "scripts/**/*.ts"
+     , "examples/**/*.ts"
      , "src/**/*.ts"
      , "tests/**/*.spec.ts"
   ]
