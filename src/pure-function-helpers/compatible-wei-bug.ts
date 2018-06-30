@@ -18,7 +18,7 @@ import {
 }                     from 'wechaty-puppet'
 import { PadchatContactPayload } from '../padchat-schemas'
 
-export function stripBugChatroomId(id?: string) {
+export function stripBugChatroomId (id?: string) {
   if (!id) {
     return ''
   }
@@ -30,7 +30,7 @@ export function stripBugChatroomId(id?: string) {
  * even if the id is bot it self
  *
  */
-export function generateFakeSelfBot(contactId: string): PadchatContactPayload {
+export function generateFakeSelfBot (contactId: string): PadchatContactPayload {
   return {
     big_head          : 'http://www.botorange.com',
     city              : 'Chatie',

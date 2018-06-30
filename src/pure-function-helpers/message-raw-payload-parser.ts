@@ -12,17 +12,17 @@ import {
 }                         from '../padchat-schemas'
 
 import {
-  isRoomId,
   isContactId,
+  isRoomId,
 }                         from './is-type'
-import {
-  messageType,
-}                         from './message-type'
 import {
   messageFileName,
 }                         from './message-file-name'
+import {
+  messageType,
+}                         from './message-type'
 
-export function messageRawPayloadParser(
+export function messageRawPayloadParser (
   rawPayload: PadchatMessagePayload,
 ): MessagePayload {
 
@@ -36,7 +36,7 @@ export function messageRawPayloadParser(
   const payloadBase = {
     id        : rawPayload.msg_id,
     timestamp : rawPayload.timestamp,   // Padchat message timestamp is seconds
-    type      : type,
+    type,
   } as {
     id        : string,
     timestamp : number,
@@ -52,11 +52,11 @@ export function messageRawPayloadParser(
     payloadBase.filename = messageFileName(rawPayload) || undefined
   }
 
-  let fromId: undefined | string = undefined
-  let roomId: undefined | string = undefined
-  let toId:   undefined | string = undefined
+  let fromId: undefined | string
+  let roomId: undefined | string
+  let toId:   undefined | string
 
-  let text:   undefined | string = undefined
+  let text:   undefined | string
 
   /**
    * 1. Set Room Id
@@ -95,7 +95,7 @@ export function messageRawPayloadParser(
     if (parts && parts.length > 1) {
       if (isContactId(parts[0])) {
 
-      fromId = parts[0]
+        fromId = parts[0]
 
       }
     } else {

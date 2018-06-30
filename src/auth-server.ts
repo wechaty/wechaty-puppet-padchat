@@ -1,8 +1,8 @@
-import WebSocket from 'ws'
+import express from 'express'
 import {
   createServer,
 }                               from 'http'
-import express from 'express'
+import WebSocket from 'ws'
 
 import cuid from 'cuid'
 
@@ -16,13 +16,13 @@ import {
 
 const ENDPOINT = 'ws://54.223.36.77:8080/wx'
 
-function main(): void {
+function main (): void {
   const app = express()
   const server = createServer()
 
   // app.use(express.static(path.join(__dirname, '/public')));
 
-  const wss = new WebSocket.Server({server: server})
+  const wss = new WebSocket.Server({ server })
 
   wss.on('connection', function (ws) {
     console.log('new connection')
@@ -37,7 +37,7 @@ function main(): void {
 
 }
 
-function proxyWs(downStream: WebSocket): void {
+function proxyWs (downStream: WebSocket): void {
 
   const weiId = cuid()
   let buf: string[] = []
@@ -114,7 +114,7 @@ const VALID_TOKEN_DICT = {
   'padchat-token-lijiarui'           : '@lijiarui',
 }
 
-function validToken(token: string) {
+function validToken (token: string) {
   if (token in VALID_TOKEN_DICT) {
     console.log('token valid: ' + token)
     return true

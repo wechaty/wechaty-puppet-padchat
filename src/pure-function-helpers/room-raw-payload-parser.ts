@@ -6,7 +6,7 @@ import {
   PadchatRoomPayload,
 }                         from '../padchat-schemas'
 
-export function roomRawPayloadParser(
+export function roomRawPayloadParser (
   rawPayload: PadchatRoomPayload,
 ): RoomPayload {
   const payload: RoomPayload = {

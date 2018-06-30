@@ -37,7 +37,7 @@ const ROOM_LEAVE_BOT_REGEX_LIST = [
   /^(你)被"([^"]+?)"移出群聊/,
 ]
 
-export function roomLeaveEventMessageParser(
+export function roomLeaveEventMessageParser (
   rawPayload: PadchatMessagePayload,
 ): null | PuppetRoomLeaveEvent {
 
@@ -86,7 +86,7 @@ export function roomLeaveEventMessageParser(
 
   const roomLeaveEvent: PuppetRoomLeaveEvent = {
     leaverNameList  : [leaverName],
-    removerName     : removerName,
+    removerName,
     roomId,
   }
   return roomLeaveEvent

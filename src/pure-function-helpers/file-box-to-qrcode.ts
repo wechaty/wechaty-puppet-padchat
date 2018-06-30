@@ -1,11 +1,11 @@
 // The npm package of my best choice for QR code decoding on Angular SPA
 // https://dev.to/j_sakamoto/the-npm-package-of-my-best-choice-for-qr-code-decoding-on-angular-spa-4747?returning-user=true
-import jsQR             from 'jsqr'
 import Jimp             from 'jimp'
+import jsQR             from 'jsqr'
 
 import { FileBox } from 'file-box'
 
-export async function fileBoxToQrcode(file: FileBox): Promise<string> {
+export async function fileBoxToQrcode (file: FileBox): Promise<string> {
   const future = new Promise<string>(async (resolve, reject) => {
     await Jimp.read(await file.toBuffer(), (err, image) => {
       if (err) {

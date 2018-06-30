@@ -20,7 +20,7 @@ const FRIENDSHIP_CONFIRM_REGEX_LIST = [
   /^(.+)刚刚把你添加到通讯录，现在可以开始聊天了。$/,
 ]
 
-export function friendshipConfirmEventMessageParser(
+export function friendshipConfirmEventMessageParser (
   rawPayload: PadchatMessagePayload,
 ): null | string {
 
@@ -51,7 +51,7 @@ export function friendshipConfirmEventMessageParser(
  *
  */
 
-export function friendshipReceiveEventMessageParser(
+export function friendshipReceiveEventMessageParser (
   rawPayload: PadchatMessagePayload,
 ): null | string {
 
@@ -97,7 +97,7 @@ const FRIENDSHIP_VERIFY_REGEX_LIST = [
   /^(.+)开启了朋友验证，你还不是他（她）朋友。请先发送朋友验证请求，对方验证通过后，才能聊天。/,
 ]
 
-export function friendshipVerifyEventMessageParser(
+export function friendshipVerifyEventMessageParser (
   rawPayload: PadchatMessagePayload,
 ): null | string {
 

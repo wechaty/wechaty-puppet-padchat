@@ -2,8 +2,8 @@ import * as fs    from 'fs'
 import * as path  from 'path'
 
 /* tslint:disable:variable-name */
-import { generate } from 'qrcode-terminal'
 import { FileBox }  from 'file-box'
+import { generate } from 'qrcode-terminal'
 
 /**
  * Change `import { ... } from '../'`
@@ -11,8 +11,8 @@ import { FileBox }  from 'file-box'
  * when you are runing with Docker or NPM instead of Git Source.
  */
 import {
-  Wechaty,
   log,
+  Wechaty,
 }               from 'wechaty'
 
 const BOT_QR_CODE_IMAGE_FILE = path.resolve(

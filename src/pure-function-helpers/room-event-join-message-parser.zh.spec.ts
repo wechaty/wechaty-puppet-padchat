@@ -139,7 +139,7 @@ test('roomJoinEventMessageParser() ZH-bot-invite-three-bot-is-owner', async t =>
     timestamp   : 1528828692,
     to_user     : 'wxid_zj2cahpwzgie12',
     uin         : 324216852,
-    }
+  }
   const EXPECTED_EVENT: PuppetRoomJoinEvent = {
     inviteeNameList : ['李卓桓', '李佳芮', '桔小秘'],
     inviterName     : YOU,

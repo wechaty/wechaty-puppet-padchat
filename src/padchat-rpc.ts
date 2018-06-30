@@ -702,7 +702,7 @@ export class PadchatRpc extends EventEmitter {
    * Get all member of a room by room id
    * @param {any} roomId        chatroom_id
    */
-  public async WXGetChatRoomMember(roomId: string): Promise<null | PadchatRoomMemberListPayload> {
+  public async WXGetChatRoomMember (roomId: string): Promise<null | PadchatRoomMemberListPayload> {
     const result = await this.rpcCall('WXGetChatRoomMember', roomId)
     if (!result) {
       throw Error('PadchatRpc, WXGetChatRoomMember, cannot get result from websocket server!')
@@ -752,7 +752,7 @@ export class PadchatRpc extends EventEmitter {
    * @param {any} username        user_name
    * @param {any} password  password
    */
-  public async WXQRCodeLogin(username: string, password: string): Promise<WXQRCodeLoginType> {
+  public async WXQRCodeLogin (username: string, password: string): Promise<WXQRCodeLoginType> {
     const result = await this.rpcCall('WXQRCodeLogin', username, password)
 
     if (!result) {
@@ -773,7 +773,7 @@ export class PadchatRpc extends EventEmitter {
     throw Error('PadchatRpc, WXQRCodeLogin, unknown status: ' + result.status)
   }
 
-  public async WXSetUserRemark(id: string, remark: string): Promise<StandardType> {
+  public async WXSetUserRemark (id: string, remark: string): Promise<StandardType> {
     const result = await this.rpcCall('WXSetUserRemark', id, remark)
     log.silly('PadchatRpc', 'WXSetUserRemark result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -782,7 +782,7 @@ export class PadchatRpc extends EventEmitter {
     return result
   }
 
-  public async WXDeleteChatRoomMember(roomId: string, contactId: string): Promise<StandardType> {
+  public async WXDeleteChatRoomMember (roomId: string, contactId: string): Promise<StandardType> {
     const result = await this.rpcCall('WXDeleteChatRoomMember', roomId, contactId)
     log.silly('PadchatRpc', 'WXDeleteChatRoomMember result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -791,7 +791,7 @@ export class PadchatRpc extends EventEmitter {
     return result
   }
 
-  public async WXAddChatRoomMember(roomId: string, contactId: string): Promise<number> {
+  public async WXAddChatRoomMember (roomId: string, contactId: string): Promise<number> {
     const result: WXAddChatRoomMemberType = await this.rpcCall('WXAddChatRoomMember', roomId, contactId)
     log.silly('PadchatRpc', 'WXAddChatRoomMember result: %s', JSON.stringify(result))
 
@@ -835,7 +835,7 @@ export class PadchatRpc extends EventEmitter {
    * @param {string} contactId
    * @returns {Promise<number>}
    */
-  public async WXInviteChatRoomMember(roomId: string, contactId: string): Promise<number> {
+  public async WXInviteChatRoomMember (roomId: string, contactId: string): Promise<number> {
     // TODO:
     // Change `WXAddChatRoomMemberType` to `WXInviteChatRoomMemberType`
     const result: WXAddChatRoomMemberType = await this.rpcCall('WXInviteChatRoomMember', roomId, contactId)
@@ -865,7 +865,7 @@ export class PadchatRpc extends EventEmitter {
     return result.status
   }
 
-  public async WXSetChatroomName(roomId: string, topic: string): Promise<StandardType> {
+  public async WXSetChatroomName (roomId: string, topic: string): Promise<StandardType> {
     const result = await this.rpcCall('WXSetChatroomName', roomId, topic)
     log.silly('PadchatRpc', 'WXSetChatroomName result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -874,7 +874,7 @@ export class PadchatRpc extends EventEmitter {
     return result
   }
 
-  public async WXQuitChatRoom(roomId: string): Promise<StandardType> {
+  public async WXQuitChatRoom (roomId: string): Promise<StandardType> {
     const result = await this.rpcCall('WXQuitChatRoom', roomId)
     log.silly('PadchatRpc', 'WXQuitChatRoom result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -883,7 +883,7 @@ export class PadchatRpc extends EventEmitter {
     return result
   }
 
-  public async WXAddUser(
+  public async WXAddUser (
     strangerV1 : string,
     strangerV2 : string,
     type       : WXSearchContactTypeStatus,
@@ -900,13 +900,13 @@ export class PadchatRpc extends EventEmitter {
     return result
   }
 
-  public async WXAcceptUser(stranger: string, ticket: string): Promise<any> {
+  public async WXAcceptUser (stranger: string, ticket: string): Promise<any> {
     const result = await this.rpcCall('WXAcceptUser', stranger, ticket)
     log.silly('PadchatRpc', 'WXAcceptUser result: %s', JSON.stringify(result))
     return result
   }
 
-  public async WXLogout(): Promise<WXLogoutType> {
+  public async WXLogout (): Promise<WXLogoutType> {
     const result = await this.rpcCall('WXLogout')
     log.silly('PadchatRpc', 'WXLogout result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -916,7 +916,7 @@ export class PadchatRpc extends EventEmitter {
   }
 
   // TODO: check any
-  public async WXSendMoments(text: string): Promise<any> {
+  public async WXSendMoments (text: string): Promise<any> {
     const result = await this.rpcCall('WXSendMoments', text)
     log.silly('PadchatRpc', 'WXSendMoments result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -926,7 +926,7 @@ export class PadchatRpc extends EventEmitter {
   }
 
   // Sync Chat Message
-  public async WXSyncMessage(): Promise<any> {
+  public async WXSyncMessage (): Promise<any> {
     const result = await this.rpcCall('WXSyncMessage')
     log.silly('PadchatRpc', 'WXSyncMessage result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -936,7 +936,7 @@ export class PadchatRpc extends EventEmitter {
   }
 
   // This function is used for add new friends by id
-  public async WXSearchContact(id: string): Promise<WXSearchContactType> {
+  public async WXSearchContact (id: string): Promise<WXSearchContactType> {
     const result = await this.rpcCall('WXSearchContact', id)
     log.silly('PadchatRpc', 'WXSearchContact result: %s', JSON.stringify(result))
 
@@ -956,7 +956,7 @@ export class PadchatRpc extends EventEmitter {
 
   // TODO: check any
   // send hello to strange
-  public async WXSayHello(stranger: string, text: string): Promise<any> {
+  public async WXSayHello (stranger: string, text: string): Promise<any> {
     const result = await this.rpcCall('WXSayHello', stranger, text)
     log.silly('PadchatRpc', 'WXSayHello , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -967,7 +967,7 @@ export class PadchatRpc extends EventEmitter {
 
   // TODO: check any
   // delete friend
-  public async WXDeleteUser(id: string): Promise<any> {
+  public async WXDeleteUser (id: string): Promise<any> {
     const result = await this.rpcCall('WXDeleteUser', id)
     log.silly('PadchatRpc', 'WXDeleteUser , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -976,7 +976,7 @@ export class PadchatRpc extends EventEmitter {
     return result
   }
 
-  public async WXCreateChatRoom(userList: string[]): Promise<string> {
+  public async WXCreateChatRoom (userList: string[]): Promise<string> {
     const result = await this.rpcCall('WXCreateChatRoom', JSON.stringify(userList))
     log.silly('PadchatRpc', 'WXCreateChatRoom(userList.length=%d) = "%s"', userList.length, JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -988,7 +988,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO: check any
   // TODO: receive red-packet automatically
   // red_packet: see this from the recived message
-  public async WXReceiveRedPacket(redPacket: string): Promise<any> {
+  public async WXReceiveRedPacket (redPacket: string): Promise<any> {
     const result = await this.rpcCall('WXReceiveRedPacket', redPacket)
     log.silly('PadchatRpc', 'WXReceiveRedPacket , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -999,7 +999,7 @@ export class PadchatRpc extends EventEmitter {
 
   // TODO: check any
   // TODO: 查看红包
-  public async WXQueryRedPacket(redPacket: string): Promise<any> {
+  public async WXQueryRedPacket (redPacket: string): Promise<any> {
     const result = await this.rpcCall('WXQueryRedPacket', redPacket)
     log.silly('PadchatRpc', 'WXQueryRedPacket , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1010,7 +1010,7 @@ export class PadchatRpc extends EventEmitter {
 
   // TODO: check any
   // TODO: 打开红包
-  public async WXOpenRedPacket(redPacket: string): Promise<any> {
+  public async WXOpenRedPacket (redPacket: string): Promise<any> {
     const result = await this.rpcCall('WXOpenRedPacket', redPacket)
     log.silly('PadchatRpc', 'WXOpenRedPacket , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1021,7 +1021,7 @@ export class PadchatRpc extends EventEmitter {
 
   // TODO: check any
   // set user avatar, param image is the same as send [WXSendImage]
-  public async WXSetHeadImage(image: string): Promise<any> {
+  public async WXSetHeadImage (image: string): Promise<any> {
     const result = await this.rpcCall('WXOpenRedPacket', image)
     log.silly('PadchatRpc', 'WXOpenRedPacket , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1037,7 +1037,7 @@ export class PadchatRpc extends EventEmitter {
   // country		国家，CN
   // provincia	地区，省，Zhejiang
   // city			城市，Hangzhou
-  public async WXSetUserInfo(nickeName: string, signature: string, sex: string, country: string, provincia: string, city: string): Promise<any> {
+  public async WXSetUserInfo (nickeName: string, signature: string, sex: string, country: string, provincia: string, city: string): Promise<any> {
     const result = await this.rpcCall('WXSetUserInfo', nickeName, signature, sex, country, provincia, city)
     log.silly('PadchatRpc', 'WXSetUserInfo , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1050,7 +1050,7 @@ export class PadchatRpc extends EventEmitter {
   // 查看附近的人
   // longitude	浮点数，经度
   // latitude		浮点数，维度
-  public async WXGetPeopleNearby(longitude: string, latitude: string): Promise<any> {
+  public async WXGetPeopleNearby (longitude: string, latitude: string): Promise<any> {
     const result = await this.rpcCall('WXGetPeopleNearby', longitude, latitude)
     log.silly('PadchatRpc', 'WXGetPeopleNearby , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1061,7 +1061,7 @@ export class PadchatRpc extends EventEmitter {
 
   // TODO: check any
   // 获取公众号信息 id: gh_xxxx
-  public async WXGetSubscriptionInfo(id: string): Promise<any> {
+  public async WXGetSubscriptionInfo (id: string): Promise<any> {
     const result = await this.rpcCall('WXGetSubscriptionInfo', id)
     log.silly('PadchatRpc', 'WXGetSubscriptionInfo , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1075,7 +1075,7 @@ export class PadchatRpc extends EventEmitter {
   // id			      公众号用户名
   // OrderId			菜单id，通过WXGetSubscriptionInfo获取, 原来叫id
   // OrderKey			菜单key，通过WXGetSubscriptionInfo获取, 原来叫key
-  public async WXSubscriptionCommand(id: string, orderId: string, orderKey: string): Promise<any> {
+  public async WXSubscriptionCommand (id: string, orderId: string, orderKey: string): Promise<any> {
     const result = await this.rpcCall('WXSubscriptionCommand', id, orderId, orderKey)
     log.silly('PadchatRpc', 'WXSubscriptionCommand , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1088,7 +1088,7 @@ export class PadchatRpc extends EventEmitter {
   // 公众号中获取url访问token, 给下面的函数使用[WXRequestUrl]
   // user			公众号用户名
   // url			访问的链接
-  public async WXGetRequestToken(id: string, url: string): Promise<any> {
+  public async WXGetRequestToken (id: string, url: string): Promise<any> {
     const result = await this.rpcCall('WXGetRequestToken', id, url)
     log.silly('PadchatRpc', 'WXGetRequestToken , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1102,7 +1102,7 @@ export class PadchatRpc extends EventEmitter {
   // url			url地址
   // key			token中的key
   // uin		  token中的uin
-  public async WXRequestUrl(url: string, key: string, uin: string): Promise<any> {
+  public async WXRequestUrl (url: string, key: string, uin: string): Promise<any> {
     const result = await this.rpcCall('WXRequestUrl', url, key, uin)
     log.silly('PadchatRpc', 'WXRequestUrl , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1113,7 +1113,7 @@ export class PadchatRpc extends EventEmitter {
 
   // TODO check any
   // 设置微信ID
-  public async WXSetWeChatID(id: string): Promise<any> {
+  public async WXSetWeChatID (id: string): Promise<any> {
     const result = await this.rpcCall('WXSetWeChatID', id)
     log.silly('PadchatRpc', 'WXSetWeChatID , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1125,7 +1125,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 查看转账信息
   // transfer		转账消息
-  public async WXTransferQuery(transfer: string): Promise<any> {
+  public async WXTransferQuery (transfer: string): Promise<any> {
     const result = await this.rpcCall('WXTransferQuery', transfer)
     log.silly('PadchatRpc', 'WXTransferQuery , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1137,7 +1137,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 接受转账
   // transfer		转账消息
-  public async WXTransferOperation(transfer: string): Promise<any> {
+  public async WXTransferOperation (transfer: string): Promise<any> {
     const result = await this.rpcCall('WXTransferOperation', transfer)
     log.silly('PadchatRpc', 'WXTransferOperation , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1147,7 +1147,7 @@ export class PadchatRpc extends EventEmitter {
   }
 
   // TODO: check if this WXGetMsgEmoticon exist in protocol, Huan LI 201806
-  public async WXGetMsgEmoticon(msg: string): Promise<any> {
+  public async WXGetMsgEmoticon (msg: string): Promise<any> {
     const result = await this.rpcCall('WXGetMsgEmoticon', msg)
     log.silly('PadchatRpc', 'WXGetMsgEmoticon(), result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1159,7 +1159,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 获取消息图片 （应该是查看原图）
   // msg			收到的整个图片消息
-  public async WXGetMsgImage(msg: string): Promise<any> {
+  public async WXGetMsgImage (msg: string): Promise<any> {
     const result = await this.rpcCall('WXGetMsgImage', msg)
     log.silly('PadchatRpc', 'WXGetMsgImage , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1171,7 +1171,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 获取消息视频 （应该是查看视频）
   // msg			收到的整个视频消息
-  public async WXGetMsgVideo(msg: string): Promise<any> {
+  public async WXGetMsgVideo (msg: string): Promise<any> {
     const result = await this.rpcCall('WXGetMsgVideo', msg)
     log.silly('PadchatRpc', 'WXGetMsgVideo , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1183,7 +1183,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 获取消息语音(语音消息大于20秒时通过该接口获取)
   // msg			收到的整个视频消息
-  public async WXGetMsgVoice(msg: string): Promise<any> {
+  public async WXGetMsgVoice (msg: string): Promise<any> {
     const result = await this.rpcCall('WXGetMsgVoice', msg)
     log.silly('PadchatRpc', 'WXGetMsgVoice , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1195,7 +1195,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 搜索公众号
   // id			公众号用户名: gh_xxx
-  public async WXWebSearch(id: string): Promise<any> {
+  public async WXWebSearch (id: string): Promise<any> {
     const result = await this.rpcCall('WXWebSearch', id)
     log.silly('PadchatRpc', 'WXWebSearch , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1209,7 +1209,7 @@ export class PadchatRpc extends EventEmitter {
   // user			对方用户名
   // id			    名片的微信id
   // caption		名片的标题
-  public async WXShareCard(user: string, id: string, caption: string): Promise<any> {
+  public async WXShareCard (user: string, id: string, caption: string): Promise<any> {
     const result = await this.rpcCall('WXShareCard', user, id, caption)
     log.silly('PadchatRpc', 'WXShareCard , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1220,7 +1220,7 @@ export class PadchatRpc extends EventEmitter {
 
   // TODO check any
   // 重置同步信息
-  public async WXSyncReset(): Promise<any> {
+  public async WXSyncReset (): Promise<any> {
     const result = await this.rpcCall('WXSyncReset')
     log.silly('PadchatRpc', 'WXSyncReset , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1232,7 +1232,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 扫描二维码获取信息
   // path			本地二维码图片全路径
-  public async WXQRCodeDecode(path: string): Promise<any> {
+  public async WXQRCodeDecode (path: string): Promise<any> {
     const result = await this.rpcCall('WXQRCodeDecode', path)
     log.silly('PadchatRpc', 'WXQRCodeDecode , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1244,7 +1244,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 朋友圈上传图片获取url
   // image			图片数据, 和发送消息的image 是一样的base64 串
-  public async WXSnsUpload(image: string): Promise<any> {
+  public async WXSnsUpload (image: string): Promise<any> {
     const result = await this.rpcCall('WXSnsUpload', image)
     log.silly('PadchatRpc', 'WXSnsUpload , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1256,7 +1256,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 获取朋友圈消息详情(例如评论)
   // id			朋友圈消息id
-  public async WXSnsObjectDetail(id: string): Promise<any> {
+  public async WXSnsObjectDetail (id: string): Promise<any> {
     const result = await this.rpcCall('WXSnsObjectDetail', id)
     log.silly('PadchatRpc', 'WXSnsObjectDetail , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1271,7 +1271,7 @@ export class PadchatRpc extends EventEmitter {
   // type			     操作类型,1为删除朋友圈，4为删除评论，5为取消赞
   // comment		   当type为4时，对应删除评论的id，通过WXSnsObjectDetail接口获取。当type为其他值时，comment不可用，置为0。
   // commentType	 评论类型,当删除评论时可用，2或者3.(规律未知)
-  public async WXSnsObjectOp(id: string, type: string, comment: string, commentType: string): Promise<any> {
+  public async WXSnsObjectOp (id: string, type: string, comment: string, commentType: string): Promise<any> {
     const result = await this.rpcCall('WXSnsObjectOp', id, type, comment, commentType)
     log.silly('PadchatRpc', 'WXSnsObjectOp , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1286,7 +1286,7 @@ export class PadchatRpc extends EventEmitter {
   // id			    朋友圈消息id
   // content		评论内容
   // replyId		回复的id    //如果想回复某人的评论，就加上他的comment_id  否则就用0
-  public async WXSnsComment(user: string, id: string, content: string, replyId: string): Promise<any> {
+  public async WXSnsComment (user: string, id: string, content: string, replyId: string): Promise<any> {
     const result = await this.rpcCall('WXSnsComment', user, id, content, replyId)
     log.silly('PadchatRpc', 'WXSnsComment , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1299,7 +1299,7 @@ export class PadchatRpc extends EventEmitter {
   // 获取好友朋友圈信息
   // user			对方用户名
   // id			    获取到的最后一次的id，第一次调用设置为空
-  public async WXSnsUserPage(user: string, id: string): Promise<any> {
+  public async WXSnsUserPage (user: string, id: string): Promise<any> {
     const result = await this.rpcCall('WXSnsUserPage', user, id)
     log.silly('PadchatRpc', 'WXSnsUserPage , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1311,7 +1311,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 获取朋友圈动态
   // id			    获取到的最后一次的id，第一次调用设置为空
-  public async WXSnsTimeline(id: string): Promise<any> {
+  public async WXSnsTimeline (id: string): Promise<any> {
     const result = await this.rpcCall('WXSnsTimeline', id)
     log.silly('PadchatRpc', 'WXSnsTimeline , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1324,7 +1324,7 @@ export class PadchatRpc extends EventEmitter {
   // 发送APP消息(分享应用或者朋友圈链接等)
   // user			对方用户名
   // content		消息内容(整个消息结构<appmsg xxxxxxxxx>) 参考收到的MsgType
-  public async WXSendAppMsg(user: string, content: string): Promise<any> {
+  public async WXSendAppMsg (user: string, content: string): Promise<any> {
     const result = await this.rpcCall('WXSendAppMsg', user, content)
     log.silly('PadchatRpc', 'WXSendAppMsg , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1336,7 +1336,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 同步收藏消息(用户获取收藏对象的id)
   // key			同步的key，第一次调用设置为空。
-  public async WXFavSync(key: string): Promise<any> {
+  public async WXFavSync (key: string): Promise<any> {
     const result = await this.rpcCall('WXFavSync', key)
     log.silly('PadchatRpc', 'WXFavSync , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1348,7 +1348,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 添加收藏
   // fav_object	收藏对象结构(<favitem type=5xxxxxx)
-  public async WXFavAddItem(favObject: string): Promise<any> {
+  public async WXFavAddItem (favObject: string): Promise<any> {
     const result = await this.rpcCall('WXFavAddItem', favObject)
     log.silly('PadchatRpc', 'WXFavAddItem , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1360,7 +1360,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 获取收藏对象的详细信息
   // id			收藏对象id
-  public async WXFavGetItem(id: string): Promise<any> {
+  public async WXFavGetItem (id: string): Promise<any> {
     const result = await this.rpcCall('WXFavGetItem', id)
     log.silly('PadchatRpc', 'WXFavGetItem , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1372,7 +1372,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 删除收藏对象
   // id			收藏对象id
-  public async WXFavDeleteItem(id: string): Promise<any> {
+  public async WXFavDeleteItem (id: string): Promise<any> {
     const result = await this.rpcCall('WXFavDeleteItem', id)
     log.silly('PadchatRpc', 'WXFavDeleteItem , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1383,7 +1383,7 @@ export class PadchatRpc extends EventEmitter {
 
   // TODO check any
   // 获取所有标签列表
-  public async WXGetContactLabelList(): Promise<any> {
+  public async WXGetContactLabelList (): Promise<any> {
     const result = await this.rpcCall('WXGetContactLabelList')
     log.silly('PadchatRpc', 'WXGetContactLabelList , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1395,7 +1395,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 添加标签到列表
   // label			标签内容
-  public async WXAddContactLabel(label: string): Promise<any> {
+  public async WXAddContactLabel (label: string): Promise<any> {
     const result = await this.rpcCall('WXAddContactLabel', label)
     log.silly('PadchatRpc', 'WXAddContactLabel , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1407,7 +1407,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 从列表删除标签
   // id			标签id
-  public async WXDeleteContactLabel(id: string): Promise<any> {
+  public async WXDeleteContactLabel (id: string): Promise<any> {
     const result = await this.rpcCall('WXDeleteContactLabel', id)
     log.silly('PadchatRpc', 'WXDeleteContactLabel , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1420,7 +1420,7 @@ export class PadchatRpc extends EventEmitter {
   // 从列表删除标签
   // user			用户名
   // id			    标签id
-  public async WXSetContactLabel(user: string, id: string): Promise<any> {
+  public async WXSetContactLabel (user: string, id: string): Promise<any> {
     const result = await this.rpcCall('WXSetContactLabel', user, id)
     log.silly('PadchatRpc', 'WXSetContactLabel , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1433,7 +1433,7 @@ export class PadchatRpc extends EventEmitter {
   // 获取用户二维码(自己或者已加入的群)
   // user			用户名
   // style			是否使用风格化二维码
-  public async WXGetUserQRCode(user: string, style: number): Promise<string> {
+  public async WXGetUserQRCode (user: string, style: number): Promise<string> {
     const result = await this.rpcCall('WXGetUserQRCode', user, style)
     log.silly('PadchatRpc', 'WXGetUserQRCode , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1446,7 +1446,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // AppMsg上传数据
   // data			和发送图片的data 类似
-  public async WXUploadAppAttach(data: string): Promise<any> {
+  public async WXUploadAppAttach (data: string): Promise<any> {
     const result = await this.rpcCall('WXUploadAppAttach', data)
     log.silly('PadchatRpc', 'WXUploadAppAttach , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1461,7 +1461,7 @@ export class PadchatRpc extends EventEmitter {
   // voice_data	语音数据
   // voice_size	语音大小 (应该不需要)
   // voice_time	语音时间(毫秒，最大60 * 1000)
-  public async WXSendVoice(user: string, data: string, time: number): Promise<any> {
+  public async WXSendVoice (user: string, data: string, time: number): Promise<any> {
     const result = await this.rpcCall('WXSendVoice', user, data, String(time))
     log.silly('PadchatRpc', 'WXSendVoice , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1473,7 +1473,7 @@ export class PadchatRpc extends EventEmitter {
   // TODO check any
   // 同步朋友圈动态(好友评论或点赞自己朋友圈的消息)
   // key		同步key
-  public async WXSnsSync(key: string): Promise<any> {
+  public async WXSnsSync (key: string): Promise<any> {
     const result = await this.rpcCall('WXSnsSync', key)
     log.silly('PadchatRpc', 'WXSnsSync , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1486,7 +1486,7 @@ export class PadchatRpc extends EventEmitter {
   // 群发消息
   // user			用户名json数组 ["AB1","AC2","AD3"]
   // content		消息内容
-  public async WXMassMessage(userList: string[], content: string): Promise<any> {
+  public async WXMassMessage (userList: string[], content: string): Promise<any> {
     const result = await this.rpcCall('WXMassMessage', JSON.stringify(userList), content)
     log.silly('PadchatRpc', 'WXMassMessage , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1499,7 +1499,7 @@ export class PadchatRpc extends EventEmitter {
   // 设置群公告
   // chatroom	群id
   // content	    内容
-  public async WXSetChatroomAnnouncement(chatroom: string, content: string): Promise<any> {
+  public async WXSetChatroomAnnouncement (chatroom: string, content: string): Promise<any> {
     const result = await this.rpcCall('WXSetChatroomAnnouncement', chatroom, content)
     log.silly('PadchatRpc', 'WXSetChatroomAnnouncement , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
@@ -1511,7 +1511,7 @@ export class PadchatRpc extends EventEmitter {
 
   // FIXME: does Get exist?
   // FIXME2: what's the structure of result? result.data???
-  public async WXGetChatroomAnnouncement(chatroom: string): Promise<string> {
+  public async WXGetChatroomAnnouncement (chatroom: string): Promise<string> {
     const result = await this.rpcCall('WXGetChatroomAnnouncement', chatroom)
     log.silly('PadchatRpc', 'WXGetChatroomAnnouncement ,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {

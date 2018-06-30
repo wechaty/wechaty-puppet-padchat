@@ -6,23 +6,23 @@ import sinon from 'sinon'
 
 import { MemoryCard } from 'memory-card'
 
-import { PadchatManager } from './padchat-manager'
 import {
   WECHATY_PUPPET_PADCHAT_ENDPOINT,
 }                                     from './config'
+import { PadchatManager } from './padchat-manager'
 
 class PadchatManagerTest extends PadchatManager {
-  public onSocket(payload: any) {
+  public onSocket (payload: any) {
     return super.onSocket(payload)
   }
 
-  public async initCache(token: string, selfId: string) {
+  public async initCache (token: string, selfId: string) {
     return super.initCache(
       token,
       selfId,
     )
   }
-  public async releaseCache() {
+  public async releaseCache () {
     return super.releaseCache()
   }
 }
@@ -110,7 +110,7 @@ test('PadchatManager() stop many instances for the same time', async t => {
     managerList.push(manager)
   }
 
-  const stopFutureList = [] as Promise<void>[]
+  const stopFutureList = [] as Array<Promise<void>>
 
   for (let i = 0; i < MAX_NUM; i++) {
     const manager = managerList[i]

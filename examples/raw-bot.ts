@@ -45,109 +45,109 @@ const userId = 'test'
 const msgId = 'abc231923912983'
 
 const init = {
-  'userId': userId,
-  'msgId':  uuidV4(),
-  'apiName': 'init',
-  'param': [],
+  userId,
+  msgId:  uuidV4(),
+  apiName: 'init',
+  param: [],
 }
 
 const wXInitialize = {
-  'userId': userId,
-  'msgId':  uuidV4(),
-  'apiName': 'wXInitialize',
-  'param': [],
+  userId,
+  msgId:  uuidV4(),
+  apiName: 'wXInitialize',
+  param: [],
 }
 
 const wXGetQRCode = {
-  'userId': userId,
-  'msgId':  uuidV4(),
-  'apiName': 'wXGetQRCode',
-  'param': [],
+  userId,
+  msgId:  uuidV4(),
+  apiName: 'wXGetQRCode',
+  param: [],
 }
 
 const wXCheckQRCode = {
-  'userId': userId,
-  'msgId':  uuidV4(),
-  'apiName': 'wXCheckQRCode',
-  'param': [],
+  userId,
+  msgId:  uuidV4(),
+  apiName: 'wXCheckQRCode',
+  param: [],
 }
 
 const wXHeartBeat = {
-  'userId': userId,
-  'msgId':  uuidV4(),
-  'apiName': 'wXHeartBeat',
-  'param': [],
+  userId,
+  msgId:  uuidV4(),
+  apiName: 'wXHeartBeat',
+  param: [],
 }
 
 const wXSyncContact = {
-  'userId': userId,
-  'msgId':  uuidV4(),
-  'apiName': 'wXSyncContact',
-  'param': [],
+  userId,
+  msgId:  uuidV4(),
+  apiName: 'wXSyncContact',
+  param: [],
 }
 
 // 生成62
 const wXGenerateWxDat = {
-  'userId': userId,
-  'msgId':  uuidV4(),
-  'apiName': 'wXGenerateWxDat',
-  'param': [],
+  userId,
+  msgId:  uuidV4(),
+  apiName: 'wXGenerateWxDat',
+  param: [],
 }
 
 // 加载62
 const wXLoadWxDat = {
-  'userId': userId,
-  'msgId':  uuidV4(),
-  'apiName': 'wXLoadWxDat',
-  'param': [],
+  userId,
+  msgId:  uuidV4(),
+  apiName: 'wXLoadWxDat',
+  param: [],
 }
 
 // 获取登陆token
 const wXGetLoginToken = {
-  'userId': userId,
-  'msgId':  uuidV4(),
-  'apiName': 'wXGetLoginToken',
-  'param': [],
+  userId,
+  msgId:  uuidV4(),
+  apiName: 'wXGetLoginToken',
+  param: [],
 }
 
 // 断线重连
 const wXAutoLogin = {
-  'userId': userId,
-  'msgId':  uuidV4(),
-  'apiName': 'wXAutoLogin',
-  'param': [],
+  userId,
+  msgId:  uuidV4(),
+  apiName: 'wXAutoLogin',
+  param: [],
 }
 
 // 二次登陆
 const wXLoginRequest = {
-  'userId': userId,
-  'msgId':  uuidV4(),
-  'apiName': 'wXLoginRequest',
-  'param': [],
+  userId,
+  msgId:  uuidV4(),
+  apiName: 'wXLoginRequest',
+  param: [],
 }
 
 // 发送文本消息
 const wXSendMsg = {
-  'userId': userId,
-  'msgId':  uuidV4(),
-  'apiName': 'wXSendMsg',
-  'param': [],
+  userId,
+  msgId:  uuidV4(),
+  apiName: 'wXSendMsg',
+  param: [],
 }
 
 // 获取联系人信息
 const wXGetContact = {
-  'userId': userId,
-  'msgId':  uuidV4(),
-  'apiName': 'wXGetContact',
-  'param': [],
+  userId,
+  msgId:  uuidV4(),
+  apiName: 'wXGetContact',
+  param: [],
 }
 
 // 获取联系人信息
 const wXSearchContact = {
-  'userId': userId,
-  'msgId':  uuidV4(),
-  'apiName': 'wXSearchContact',
-  'param': [],
+  userId,
+  msgId:  uuidV4(),
+  apiName: 'wXSearchContact',
+  param: [],
 }
 
 let botWs
@@ -167,11 +167,11 @@ const autoData = {
 
 const ipadContactRawPayloadMap = new Map<string, IpadContactRawPayload>()
 
-const connect = async function() {
+const connect = async function () {
   await initConfig()
   botWs = new webSocket('ws://101.132.129.155:9091/wx', { perMessageDeflate: true })
 
-  botWs.on('open', function open() {
+  botWs.on('open', function open () {
     try {
       botWs.send(JSON.stringify(init))
       console.log('SEND: ' + JSON.stringify(init))
@@ -208,7 +208,7 @@ const connect = async function() {
     }
   })
 
-  botWs.on('message', async function incoming(data) {
+  botWs.on('message', async function incoming (data) {
 
     const allData = JSON.parse(data)
     console.log('========== New Message ==========')
@@ -311,10 +311,10 @@ const connect = async function() {
         nickName = qrcodeStatus.nickName
         password = qrcodeStatus.password
         const wXQRCodeLogin = {
-          'userId': userId,
-          'msgId':  msgId,
-          'apiName': 'wXQRCodeLogin',
-          'param': [encodeURIComponent(userName), encodeURIComponent(password)],
+          userId,
+          msgId,
+          apiName: 'wXQRCodeLogin',
+          param: [encodeURIComponent(userName), encodeURIComponent(password)],
         }
         botWs.send(JSON.stringify(wXQRCodeLogin))
         console.log('SEND: ' + JSON.stringify(wXQRCodeLogin))
@@ -367,10 +367,10 @@ const connect = async function() {
       if (qrcodeStatus.status === -301) {
         console.log('301重定向')
         const wXQRCodeLogin = {
-          'userId': userId,
-          'msgId':  msgId,
-          'apiName': 'wXQRCodeLogin',
-          'param': [encodeURIComponent(userName), encodeURIComponent(password)],
+          userId,
+          msgId,
+          apiName: 'wXQRCodeLogin',
+          param: [encodeURIComponent(userName), encodeURIComponent(password)],
         }
         botWs.send(JSON.stringify(wXQRCodeLogin))
         console.log('SEND: ' + JSON.stringify(wXQRCodeLogin))
@@ -414,14 +414,14 @@ const connect = async function() {
         })
 
         console.log('############### 继续加载 ###############')
-        setTimeout(function() {
+        setTimeout(function () {
           botWs.send(JSON.stringify(wXSyncContact))
           console.log('SEND: ' + JSON.stringify(wXSyncContact))
         }, 3 * 1000)
 
       } else {
         console.log('出错啦! contactStatus 不是数组')
-        setTimeout(function() {
+        setTimeout(function () {
           botWs.send(JSON.stringify(wXSyncContact))
           console.log('SEND: ' + JSON.stringify(wXSyncContact))
         }, 3 * 1000)
@@ -452,7 +452,7 @@ try {
   throw(error)
 }
 
-async function initConfig() {
+async function initConfig () {
   // 获取62数据和token
   try {
     const tmpBuf = await fs.readFileSync('./config.json')
@@ -465,7 +465,7 @@ async function initConfig() {
   }
 }
 
-function checkQrcode(allData) {
+function checkQrcode (allData) {
   console.log('begin to checkQrcode')
   botWs.send(JSON.stringify(wXCheckQRCode))
   console.log('SEND: ' + JSON.stringify(wXCheckQRCode))
@@ -499,7 +499,7 @@ function checkQrcode(allData) {
   }
 }
 
-function saveToJson(rawPayload: Map<string, IpadContactRawPayload>) {
+function saveToJson (rawPayload: Map<string, IpadContactRawPayload>) {
   const rawPayloadJson = {}
   rawPayload.forEach((value , key) => {
     rawPayloadJson[key] = value
@@ -509,7 +509,7 @@ function saveToJson(rawPayload: Map<string, IpadContactRawPayload>) {
   console.log('已写入json file 中')
 }
 
-function saveConfig() {
+function saveConfig () {
   if (autoData.wxData && autoData.token) {
     fs.writeFileSync('./config.json', JSON.stringify(autoData, null, 2))
     console.log('已写入config file 中')
@@ -520,7 +520,7 @@ function saveConfig() {
   }
 }
 
-function loginSucceed() {
+function loginSucceed () {
   // 设置心跳
   botWs.send(JSON.stringify(wXHeartBeat))
   console.log('SEND: ' + JSON.stringify(wXHeartBeat))

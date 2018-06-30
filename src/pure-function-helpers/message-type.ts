@@ -6,7 +6,7 @@ import {
   PadchatMessageType,
 }                         from '../padchat-schemas'
 
-export function messageType(
+export function messageType (
   rawType: PadchatMessageType,
 ): MessageType {
   let type: MessageType

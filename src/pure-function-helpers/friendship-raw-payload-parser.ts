@@ -9,17 +9,17 @@ import {
 }                       from 'wechaty-puppet'
 
 import {
-  PadchatMessagePayload,
   PadchatFriendshipPayload,
+  PadchatMessagePayload,
 }                                 from '../padchat-schemas'
 
 import {
   friendshipConfirmEventMessageParser,
-  friendshipVerifyEventMessageParser,
   friendshipReceiveEventMessageParser,
+  friendshipVerifyEventMessageParser,
 }                                         from './friendship-event-message-parser'
 
-export function friendshipRawPayloadParser(
+export function friendshipRawPayloadParser (
   rawPayload: PadchatMessagePayload,
 ) : FriendshipPayload {
 
@@ -46,7 +46,7 @@ export function friendshipRawPayloadParser(
   }
 }
 
-function friendshipRawPayloadParserConfirm(
+function friendshipRawPayloadParserConfirm (
   rawPayload: PadchatMessagePayload,
 ): FriendshipPayload {
   const payload: FriendshipPayloadConfirm = {
@@ -57,7 +57,7 @@ function friendshipRawPayloadParserConfirm(
   return payload
 }
 
-function friendshipRawPayloadParserVerify(
+function friendshipRawPayloadParserVerify (
   rawPayload: PadchatMessagePayload,
 ): FriendshipPayload {
   const payload: FriendshipPayloadVerify = {
@@ -68,7 +68,7 @@ function friendshipRawPayloadParserVerify(
   return payload
 }
 
-function friendshipRawPayloadParserReceive(
+function friendshipRawPayloadParserReceive (
   rawPayload: PadchatMessagePayload,
 ) {
   const tryXmlText = rawPayload.content

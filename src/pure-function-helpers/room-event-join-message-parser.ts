@@ -80,7 +80,7 @@ const ROOM_JOIN_OTHER_INVITE_OTHER_QRCODE_REGEX_LIST_EN = [
   /^"(.+)" joined the group chat via the QR Code shared by "(.+)"/,
 ]
 
-export function roomJoinEventMessageParser(
+export function roomJoinEventMessageParser (
   rawPayload: PadchatMessagePayload,
 ): null | PuppetRoomJoinEvent {
 
@@ -236,7 +236,7 @@ export function roomJoinEventMessageParser(
     // /^"([^"]+?)"邀请你加入了群聊/,
     // /^"([^"]+?)"邀请你和"(.+?)"加入了群聊/,
     const inviterName = matches[1]
-    let inviteeNameList: (YOU | string)[] = [YOU]
+    let inviteeNameList: Array<YOU | string> = [YOU]
     if (matches[2]) {
       let nameList
       if (languageEn) {

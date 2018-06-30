@@ -27,7 +27,7 @@ const ROOM_TOPIC_YOU_REGEX_LIST = [
   /^(你)修改群名为“(.+)”$/,
 ]
 
-export function roomTopicEventMessageParser(
+export function roomTopicEventMessageParser (
   rawPayload: PadchatMessagePayload,
 ): null | PuppetRoomTopicEvent {
 
@@ -48,7 +48,7 @@ export function roomTopicEventMessageParser(
   ROOM_TOPIC_OTHER_REGEX_LIST .some(regex => !!(matchesForOther = content.match(regex)))
   ROOM_TOPIC_YOU_REGEX_LIST   .some(regex => !!(matchesForYou   = content.match(regex)))
 
-  const matches: (string | YOU)[] = matchesForOther || matchesForYou
+  const matches: Array<string | YOU> = matchesForOther || matchesForYou
   if (!matches) {
     return null
   }

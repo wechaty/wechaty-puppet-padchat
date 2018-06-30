@@ -6,10 +6,10 @@
 import test  from 'blue-tape'
 
 import {
-  isRoomId,
   isContactId,
   isContactOfficialId,
   isPayload,
+  isRoomId,
   isStrangerV1,
   isStrangerV2,
 }                             from './is-type'
@@ -61,5 +61,5 @@ test('isPayload()', async t => {
   t.equal(isPayload(undefined as any) , false, 'undefined is not payload')
   t.equal(isPayload(null as any)      , false, 'null is not payload')
   t.equal(isPayload({})               , false, '{} is not payload')
-  t.equal(isPayload({a: 42})          , true, 'valid payload')
+  t.equal(isPayload({ a: 42 })          , true, 'valid payload')
 })

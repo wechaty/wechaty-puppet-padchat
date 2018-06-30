@@ -8,11 +8,11 @@ import {
 }                             from '../padchat-schemas'
 
 import {
-  isRoomId,
   isContactOfficialId,
+  isRoomId,
 }                           from './is-type'
 
-export function contactRawPayloadParser(
+export function contactRawPayloadParser (
   rawPayload: PadchatContactPayload,
 ): ContactPayload {
   if (!rawPayload.user_name) {
