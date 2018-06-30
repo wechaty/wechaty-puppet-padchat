@@ -15,16 +15,21 @@ npm install *-*.*.*.tgz \
   @types/lru-cache \
   @types/node \
   @types/normalize-package-data \
+  @types/xml2json \
   brolog \
   file-box \
+  fs-extra \
   hot-import \
   lru-cache \
   memory-card \
   normalize-package-data \
+  rx-queue \
   state-switch \
   typescript \
   wechaty-puppet \
   watchdog \
+  qr-image \
+  xml2json \
 
 ./node_modules/.bin/tsc \
   --esModuleInterop \
