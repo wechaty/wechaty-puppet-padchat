@@ -12,17 +12,27 @@ npm install wechaty-puppet-padchat
 ## SOURCE
 
 ```ts
+import { Wechaty } from 'wechaty'
+import { PuppetPadchat } from 'wechaty-puppet-padchat'
 
+const WECHATY_PUPPET_PADCHAT_TOKEN = 'your-token-here'
+
+const puppet = new PuppetPadchat({
+  token: WECHATY_PUPPET_PADCHAT_TOKEN,
+})
+
+const bot = new Wechaty({
+  puppet,
+})
+
+// You are all set
 ```
 
 ## RUN
 
 ```shell
-WECHATY_PUPPET=padchat \
-  WECHATY_PUPPET_PADCHAT_TOKEN="$YOUR_PUPPET_PADCHAT_TOKEN" \
-  ./node_modules/.bin/ts-node \
-  examples/wechaty-padchat-bot.ts
-  
+./node_modules/.bin/ts-node \
+  wechaty-padchat-bot.ts
 ```
 
 Currently you can apply a Alpha Testing Padchat Token at here: [Wechaty Padchat Alpha Testing](https://github.com/Chatie/wechaty/issues/1296)
