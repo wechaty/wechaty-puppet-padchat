@@ -103,7 +103,7 @@ export class PuppetPadchat extends Puppet {
   private memory          : MemoryCard
 
   constructor (
-    public options: PuppetOptions = {},
+    public options: PuppetOptions,
   ) {
     super({
       timeout: 60 * 4,  // Default set timeout to 4 minutes for PuppetPadchat
