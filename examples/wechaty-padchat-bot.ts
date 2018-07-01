@@ -12,6 +12,16 @@ const BOT_QR_CODE_IMAGE_URL = 'https://chatie.io/wechaty/images/bot-qr-code.png'
 
 /**
  *
+ * 0. Create our bot
+ *
+ */
+const bot = new Wechaty({
+  profile : 'padchat-demo',
+  puppet  : new PuppetPadchat(),
+})
+
+/**
+ *
  * 1. Define Event Handler Functions for:
  *  `scan`, `login`, `logout`, `error`, and `message`
  *
@@ -89,16 +99,10 @@ async function onMessage (msg: Message) {
 
 /**
  *
- * 3. Declare a Wechaty Bot,
- *    register all event handlers
+ * 3. Register all event handlers
  *    that we had previous defined.
  *
  */
-const bot = new Wechaty({
-  profile : 'padchat-demo',
-  puppet  : new PuppetPadchat(),
-})
-
 bot
 .on('logout', onLogout)
 .on('login',  onLogin)
