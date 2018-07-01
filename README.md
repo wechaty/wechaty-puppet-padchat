@@ -27,6 +27,10 @@ WECHATY_PUPPET=padchat \
 
 Currently you can apply a Alpha Testing Padchat Token at here: [Wechaty Padchat Alpha Testing](https://github.com/Chatie/wechaty/issues/1296)
 
+## AUTHOR
+
+Jiarui LI <rui@chatie.io>
+
 ## LICENSE
 
 Apache-2.0
