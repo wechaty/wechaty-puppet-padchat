@@ -26,7 +26,7 @@ export interface IpadContactRawPayload {
 
   member_count:       number, // 0,
   msg_type:           number, // 2: Contact Or Room whole content
-  nickName:          string, // '梦君君', Contact:用户昵称， Room: 群昵称
+  nickName:           string, // '梦君君', Contact:用户昵称， Room: 群昵称
   provincia:          string, // 'Beijing',
   py_initial:         string, // 'MJJ',
   quan_pin:           string, // 'mengjunjun',
