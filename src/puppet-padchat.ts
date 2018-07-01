@@ -22,9 +22,8 @@ import path  from 'path'
 import flatten  from 'array-flatten'
 import LRU      from 'lru-cache'
 
-import {
-  FileBox,
-}               from 'file-box'
+import { FileBox }    from 'file-box'
+import { MemoryCard } from 'memory-card'
 
 import {
   ContactGender,
@@ -100,10 +99,11 @@ export class PuppetPadchat extends Puppet {
   private padchatCounter: number
   private readonly cachePadchatMessagePayload: LRU.Cache<string, PadchatMessagePayload>
 
-  private padchatManager?      : PadchatManager
+  private padchatManager? : PadchatManager
+  private memory          : MemoryCard
 
   constructor (
-    public options: PuppetOptions,
+    public options: PuppetOptions = {},
   ) {
     super({
       timeout: 60 * 4,  // Default set timeout to 4 minutes for PuppetPadchat
@@ -120,6 +120,9 @@ export class PuppetPadchat extends Puppet {
     }
 
     this.cachePadchatMessagePayload = new LRU<string, PadchatMessagePayload>(lruOptions)
+    this.memory = options.memory
+                    ? options.memory
+                    : new MemoryCard()
 
     this.padchatCounter = PADCHAT_COUNTER++
 
@@ -188,7 +191,7 @@ export class PuppetPadchat extends Puppet {
   }
 
   public async start (): Promise<void> {
-    log.verbose('PuppetPadchat', `start() with ${this.options.memory.name}`)
+    log.verbose('PuppetPadchat', `start() with ${this.memory.name}`)
 
     if (this.state.on()) {
       log.warn('PuppetPadchat', 'start() already on(pending)?')
@@ -205,7 +208,7 @@ export class PuppetPadchat extends Puppet {
 
     const manager = this.padchatManager = new PadchatManager({
       endpoint : this.options.endpoint  || WECHATY_PUPPET_PADCHAT_ENDPOINT,
-      memory   : this.options.memory,
+      memory   : this.memory,
       token    : this.options.token     || padchatToken(),
     })
 
