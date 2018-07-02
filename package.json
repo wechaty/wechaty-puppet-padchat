@@ -66,7 +66,7 @@
     "tslint": "^5.10.0",
     "tslint-config-standard": "^7.1.0",
     "typescript": "^2.9.2",
-    "wechaty": "^0.17.62",
+    "wechaty": "^0.16.5",
     "wechaty-puppet": "^0.2.10"
   },
   "git": {
@@ -76,7 +76,7 @@
   },
   "peerDependencies": {
     "file-box": "^0.8.22",
-    "wechaty-puppet": "0.2.9"
+    "wechaty-puppet": "^0.2.9"
   },
   "homepage": "https://github.com/lijiarui/wechaty-puppet-padchat#readme",
   "dependencies": {
