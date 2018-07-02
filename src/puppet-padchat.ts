@@ -506,6 +506,7 @@ export class PuppetPadchat extends Puppet {
         || friendshipReceiveContactId
         || friendshipVerifyContactId
     ) {
+      // Maybe load contact here since we know a new friend is added
       this.emit('friendship', rawPayload.msg_id)
     }
   }

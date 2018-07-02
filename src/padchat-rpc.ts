@@ -413,6 +413,14 @@ export class PadchatRpc extends EventEmitter {
       return
     }
 
+    if (payload.type === PadchatPayloadType.InvalidPadchatToken) {
+      log.error('PadchatRpc', 'onSocket(payload.type=%s) invalid padchat token, payload=%s(%s)',
+                                PadchatPayloadType[payload.type],
+                                payload.type,
+                                JSON.stringify(payload))
+      return
+    }
+
     if (!payload.msgId && !payload.data) {
       /**
        * Discard message that have neither msgId(Padchat API Call) nor data(Tencent Message)
