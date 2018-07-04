@@ -23,7 +23,6 @@ import flatten  from 'array-flatten'
 import LRU      from 'lru-cache'
 
 import { FileBox }    from 'file-box'
-import { MemoryCard } from 'memory-card'
 
 import {
   ContactGender,
