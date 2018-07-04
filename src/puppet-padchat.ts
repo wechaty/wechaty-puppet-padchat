@@ -100,7 +100,6 @@ export class PuppetPadchat extends Puppet {
   private readonly cachePadchatMessagePayload: LRU.Cache<string, PadchatMessagePayload>
 
   private padchatManager? : PadchatManager
-  private memory          : MemoryCard
 
   constructor (
     public options: PuppetOptions = {},
@@ -120,9 +119,6 @@ export class PuppetPadchat extends Puppet {
     }
 
     this.cachePadchatMessagePayload = new LRU<string, PadchatMessagePayload>(lruOptions)
-    this.memory = options.memory
-                    ? options.memory
-                    : new MemoryCard()
 
     this.padchatCounter = PADCHAT_COUNTER++
 
