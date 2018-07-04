@@ -3,7 +3,6 @@
 // tslint:disable:no-shadowed-variable
 import test  from 'blue-tape'
 
-import { MemoryCard } from 'memory-card'
 import { PuppetPadchat } from './puppet-padchat'
 
 // class PuppetPadchatTest extends PuppetPadchat {
