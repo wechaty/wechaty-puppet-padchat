@@ -2,7 +2,7 @@
 
 [![NPM Version](https://badge.fury.io/js/wechaty-puppet-padchat.svg)](https://badge.fury.io/js/wechaty-puppet-padchat)
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-blue.svg)](https://www.typescriptlang.org/)
-[![Linux/Mac Build Status](https://travis-ci.com/Chatie/wechaty-puppet-padchat.svg?branch=master)](https://travis-ci.com/Chatie/wechaty-puppet-padchat)
+[![Linux/Mac Build Status](https://travis-ci.com/lijiarui/wechaty-puppet-padchat.svg?branch=master)](https://travis-ci.com/lijiarui/wechaty-puppet-padchat)
 
 This module is a sub module of [Wechaty Puppet](https://github.com/Chatie/wechaty/issues/1167).
 
