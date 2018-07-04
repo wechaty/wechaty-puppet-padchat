@@ -8,15 +8,11 @@
 // tslint:disable:no-console
 
 import {
-  MemoryCard,
-}                 from 'memory-card'
-
-import {
   PuppetPadchat,
 }                 from 'wechaty-puppet-padchat'
 
 async function main () {
-  const puppet = new PuppetPadchat({ memory: new MemoryCard() })
+  const puppet = new PuppetPadchat()
   console.log(`Puppet v${puppet.version()} smoke testing passed.`)
   return 0
 }
