@@ -230,7 +230,7 @@ export class PuppetPadchat extends Puppet {
     }
 
     manager.removeAllListeners()
-    // manager.on('error'    , e => this.emit('error', e))
+    manager.on('error',   e                                               => this.emit('error', e))
     manager.on('scan',    (qrcode: string, status: number, data?: string) => this.emit('scan', qrcode, status, data))
     manager.on('login',   (userId: string)                                => this.login(userId))
     manager.on('message', (rawPayload: PadchatMessagePayload)             => this.onPadchatMessage(rawPayload))

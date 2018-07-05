@@ -37,7 +37,6 @@ jobs:
         - echo "NPM Deploying Started ..."
         - npm version
         - if ./scripts/development-release.ts; then ./scripts/package-publish-config-tag-next.ts; fi
-        - rm -f examples/*
         - npm run dist
         - echo "NPM Building Finished."
 

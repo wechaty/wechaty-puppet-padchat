@@ -3,7 +3,6 @@ import {
   Message,
   Wechaty,
 }                         from 'wechaty'
-import { PuppetPadchat }  from '../src/'  // from 'wechaty-puppet-padchat'
 
 import { FileBox }  from 'file-box'
 import { generate } from 'qrcode-terminal'
@@ -17,7 +16,7 @@ const BOT_QR_CODE_IMAGE_URL = 'https://chatie.io/wechaty/images/bot-qr-code.png'
  */
 const bot = new Wechaty({
   profile : 'padchat-demo',
-  puppet  : new PuppetPadchat(),
+  puppet  : 'padchat'
 })
 
 /**
