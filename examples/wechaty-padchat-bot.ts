@@ -2,26 +2,30 @@ import {
   Contact,
   Message,
   Wechaty,
-}                         from 'wechaty'
+}                   from 'wechaty'
+
+import {
+  PuppetPadchat,
+}                   from '../src/'
 
 import { FileBox }  from 'file-box'
 import { generate } from 'qrcode-terminal'
 
-const BOT_QR_CODE_IMAGE_URL = 'https://chatie.io/wechaty/images/bot-qr-code.png'
-
 /**
  *
- * 0. Create our bot
+ * 1. Create our bot
  *
  */
+const puppet = new PuppetPadchat()
+
 const bot = new Wechaty({
   profile : 'padchat-demo',
-  puppet  : 'padchat'
+  puppet,
 })
 
 /**
  *
- * 1. Define Event Handler Functions for:
+ * 2. Define Event Handler Functions for:
  *  `scan`, `login`, `logout`, `error`, and `message`
  *
  */
@@ -55,7 +59,7 @@ function onError (e: Error) {
 
 /**
  *
- * 2. The most important handler is for:
+ * 3. The most important handler is for:
  *    dealing with Messages.
  *
  */
@@ -73,21 +77,21 @@ async function onMessage (msg: Message) {
   }
 
   /**
-   * 1. reply 'dong'
+   * 3.1. reply 'dong'
    */
   await msg.say('dong')
   console.log('REPLY: dong')
 
   /**
-   * 2. reply image(qrcode image)
+   * 3.2. reply image(qrcode image)
    */
-  const fileBox = FileBox.fromUrl(BOT_QR_CODE_IMAGE_URL)
+  const fileBox = FileBox.fromUrl('https://chatie.io/wechaty/images/bot-qr-code.png')
 
   await msg.say(fileBox)
   console.log('REPLY: %s', fileBox.toString())
 
   /**
-   * 3. reply 'scan now!'
+   * 3.3. reply 'scan now!'
    */
   await msg.say([
     'Join Wechaty Developers Community\n\n',
@@ -98,7 +102,7 @@ async function onMessage (msg: Message) {
 
 /**
  *
- * 3. Register all event handlers
+ * 4. Register all event handlers
  *    that we had previous defined.
  *
  */
@@ -112,7 +116,7 @@ bot
 
 /**
  *
- * 4. Start the bot!
+ * 5. Start the bot!
  *
  */
 bot.start()
