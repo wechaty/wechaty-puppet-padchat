@@ -35,8 +35,7 @@ const bot = new Wechaty({
 ## RUN
 
 ```shell
-./node_modules/.bin/ts-node \
-  examples/wechaty-padchat-bot.ts
+./node_modules/.bin/ts-node examples/wechaty-padchat-bot.ts
 ```
 
 Currently you can apply a Alpha Testing Padchat Token at here: [Wechaty Padchat Alpha Testing](https://github.com/Chatie/wechaty/issues/1296)
