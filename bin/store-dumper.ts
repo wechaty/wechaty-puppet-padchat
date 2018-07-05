@@ -56,7 +56,7 @@ async function main () {
   log.warn('Dumper', 'main() Store status: contact: %d, room: %d, room members: %d',
                       cacheContactRawPayload.size,
                       cacheRoomRawPayload.size,
-                      cacheRoomMemberRawPayload.size,
+                      roomMemberTotalNum,
           )
 
   dumpHtml()
@@ -90,7 +90,7 @@ function dumpHtml () {
 /**
  * Cotnacts
  */
-function dumpContacts () {
+export function dumpContacts () {
   let n = 0
   console.log(`
     <h2>Contacts</h2>
@@ -135,7 +135,7 @@ function dumpContacts () {
 /**
  * Rooms
  */
-function dumpRooms () {
+export function dumpRooms () {
   let n = 0
   console.log(`
     <h2>Rooms</h2>
@@ -180,7 +180,7 @@ function dumpRooms () {
 /**
  * Room Members
  */
-function dumpRoomMembers () {
+export function dumpRoomMembers () {
   let n = 0
   console.log(`
   <h2>Room Members</h2>
