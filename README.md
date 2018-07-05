@@ -9,7 +9,7 @@ This module is a sub module of [Wechaty Puppet](https://github.com/Chatie/wechat
 ## BREAKING WARNING
 
 THE CODE IS BREAKING NOW,
- 
+
 WE WILL REMOVE THIS WARNING AFTER WE FIXED IT.
 
 ## INSTALL
