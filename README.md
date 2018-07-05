@@ -1,5 +1,10 @@
 # WECHATY-PUPPET-PADCHAT
 
+[![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-blue.svg)](https://github.com/chatie/wechaty)
+[![NPM Version](https://badge.fury.io/js/wechaty-puppet-padchat.svg)](https://badge.fury.io/js/wechaty-puppet-padchat)
+[![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-blue.svg)](https://www.typescriptlang.org/)
+[![Linux/Mac Build Status](https://travis-ci.com/lijiarui/wechaty-puppet-padchat.svg?branch=master)](https://travis-ci.com/lijiarui/wechaty-puppet-padchat)
+
 This module is a sub module of [Wechaty Puppet](https://github.com/Chatie/wechaty/issues/1167).
 
 ## INSTALL
@@ -31,10 +36,7 @@ const bot = new Wechaty({
 ## RUN
 
 ```shell
-npm install
-
-./node_modules/.bin/ts-node \
-  examples/wechaty-padchat-bot.ts
+./node_modules/.bin/ts-node examples/wechaty-padchat-bot.ts
 ```
 
 Currently you can apply a Alpha Testing Padchat Token at here: [Wechaty Padchat Alpha Testing](https://github.com/Chatie/wechaty/issues/1296)

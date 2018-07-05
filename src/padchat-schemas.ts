@@ -68,6 +68,7 @@ export enum PadchatContinue {
 
 export enum PadchatPayloadType {
   Logout = -1, // -1 when logout
+  InvalidPadchatToken = -1111, // -1111 when the token pass to padchat server is invalid
 }
 
 export interface PadchatPayload {

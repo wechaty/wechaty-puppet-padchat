@@ -15,7 +15,9 @@ import {
   log,
 }             from 'brolog'
 
-export const WECHATY_PUPPET_PADCHAT_ENDPOINT = process.env.WECHATY_PUPPET_PADCHAT_ENDPOINT || 'ws://54.223.36.77:8080/wx'
+const WECHATY_PUPPET_PADCHAT_ENDPOINT_ENV_VAR = 'WECHATY_PUPPET_PADCHAT_ENDPOINT'
+
+export const WECHATY_PUPPET_PADCHAT_ENDPOINT = process.env[WECHATY_PUPPET_PADCHAT_ENDPOINT_ENV_VAR]  || 'ws://54.223.73.175:8788/wx'
 
 function padchatToken () {
   const token = process.env.WECHATY_PUPPET_PADCHAT_TOKEN as string

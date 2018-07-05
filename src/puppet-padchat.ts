@@ -23,7 +23,6 @@ import flatten  from 'array-flatten'
 import LRU      from 'lru-cache'
 
 import { FileBox }    from 'file-box'
-import { MemoryCard } from 'memory-card'
 
 import {
   ContactGender,
@@ -100,7 +99,6 @@ export class PuppetPadchat extends Puppet {
   private readonly cachePadchatMessagePayload: LRU.Cache<string, PadchatMessagePayload>
 
   private padchatManager? : PadchatManager
-  private memory          : MemoryCard
 
   constructor (
     public options: PuppetOptions = {},
@@ -120,9 +118,6 @@ export class PuppetPadchat extends Puppet {
     }
 
     this.cachePadchatMessagePayload = new LRU<string, PadchatMessagePayload>(lruOptions)
-    this.memory = options.memory
-                    ? options.memory
-                    : new MemoryCard()
 
     this.padchatCounter = PADCHAT_COUNTER++
 
@@ -235,7 +230,7 @@ export class PuppetPadchat extends Puppet {
     }
 
     manager.removeAllListeners()
-    // manager.on('error'    , e => this.emit('error', e))
+    manager.on('error',   e                                               => this.emit('error', e))
     manager.on('scan',    (qrcode: string, status: number, data?: string) => this.emit('scan', qrcode, status, data))
     manager.on('login',   (userId: string)                                => this.login(userId))
     manager.on('message', (rawPayload: PadchatMessagePayload)             => this.onPadchatMessage(rawPayload))
@@ -244,28 +239,11 @@ export class PuppetPadchat extends Puppet {
 
     manager.on('reset', async reason => {
       log.warn('PuppetPadchat', 'startManager() manager.on(reset) for %s. Restarting PuppetPadchat ... ', reason)
-      await this.reset(reason)
+      // Puppet Base class will deal with this RESET event for you.
+      await this.emit('reset', reason)
     })
 
     await manager.start()
-  }
-
-  protected async reset (reason: string): Promise<void> {
-    log.verbose('PuppetPadchat', 'reset(%s)', reason)
-
-    try {
-      log.silly('PuppetPadchat', 'reset() before stop')
-      await this.stop()
-      log.silly('PuppetPadchat', 'reset() after stop')
-      await this.start()
-      log.silly('PuppetPadchat', 'reset() after start')
-    } catch (e) {
-      log.error('PuppetPadchat', 'reset() exception: %s', e.message)
-      this.emit('error', e)
-      throw e
-    }
-
-    log.silly('PuppetPadchat', 'reset() done')
   }
 
   protected async onPadchatMessage (rawPayload: PadchatMessagePayload): Promise<void> {
@@ -506,6 +484,7 @@ export class PuppetPadchat extends Puppet {
         || friendshipReceiveContactId
         || friendshipVerifyContactId
     ) {
+      // Maybe load contact here since we know a new friend is added
       this.emit('friendship', rawPayload.msg_id)
     }
   }
