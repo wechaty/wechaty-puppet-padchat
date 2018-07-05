@@ -943,7 +943,7 @@ export class PadchatManager extends PadchatRpc {
 
       // check user_name too becasue the server might return {}
       // See issue #1358 https://github.com/Chatie/wechaty/issues/1358
-      if (tryRawPayload /* && tryRawPayload.user_name */) {
+      if (tryRawPayload && tryRawPayload.user_name) {
         this.cacheContactRawPayload.set(contactId, tryRawPayload)
         return tryRawPayload
       }
