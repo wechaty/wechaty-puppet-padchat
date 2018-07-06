@@ -1,6 +1,6 @@
 {
   "name": "wechaty-puppet-padchat",
-  "version": "0.3.15",
+  "version": "0.3.16",
   "description": "Padchat Puppet for Wechaty",
   "directories": {
     "example": "examples"
