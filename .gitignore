@@ -64,3 +64,4 @@ typings/
 .DS_Store
 /*.png
 /*.html
+/*.memory-card.json
