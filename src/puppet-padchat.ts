@@ -156,31 +156,21 @@ export class PuppetPadchat extends Puppet {
     }
 
     // clean the dog because this could be re-inited
-    this.watchdog.removeAllListeners()
+    // this.watchdog.removeAllListeners()
 
     /**
      * Use manager's heartbeat to feed dog
      */
     this.padchatManager.on('heartbeat', (data: string) => {
       log.silly('PuppetPadchat', 'startWatchdog() padchatManager.on(heartbeat)')
-      this.watchdog.feed({
+      this.emit('watchdog', {
         data,
       })
-    })
-    this.watchdog.on('feed', async food => {
-      log.silly('PuppetPadchat', 'startWatchdog() watchdog.on(feed, food={type=%s, data=%s})', food.type, food.data)
-    })
-
-    this.watchdog.on('reset', async (food, timeout) => {
-      log.warn('PuppetPadchat', 'startWatchdog() dog.on(reset) last food:%s, timeout:%s',
-                                food.data,
-                                timeout,
-              )
-      await this.reset('watchdog.on(reset)')
     })
 
     this.emit('watchdog', {
       data: 'inited',
+      type: 'startWatchdog()',
     })
 
   }
@@ -211,7 +201,7 @@ export class PuppetPadchat extends Puppet {
     await this.startWatchdog()
 
     this.state.on(true)
-    this.emit('start')
+    // this.emit('start')
   }
 
   protected async login (selfId: string): Promise<void> {
@@ -504,7 +494,7 @@ export class PuppetPadchat extends Puppet {
 
     this.state.off('pending')
 
-    this.watchdog.sleep()
+    // this.watchdog.sleep()
     await this.logout()
 
     await this.padchatManager.stop()
@@ -513,7 +503,7 @@ export class PuppetPadchat extends Puppet {
     this.padchatManager = undefined
 
     this.state.off(true)
-    this.emit('stop')
+    // this.emit('stop')
   }
 
   public async logout (): Promise<void> {
