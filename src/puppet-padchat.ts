@@ -98,7 +98,7 @@ export class PuppetPadchat extends Puppet {
   private padchatCounter: number
   private readonly cachePadchatMessagePayload: LRU.Cache<string, PadchatMessagePayload>
 
-  private padchatManager? : PadchatManager
+  protected padchatManager? : PadchatManager
 
   constructor (
     public options: PuppetOptions = {},
