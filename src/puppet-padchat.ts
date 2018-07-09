@@ -201,7 +201,6 @@ export class PuppetPadchat extends Puppet {
     await this.startWatchdog()
 
     this.state.on(true)
-    // this.emit('start')
   }
 
   protected async login (selfId: string): Promise<void> {
@@ -268,8 +267,6 @@ export class PuppetPadchat extends Puppet {
       rawPayload.msg_id,
       rawPayload,
     )
-
-    // console.log('rawPayload:', rawPayload)
 
     /**
      * 3. Check for Different Message Types
@@ -503,7 +500,6 @@ export class PuppetPadchat extends Puppet {
     this.padchatManager = undefined
 
     this.state.off(true)
-    // this.emit('stop')
   }
 
   public async logout (): Promise<void> {
@@ -561,14 +557,12 @@ export class PuppetPadchat extends Puppet {
       throw new Error('no padchat manager')
     }
 
-    const rawPayload = await this.padchatManager.contactRawPayload(contactId)
-
-    if (rawPayload && rawPayload.user_name) {
-      // check user_name too becasue the server might return {}
+    try {
+      await this.padchatManager.contactRawPayload(contactId)
       return true
+    } catch (e) {
+      return false
     }
-
-    return false
   }
 
   public async contactList (): Promise<string[]> {

@@ -943,9 +943,14 @@ export class PadchatManager extends PadchatRpc {
 
       // check user_name too becasue the server might return {}
       // See issue #1358 https://github.com/Chatie/wechaty/issues/1358
-      if (tryRawPayload /* && tryRawPayload.user_name */) {
+      if (tryRawPayload && tryRawPayload.user_name) {
         this.cacheContactRawPayload.set(contactId, tryRawPayload)
         return tryRawPayload
+      } else if (tryRawPayload) {
+        // If the payload is valid but we don't have user_name inside it,
+        // consider this payload as invalid one and do not retry
+        // Correct me if I am wrong here
+        return null
       }
       return retryException(new Error('tryRawPayload empty'))
     })
