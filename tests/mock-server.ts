@@ -1,23 +1,27 @@
+#!/usr/bin/env ts-node
+// tslint:disable:object-literal-sort-keys
+// tslint:disable:no-trailing-whitespace
+// tslint:disable:no-unnecessary-type-assertion
+
 import WebSocket from 'ws'
 
 import { PadchatRpcRequest } from '../src/padchat-rpc.type'
 
-import { MOCK_USER_ID, MOCK_TOKEN, MOCK_SELF_CONTACT } from './mock-config'
-
+import { MOCK_SELF_CONTACT, MOCK_TOKEN, MOCK_USER_ID } from './mock-config' 
 interface MockFunction {
   callLimit?: number,
   callCount?: number,
-  func: Function,
+  func: (ws: WebSocket, messageObj: PadchatRpcRequest) => void,
 }
 
 export class MockSocketServer {
   private readonly USER_NAME = MOCK_USER_ID
-  private port: number;
+  private port: number
   private server?: WebSocket.Server
   private contactPayloadMockArray: any[] = []
   private contactCounter = 0
 
-  constructor(port: number) {
+  constructor (port: number) {
     this.port = port
   }
 
@@ -27,14 +31,14 @@ export class MockSocketServer {
       status: 0
     })
   }
-  
+ 
   private mockWXInitialize = (ws: WebSocket, messageObj: PadchatRpcRequest) => {
     this.sendMockMessage(ws, messageObj, {
       message: 'success',
       status: 0
     })
   }
-  
+ 
   private mockWXCheckQRCode = (ws: WebSocket, messageObj: PadchatRpcRequest) => {
     this.sendMockMessage(ws, messageObj, {
       status: 2,
@@ -42,38 +46,38 @@ export class MockSocketServer {
       password: 'very_secure'
     })
   }
-  
+ 
   private mockWXQRCodeLogin = (ws: WebSocket, messageObj: PadchatRpcRequest) => {
     this.sendMockMessage(ws, messageObj, {
       status: 0,
       user_name: this.USER_NAME
     })
   }
-  
+ 
   private mockWXHeartBeat = (ws: WebSocket, messageObj: PadchatRpcRequest) => {
     this.sendMockMessage(ws, messageObj, {
       status: 0,
       message: ':P'
     })
   }
-  
+ 
   private mockWXGenerateWxDat = (ws: WebSocket, messageObj: PadchatRpcRequest) => {
     this.sendMockMessage(ws, messageObj, {
       status: 0,
       data: 'YnBsaXN0MDDUAQIDBAUGCQpYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKIHCFUkbnVsbF8QIDJjOGQzNDZmNTNjNmVjNmI4OTE1YjEwNTY4YjYyY2MzXxAPTlNLZXllZEFyY2hpdmVy0QsMVHJvb3SAAQgRGiMtMjc6QGN1eH0AAAAAAAABAQAAAAAAAAANAAAAAAAAAAAAAAAAAAAAfw=='
     })
   }
-  
+ 
   private mockWXGetLoginToken = (ws: WebSocket, messageObj: PadchatRpcRequest) => {
     this.sendMockMessage(ws, messageObj, {
-      status:0,
+      status: 0,
       token: MOCK_TOKEN,
       uin: 1234567
     })
   }
-  
+ 
   private mockWXGetContact = (ws: WebSocket, messageObj: PadchatRpcRequest) => {
-    if (messageObj.param && messageObj.param.length === 1 
+    if (messageObj.param && messageObj.param.length ===  1
         && messageObj.param[0] === this.USER_NAME
     ) {
       this.sendMockMessage(ws, messageObj, MOCK_SELF_CONTACT)
@@ -87,11 +91,11 @@ export class MockSocketServer {
       }
     }
   }
-  
+ 
   private sendMockMessage = (ws: WebSocket, messageObj: PadchatRpcRequest, obj: any) => {
     ws.send(this.constructPayload(messageObj.msgId as string, obj))
   }
-  
+ 
   private constructPayload = (msgId: string, data: any) => {
     return JSON.stringify({
       msgId,
@@ -156,16 +160,15 @@ export class MockSocketServer {
         const messageObj: PadchatRpcRequest = JSON.parse(message.toString())
         const { apiName } = messageObj
         if (apiName) {
-          if (this.apiMapping[apiName] !== undefined) {
+          if (this.apiMapping[apiName]) {
             this.fakeApiResponse(this.apiMapping[apiName], ws, messageObj)
           } else {
-            console.error(`No mapping for ${apiName} in /tests/mock-api.ts, 
+            console.error(`No mapping for ${apiName} in /tests/mock-api.ts 
                 please add your mock to run the integration test`)
           }
         } else {
           console.error(`Received non api message, please check! Message: ${message}`)
         }
-        console.log(messageObj)
       })
     })
   }
