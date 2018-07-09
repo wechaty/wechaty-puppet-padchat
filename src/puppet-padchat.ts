@@ -201,7 +201,6 @@ export class PuppetPadchat extends Puppet {
     await this.startWatchdog()
 
     this.state.on(true)
-    this.emit('start')
   }
 
   protected async login (selfId: string): Promise<void> {
@@ -501,7 +500,6 @@ export class PuppetPadchat extends Puppet {
     this.padchatManager = undefined
 
     this.state.off(true)
-    this.emit('stop')
   }
 
   public async logout (): Promise<void> {

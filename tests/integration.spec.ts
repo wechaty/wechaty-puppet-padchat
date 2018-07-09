@@ -53,9 +53,6 @@ test('PuppetPadchat Integration test', async t => {
     t.ok(contactList.length === 1, 'contact list should be 1, which only contains self')
 
     await puppet.stop()
-  })
-
-  puppet.on('stop', async () => {
     t.plan(TOTAL_TEST_CHECK)
     await mockServer.stop()
   })
