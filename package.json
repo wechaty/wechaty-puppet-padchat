@@ -19,7 +19,8 @@
     "lint:ts": "tslint --project tsconfig.json && tsc --noEmit",
     "test": "npm run lint && npm run test:unit",
     "test:pack": "bash -x scripts/npm-pack-testing.sh",
-    "test:unit": "blue-tape -r ts-node/register \"src/**/*.spec.ts\" \"src/*.spec.ts\" \"tests/*.spec.ts\" \"tests/**/*.spec.ts\""
+    "test:unit": "blue-tape -r ts-node/register \"src/**/*.spec.ts\" \"src/*.spec.ts\" \"tests/**/*.spec.ts\"",
+    "test:int": "blue-tape -r ts-node/register \"tests/integration.spec.ts\""
   },
   "repository": {
     "type": "git",
