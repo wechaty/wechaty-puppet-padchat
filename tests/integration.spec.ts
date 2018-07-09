@@ -10,22 +10,36 @@ import { PuppetPadchat } from '../src/puppet-padchat'
 
 import { MockSocketServer } from './mock-server'
 
-import { MOCK_USER_ID, MOCK_TOKEN } from './mock-config'
+import { MOCK_TOKEN, MOCK_USER_ID } from './mock-config'
 
 const FAKE_SERVER_PORT = 13421
 const TOTAL_TEST_CHECK = 2
 
+const clearFlashStoreCache = async () => {
+  const baseDir = path.join(
+    os.homedir(),
+    path.sep,
+    '.wechaty',
+    'puppet-padchat-cache',
+    path.sep,
+    MOCK_TOKEN,
+    path.sep,
+    MOCK_USER_ID,
+  )
+  await fs.remove(baseDir)
+}
+
 test('PuppetPadchat Integration test', async t => {
-  
+
   await clearFlashStoreCache()
 
   const mockServer = new MockSocketServer(FAKE_SERVER_PORT)
   mockServer.setContactPayloadMockArray([])
   await mockServer.start()
-  
+
   const puppet = new PuppetPadchat({
+    endpoint: `http://localhost:${FAKE_SERVER_PORT}`,
     token: MOCK_TOKEN,
-    endpoint: `http://localhost:${FAKE_SERVER_PORT}`
   })
 
   await puppet.start()
@@ -41,22 +55,8 @@ test('PuppetPadchat Integration test', async t => {
     await puppet.stop()
   })
 
-  puppet.on('stop', () => {
+  puppet.on('stop', async () => {
     t.plan(TOTAL_TEST_CHECK)
-    mockServer.stop()
+    await mockServer.stop()
   })
 })
-
-const clearFlashStoreCache = async () => {
-  const baseDir = path.join(
-    os.homedir(),
-    path.sep,
-    '.wechaty',
-    'puppet-padchat-cache',
-    path.sep,
-    MOCK_TOKEN,
-    path.sep,
-    MOCK_USER_ID,
-  )
-  await fs.remove(baseDir)
-}
