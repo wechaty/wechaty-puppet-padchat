@@ -946,6 +946,11 @@ export class PadchatManager extends PadchatRpc {
       if (tryRawPayload && tryRawPayload.user_name) {
         this.cacheContactRawPayload.set(contactId, tryRawPayload)
         return tryRawPayload
+      } else if (tryRawPayload) {
+        // If the payload is valid but we don't have user_name inside it, 
+        // consider this payload as invalid one and do not retry
+        // Correct me if I am wrong here
+        return null
       }
       return retryException(new Error('tryRawPayload empty'))
     })
