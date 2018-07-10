@@ -908,11 +908,6 @@ export class PadchatManager extends PadchatRpc {
         }
       }
     }
-
-    this.syncContactAndRoomTimer = setTimeout(async () => {
-      await this.syncContactsAndRooms()
-    }, 3 * 60 * 60 * 1000)
-
   }
 
   public contactRawPayloadDirty (
