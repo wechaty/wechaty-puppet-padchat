@@ -19,6 +19,11 @@
 import { PuppetPadchat }  from './puppet-padchat'
 
 export {
+  VERSION,
+  log,
+}             from './config'
+
+export {
   PuppetPadchat,
 }
 
