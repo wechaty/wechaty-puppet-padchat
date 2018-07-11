@@ -1026,6 +1026,10 @@ export class PuppetPadchat extends Puppet {
     const memberIdList = await this.padchatManager.getRoomMemberIdList(roomId)
     log.silly('PuppetPadchat', 'roomMemberList()=%d', memberIdList.length)
 
+    if (memberIdList.length <= 0) {
+      await this.roomPayloadDirty(roomId)
+    }
+
     return memberIdList
   }
 
