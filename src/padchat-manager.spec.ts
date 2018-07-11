@@ -103,7 +103,7 @@ test('PadchatManager() stop many instances for the same time', async t => {
     const manager = new PadchatManagerTest({
       endpoint : WECHATY_PUPPET_PADCHAT_ENDPOINT,
       memory   : new MemoryCard(),
-      token    : 'mock token',
+      token    : 'mock token ' + i,
     })
     await manager.start()
 
