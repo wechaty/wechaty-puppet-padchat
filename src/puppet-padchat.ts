@@ -1315,6 +1315,15 @@ export class PuppetPadchat extends Puppet {
     return rawPayload
   }
 
+  public unref (): void {
+    log.verbose('PuppetPadchat', 'unref ()')
+
+    super.unref()
+
+    if (this.padchatManager) {
+      // TODO: this.padchatManager.unref()
+    }
+  }
 }
 
 export default PuppetPadchat
