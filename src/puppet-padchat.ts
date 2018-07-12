@@ -72,6 +72,7 @@ import {
   padchatToken,
   qrCodeForChatie,
   retry,
+  VERSION,
   WECHATY_PUPPET_PADCHAT_ENDPOINT,
 }                   from './config'
 
@@ -94,6 +95,7 @@ import {
 let PADCHAT_COUNTER = 0 // PuppetPadchat Instance Counter
 
 export class PuppetPadchat extends Puppet {
+  public static readonly VERSION = VERSION
 
   private padchatCounter: number
   private readonly cachePadchatMessagePayload: LRU.Cache<string, PadchatMessagePayload>
