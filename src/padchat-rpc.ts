@@ -1444,11 +1444,11 @@ export class PadchatRpc extends EventEmitter {
   public async WXGetUserQRCode (user: string, style: number): Promise<string> {
     const result = await this.rpcCall('WXGetUserQRCode', user, style)
     log.silly('PadchatRpc', 'WXGetUserQRCode , stranger,result: %s', JSON.stringify(result))
-    if (!result || result.status !== 0) {
+    if (!result || result.status !== 0 || !result.qr_code) {
       throw Error('WXGetUserQRCode, error: canot get result from websocket server')
     }
-    console.log('WXGetUserQRCode result:', result)
-    return result.data
+    // console.log('WXGetUserQRCode result:', result)
+    return result.qr_code
   }
 
   // TODO check any
