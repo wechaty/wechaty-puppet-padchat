@@ -18,6 +18,7 @@ import {
 const WECHATY_PUPPET_PADCHAT_ENDPOINT_ENV_VAR = 'WECHATY_PUPPET_PADCHAT_ENDPOINT'
 
 export const WECHATY_PUPPET_PADCHAT_ENDPOINT = process.env[WECHATY_PUPPET_PADCHAT_ENDPOINT_ENV_VAR]  || 'ws://54.223.73.175:8788/wx'
+export const SELF_QRCODE_MAX_RETRY = 5
 
 function padchatToken () {
   const token = process.env.WECHATY_PUPPET_PADCHAT_TOKEN as string
