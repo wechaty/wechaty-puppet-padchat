@@ -18,6 +18,7 @@ const FRIENDSHIP_CONFIRM_REGEX_LIST = [
   /I've accepted your friend request. Now let's chat!$/,
   /^(.+) just added you to his\/her contacts list. Send a message to him\/her now!$/,
   /^(.+)刚刚把你添加到通讯录，现在可以开始聊天了。$/,
+  /^我通过了你的朋友验证请求，现在我们可以开始聊天了$/,
 ]
 
 export function friendshipConfirmEventMessageParser (
