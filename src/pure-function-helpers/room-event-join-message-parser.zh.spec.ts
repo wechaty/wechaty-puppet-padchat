@@ -307,3 +307,28 @@ test('roomJoinEventMessageParser() ZH-bot-invite-three', async t => {
 test('roomJoinEventMessageParser() ZH-room-create', async t => {
   t.skip('can not get create sys message, because room will not sync or appear before the creater send the first message')
 })
+
+test('roomJoinEventMessageParser() ZH-other-invite-other-with-emoji-in-name', async t => {
+  const MESSAGE_PAYLOAD: PadchatMessagePayload = {
+    content     : '"XXX"邀请"<span class="emoji emoji1f338"></span>YYY"加入了群聊',
+    continue    : 1,
+    description : '',
+    from_user   : '5616634434@chatroom',
+    msg_id      : '2301570706114768273',
+    msg_source  : '',
+    msg_type    : 5,
+    status      : 1,
+    sub_type    : 10000,
+    timestamp   : 1528830737,
+    to_user     : 'wxid_zj2cahpwzgie12',
+    uin         : 324216852,
+  }
+  const EXPECTED_EVENT: PuppetRoomJoinEvent = {
+    inviteeNameList : ['<span class="emoji emoji1f338"></span>YYY'],
+    inviterName     : 'XXX',
+    roomId          : '5616634434@chatroom',
+  }
+
+  const event = roomJoinEventMessageParser(MESSAGE_PAYLOAD)
+  t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
+})
