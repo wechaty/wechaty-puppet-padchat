@@ -18,6 +18,7 @@ import {
 const WECHATY_PUPPET_PADCHAT_ENDPOINT_ENV_VAR = 'WECHATY_PUPPET_PADCHAT_ENDPOINT'
 
 export const WECHATY_PUPPET_PADCHAT_ENDPOINT = process.env[WECHATY_PUPPET_PADCHAT_ENDPOINT_ENV_VAR]  || 'ws://54.223.73.175:8788/wx'
+export const SELF_QRCODE_MAX_RETRY = 5
 
 function padchatToken () {
   const token = process.env.WECHATY_PUPPET_PADCHAT_TOKEN as string
@@ -74,6 +75,14 @@ export function qrCodeForChatie (): FileBox {
   const qrStream = qrImage.image(CHATIE_OFFICIAL_ACCOUNT_QRCODE, { type })
   return FileBox.fromStream(qrStream, name)
 }
+
+/**
+ * VERSION
+ */
+import readPkgUp from 'read-pkg-up'
+
+const pkg = readPkgUp.sync({ cwd: __dirname }).pkg
+export const VERSION = pkg.version
 
 export {
   log,

@@ -72,6 +72,8 @@ import {
   padchatToken,
   qrCodeForChatie,
   retry,
+  SELF_QRCODE_MAX_RETRY,
+  VERSION,
   WECHATY_PUPPET_PADCHAT_ENDPOINT,
 }                   from './config'
 
@@ -94,6 +96,7 @@ import {
 let PADCHAT_COUNTER = 0 // PuppetPadchat Instance Counter
 
 export class PuppetPadchat extends Puppet {
+  public static readonly VERSION = VERSION
 
   private padchatCounter: number
   private readonly cachePadchatMessagePayload: LRU.Cache<string, PadchatMessagePayload>
@@ -156,31 +159,21 @@ export class PuppetPadchat extends Puppet {
     }
 
     // clean the dog because this could be re-inited
-    this.watchdog.removeAllListeners()
+    // this.watchdog.removeAllListeners()
 
     /**
      * Use manager's heartbeat to feed dog
      */
     this.padchatManager.on('heartbeat', (data: string) => {
       log.silly('PuppetPadchat', 'startWatchdog() padchatManager.on(heartbeat)')
-      this.watchdog.feed({
+      this.emit('watchdog', {
         data,
       })
-    })
-    this.watchdog.on('feed', async food => {
-      log.silly('PuppetPadchat', 'startWatchdog() watchdog.on(feed, food={type=%s, data=%s})', food.type, food.data)
-    })
-
-    this.watchdog.on('reset', async (food, timeout) => {
-      log.warn('PuppetPadchat', 'startWatchdog() dog.on(reset) last food:%s, timeout:%s',
-                                food.data,
-                                timeout,
-              )
-      await this.reset('watchdog.on(reset)')
     })
 
     this.emit('watchdog', {
       data: 'inited',
+      type: 'startWatchdog()',
     })
 
   }
@@ -211,7 +204,6 @@ export class PuppetPadchat extends Puppet {
     await this.startWatchdog()
 
     this.state.on(true)
-    this.emit('start')
   }
 
   protected async login (selfId: string): Promise<void> {
@@ -278,8 +270,6 @@ export class PuppetPadchat extends Puppet {
       rawPayload.msg_id,
       rawPayload,
     )
-
-    // console.log('rawPayload:', rawPayload)
 
     /**
      * 3. Check for Different Message Types
@@ -504,7 +494,7 @@ export class PuppetPadchat extends Puppet {
 
     this.state.off('pending')
 
-    this.watchdog.sleep()
+    // this.watchdog.sleep()
     await this.logout()
 
     await this.padchatManager.stop()
@@ -513,7 +503,6 @@ export class PuppetPadchat extends Puppet {
     this.padchatManager = undefined
 
     this.state.off(true)
-    this.emit('stop')
   }
 
   public async logout (): Promise<void> {
@@ -571,14 +560,12 @@ export class PuppetPadchat extends Puppet {
       throw new Error('no padchat manager')
     }
 
-    const rawPayload = await this.padchatManager.contactRawPayload(contactId)
-
-    if (rawPayload && rawPayload.user_name) {
-      // check user_name too becasue the server might return {}
+    try {
+      await this.padchatManager.contactRawPayload(contactId)
       return true
+    } catch (e) {
+      return false
     }
-
-    return false
   }
 
   public async contactList (): Promise<string[]> {
@@ -642,15 +629,33 @@ export class PuppetPadchat extends Puppet {
       throw new Error('no padchat manager')
     }
 
-    const base64 = await this.padchatManager.WXGetUserQRCode(contactId, 0)
-
     const contactPayload = await this.contactPayload(contactId)
     const contactName    = contactPayload.alias || contactPayload.name || contactPayload.id
+
+    return this.getQRCode(this.padchatManager, contactName, contactId)
+  }
+
+  private async getQRCode (manager: PadchatManager, contactName: string,
+                           contactId: string, counter?: number): Promise<string> {
+    const base64 = await manager.WXGetUserQRCode(contactId, 3)
+
     const fileBox        = FileBox.fromBase64(base64, `${contactName}.jpg`)
-
-    const qrcode = await fileBoxToQrcode(fileBox)
-
-    return qrcode
+    try {
+      // There are some styles of qrcode can not be parsed by the library we are using,
+      // So added a retry mechanism here to guarantee the qrcode
+      // But still sometimes, the qrcode would be not available
+      // So in the error message, let the user to do a retry
+      return await fileBoxToQrcode(fileBox)
+    } catch (e) {
+      if (!counter) {
+        counter = 1
+      }
+      if (counter > SELF_QRCODE_MAX_RETRY) {
+        log.verbose('PuppetPadchat', 'contactQrcode(%s) get qrcode , this should happen very rare', contactId)
+        throw Error('Unable to get qrcode for self, Please try , this issue usually won\'t happen frequently, retry should fix it. If not, please open an issue on https://github.com/lijiarui/wechaty-puppet-padchat')
+      }
+      return this.getQRCode(manager, contactName, contactId, ++ counter)
+    }
   }
 
   public async contactPayloadDirty (contactId: string): Promise<void> {
@@ -1042,6 +1047,10 @@ export class PuppetPadchat extends Puppet {
     const memberIdList = await this.padchatManager.getRoomMemberIdList(roomId)
     log.silly('PuppetPadchat', 'roomMemberList()=%d', memberIdList.length)
 
+    if (memberIdList.length <= 0) {
+      await this.roomPayloadDirty(roomId)
+    }
+
     return memberIdList
   }
 
@@ -1325,6 +1334,15 @@ export class PuppetPadchat extends Puppet {
     return rawPayload
   }
 
+  public unref (): void {
+    log.verbose('PuppetPadchat', 'unref ()')
+
+    super.unref()
+
+    if (this.padchatManager) {
+      // TODO: this.padchatManager.unref()
+    }
+  }
 }
 
 export default PuppetPadchat
