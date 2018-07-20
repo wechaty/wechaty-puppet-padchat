@@ -24,6 +24,8 @@ import LRU      from 'lru-cache'
 
 import { FileBox }    from 'file-box'
 
+import axios from 'axios'
+
 import {
   ContactGender,
 
@@ -42,6 +44,7 @@ import {
   Receiver,
   RoomMemberPayload,
   RoomPayload,
+  RoomInvitation,
 }                                 from 'wechaty-puppet'
 
 import {
@@ -65,6 +68,7 @@ import {
   roomRawPayloadParser,
 
   roomTopicEventMessageParser,
+  roomInviteEventMessageParser,
 }                                         from './pure-function-helpers'
 
 import {
@@ -211,7 +215,7 @@ export class PuppetPadchat extends Puppet {
       throw new Error('no padchat manager')
     }
     await super.login(selfId)
-    await this.padchatManager.syncContactsAndRooms()
+    // await this.padchatManager.syncContactsAndRooms()
   }
 
   public async startManager (manager: PadchatManager): Promise<void> {
@@ -303,16 +307,68 @@ export class PuppetPadchat extends Puppet {
         break
 
       case PadchatMessageType.App:
+        await Promise.all([
+          this.onPadchatMessageRoomInvitation(rawPayload),
+        ])
       case PadchatMessageType.Emoticon:
       case PadchatMessageType.Image:
       case PadchatMessageType.MicroVideo:
       case PadchatMessageType.Video:
       case PadchatMessageType.Voice:
-        // TODO: the above types are filel type
+        // TODO: the above types are field type
 
       default:
         this.emit('message', rawPayload.msg_id)
         break
+    }
+  }
+
+  protected async onPadchatMessageRoomInvitation(rawPayload: PadchatMessagePayload): Promise<void> {
+    log.verbose('PuppetPadchat', 'onPadchatMessageRoomInvitation(%s)', rawPayload)
+    const roomInviteEvent = roomInviteEventMessageParser(rawPayload)
+
+    if (!this.padchatManager) {
+      throw new Error('no padchat manager')
+    }
+
+    if (roomInviteEvent) {
+      try {
+        const shareUrl = roomInviteEvent.url
+  
+        const response = await this.padchatManager.WXGetRequestToken(this.selfId(), shareUrl)
+        console.log(response)
+        
+        const roomInvitation: RoomInvitation = {
+          roomName: roomInviteEvent.roomName,
+          fromUser: rawPayload.from_user,
+          timestamp: rawPayload.timestamp,
+          accept: async () => {
+            try {
+              const res = await require('request-promise')({
+                method: 'POST',
+                uri: response.full_url
+              })
+              console.log(res)
+              return true
+            } catch (e) {
+              return false
+            }
+            
+
+            // return axios.post(response.full_url, {}).then(res => {
+            //   const { data } = res
+            //   if (data.indexOf('你未开通微信支付') !== -1) {
+            //     throw Error('The user need to enable wechaty pay(微信支付) to join the room, this is requested by Wechat.')
+            //   } else {
+            //     return true;
+            //   }
+            // })
+          }
+        }
+        this.emit('room-invite', roomInvitation)
+      } catch (e) {
+        console.error(e)
+      }
     }
   }
 
