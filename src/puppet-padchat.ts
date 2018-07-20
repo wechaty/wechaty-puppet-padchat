@@ -348,21 +348,25 @@ export class PuppetPadchat extends Puppet {
                 method: 'POST',
                 uri: response.full_url
               })
+              
+              let succeed = false
+              let message = ''
               console.log(res)
-              return true
+              if (res.indexOf('你无法查看被转发过的邀请') !== -1) {
+                message = 'Accept invitation failed, this is a forwarded invitation, can not be accepted'
+              } else if (res.indexOf('你未开通微信支') !== -1) {
+                message = 'The user need to enable wechaty pay(微信支付) to join the room, this is requested by Wechat.'
+              } else {
+                succeed = true
+                message = 'Accept Invitation succeed'
+              }
+              return { succeed, message }
             } catch (e) {
-              return false
+              return {
+                succeed: false,
+                message: 'Failed with exception: ' + e,
+              }
             }
-            
-
-            // return axios.post(response.full_url, {}).then(res => {
-            //   const { data } = res
-            //   if (data.indexOf('你未开通微信支付') !== -1) {
-            //     throw Error('The user need to enable wechaty pay(微信支付) to join the room, this is requested by Wechat.')
-            //   } else {
-            //     return true;
-            //   }
-            // })
           }
         }
         this.emit('room-invite', roomInvitation)
