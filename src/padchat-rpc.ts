@@ -29,10 +29,10 @@ import {
   PadchatPayload,
   PadchatPayloadType,
 
+  PadchatRequestTokenPayload,
   PadchatRoomMemberListPayload,
   PadchatRoomMemberPayload,
   PadchatRoomPayload,
-  PadchatRequestTokenPayload,
 }                             from './padchat-schemas'
 
 import {

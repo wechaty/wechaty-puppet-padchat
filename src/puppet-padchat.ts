@@ -24,8 +24,6 @@ import LRU      from 'lru-cache'
 
 import { FileBox }    from 'file-box'
 
-import axios from 'axios'
-
 import {
   ContactGender,
 
@@ -42,9 +40,9 @@ import {
 
   PuppetOptions,
   Receiver,
+  RoomInvitation,
   RoomMemberPayload,
   RoomPayload,
-  RoomInvitation,
 }                                 from 'wechaty-puppet'
 
 import {
@@ -63,12 +61,11 @@ import {
   isStrangerV2,
 
   messageRawPayloadParser,
+  roomInviteEventMessageParser,
   roomJoinEventMessageParser,
   roomLeaveEventMessageParser,
   roomRawPayloadParser,
-
   roomTopicEventMessageParser,
-  roomInviteEventMessageParser,
 }                                         from './pure-function-helpers'
 
 import {
@@ -310,6 +307,7 @@ export class PuppetPadchat extends Puppet {
         await Promise.all([
           this.onPadchatMessageRoomInvitation(rawPayload),
         ])
+        break
       case PadchatMessageType.Emoticon:
       case PadchatMessageType.Image:
       case PadchatMessageType.MicroVideo:
@@ -323,7 +321,8 @@ export class PuppetPadchat extends Puppet {
     }
   }
 
-  protected async onPadchatMessageRoomInvitation(rawPayload: PadchatMessagePayload): Promise<void> {
+  protected async onPadchatMessageRoomInvitation (rawPayload: PadchatMessagePayload): Promise<void> {
+    console.log(rawPayload)
     log.verbose('PuppetPadchat', 'onPadchatMessageRoomInvitation(%s)', rawPayload)
     const roomInviteEvent = roomInviteEventMessageParser(rawPayload)
 
@@ -334,40 +333,47 @@ export class PuppetPadchat extends Puppet {
     if (roomInviteEvent) {
       try {
         const shareUrl = roomInviteEvent.url
-  
+
         const response = await this.padchatManager.WXGetRequestToken(this.selfId(), shareUrl)
-        console.log(response)
-        
+
         const roomInvitation: RoomInvitation = {
-          roomName: roomInviteEvent.roomName,
-          fromUser: rawPayload.from_user,
-          timestamp: rawPayload.timestamp,
           accept: async () => {
             try {
               const res = await require('request-promise')({
                 method: 'POST',
                 uri: response.full_url
               })
-              
+
               let succeed = false
+              let resultCode = 'UNKNOWN'
               let message = ''
-              console.log(res)
-              if (res.indexOf('你无法查看被转发过的邀请') !== -1) {
+
+              if (res.indexOf('你无法查看被转发过的邀请') !== -1 || res.indexOf('Unable to view forwarded invitations')) {
+                resultCode = 'FORWARDED'
                 message = 'Accept invitation failed, this is a forwarded invitation, can not be accepted'
-              } else if (res.indexOf('你未开通微信支') !== -1) {
+              } else if (res.indexOf('你未开通微信支') !== -1 || res.indexOf('You haven\'t enabled WeChat Pay')) {
+                resultCode = 'WXPAY'
                 message = 'The user need to enable wechaty pay(微信支付) to join the room, this is requested by Wechat.'
+              } else if (res.indexOf('该邀请已过期') !== -1 || res.indexOf('Invitation expired')) {
+                resultCode = 'EXPIRED'
+                message = 'The invitation is expired, please requuest the user to send again'
               } else {
+                resultCode = 'DONE'
                 succeed = true
                 message = 'Accept Invitation succeed'
               }
-              return { succeed, message }
+              return { message, resultCode, succeed }
             } catch (e) {
               return {
-                succeed: false,
                 message: 'Failed with exception: ' + e,
+                resultCode: 'FAILED',
+                succeed: false,
               }
             }
-          }
+          },
+          fromUser: rawPayload.from_user,
+          roomName: roomInviteEvent.roomName,
+          timestamp: rawPayload.timestamp,
         }
         this.emit('room-invite', roomInvitation)
       } catch (e) {

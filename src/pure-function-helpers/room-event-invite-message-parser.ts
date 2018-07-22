@@ -7,7 +7,7 @@ import {
 import {
   PadchatMessagePayload
 }                         from '../padchat-schemas'
-import { isPayload } from './is-type';
+import { isPayload } from './is-type'
 
 /*
 {
@@ -80,11 +80,11 @@ export const roomInviteEventMessageParser = (
     return null
   }
 
-  const { content } = rawPayload;
+  const { content } = rawPayload
   const tryXmlText = content.replace(/^[^\n]+\n/, '')
   interface XmlSchema {
     msg: {
-      appmsg: 
+      appmsg:
       {
         title: string,
         des: string,
@@ -96,7 +96,7 @@ export const roomInviteEventMessageParser = (
 
   const jsonPayload = toJson(tryXmlText, { object: true }) as XmlSchema
   console.log(JSON.stringify(jsonPayload, null, 2))
-  
+
   let matchesForOtherInviteTitleEn = null as null | string[]
   let matchesForOtherInviteTitleZh = null as null | string[]
   let matchesForOtherInviteEn = null as null | string[]
