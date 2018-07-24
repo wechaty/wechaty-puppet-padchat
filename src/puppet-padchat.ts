@@ -17,7 +17,7 @@
  *
  */
 
-import path  from 'path'
+import path     from 'path'
 
 import flatten  from 'array-flatten'
 import LRU      from 'lru-cache'
@@ -31,7 +31,6 @@ import {
   ContactType,
 
   FriendshipPayload,
-  FriendshipPayloadReceive,
 
   MessagePayload,
   MessageType,
@@ -40,7 +39,7 @@ import {
 
   PuppetOptions,
   Receiver,
-  RoomInvitation,
+  RoomInvitationPayload,
   RoomMemberPayload,
   RoomPayload,
 }                                 from 'wechaty-puppet'
@@ -83,9 +82,11 @@ import {
 }                       from './padchat-manager'
 
 import {
+  FriendshipPayloadReceive,
   PadchatContactPayload,
   PadchatMessagePayload,
   PadchatMessageType,
+  PadchatRoomInvitationPayload,
   PadchatRoomMemberPayload,
   PadchatRoomPayload,
 }                           from './padchat-schemas'
@@ -212,7 +213,7 @@ export class PuppetPadchat extends Puppet {
       throw new Error('no padchat manager')
     }
     await super.login(selfId)
-    // await this.padchatManager.syncContactsAndRooms()
+    await this.padchatManager.syncContactsAndRooms()
   }
 
   public async startManager (manager: PadchatManager): Promise<void> {
@@ -322,7 +323,6 @@ export class PuppetPadchat extends Puppet {
   }
 
   protected async onPadchatMessageRoomInvitation (rawPayload: PadchatMessagePayload): Promise<void> {
-    console.log(rawPayload)
     log.verbose('PuppetPadchat', 'onPadchatMessageRoomInvitation(%s)', rawPayload)
     const roomInviteEvent = roomInviteEventMessageParser(rawPayload)
 
@@ -331,54 +331,9 @@ export class PuppetPadchat extends Puppet {
     }
 
     if (roomInviteEvent) {
-      try {
-        const shareUrl = roomInviteEvent.url
+      await this.padchatManager.saveRoomInvitationRawPayload(roomInviteEvent)
 
-        const response = await this.padchatManager.WXGetRequestToken(this.selfId(), shareUrl)
-
-        const roomInvitation: RoomInvitation = {
-          accept: async () => {
-            try {
-              const res = await require('request-promise')({
-                method: 'POST',
-                uri: response.full_url
-              })
-
-              let succeed = false
-              let resultCode = 'UNKNOWN'
-              let message = ''
-
-              if (res.indexOf('你无法查看被转发过的邀请') !== -1 || res.indexOf('Unable to view forwarded invitations')) {
-                resultCode = 'FORWARDED'
-                message = 'Accept invitation failed, this is a forwarded invitation, can not be accepted'
-              } else if (res.indexOf('你未开通微信支') !== -1 || res.indexOf('You haven\'t enabled WeChat Pay')) {
-                resultCode = 'WXPAY'
-                message = 'The user need to enable wechaty pay(微信支付) to join the room, this is requested by Wechat.'
-              } else if (res.indexOf('该邀请已过期') !== -1 || res.indexOf('Invitation expired')) {
-                resultCode = 'EXPIRED'
-                message = 'The invitation is expired, please requuest the user to send again'
-              } else {
-                resultCode = 'DONE'
-                succeed = true
-                message = 'Accept Invitation succeed'
-              }
-              return { message, resultCode, succeed }
-            } catch (e) {
-              return {
-                message: 'Failed with exception: ' + e,
-                resultCode: 'FAILED',
-                succeed: false,
-              }
-            }
-          },
-          fromUser: rawPayload.from_user,
-          roomName: roomInviteEvent.roomName,
-          timestamp: rawPayload.timestamp,
-        }
-        this.emit('room-invite', roomInvitation)
-      } catch (e) {
-        console.error(e)
-      }
+      this.emit('room-invite', roomInviteEvent.msgId)
     }
   }
 
@@ -1305,6 +1260,56 @@ export class PuppetPadchat extends Puppet {
       await this.padchatManager.WXSetChatroomAnnouncement(roomId, text)
     } else {
       return this.padchatManager.WXGetChatroomAnnouncement(roomId)
+    }
+  }
+
+  public async roomInvitationRawPayload (roomInvitationId: string): Promise<PadchatRoomInvitationPayload> {
+    if (!this.padchatManager) {
+      throw new Error('no padchat manager')
+    }
+
+    return this.padchatManager.roomInvitationRawPayload(roomInvitationId)
+  }
+
+  public async roomInvitationRawPayloadParser (rawPayload: PadchatRoomInvitationPayload): Promise<RoomInvitationPayload> {
+    return {
+      id: rawPayload.id,
+      inviterId: rawPayload.fromUser,
+      roomMemberCount: 0,
+      roomMemberIdList: [],
+      roomTopic: rawPayload.roomName,
+      timestamp: rawPayload.timestamp
+    }
+  }
+
+  public async roomInvitationAccept (roomInvitationId: string): Promise<void> {
+
+    if (!this.padchatManager) {
+      throw new Error('no padcaht manager')
+    }
+
+    let res: string = ''
+    try {
+      const payload = await this.padchatManager.roomInvitationRawPayload(roomInvitationId)
+      const shareUrl = payload.url
+
+      const response = await this.padchatManager.WXGetRequestToken(this.selfId(), shareUrl)
+
+      res = await require('request-promise')({
+        method: 'POST',
+        simple: false,
+        uri: response.full_url,
+      })
+    } catch (e) {
+      throw new Error('UNKNOWN: Unexpected error happened when trying to accept invitation\n' + e)
+    }
+    console.log(res)
+    if (res.indexOf('你无法查看被转发过的邀请') !== -1 || res.indexOf('Unable to view forwarded invitations')) {
+      throw new Error('FORWARDED: Accept invitation failed, this is a forwarded invitation, can not be accepted')
+    } else if (res.indexOf('你未开通微信支') !== -1 || res.indexOf('You haven\'t enabled WeChat Pay')) {
+      throw new Error('WXPAY: The user need to enable wechaty pay(微信支付) to join the room, this is requested by Wechat.')
+    } else if (res.indexOf('该邀请已过期') !== -1 || res.indexOf('Invitation expired')) {
+      throw new Error('EXPIRED: The invitation is expired, please request the user to send again')
     }
   }
 

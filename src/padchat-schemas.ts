@@ -18,6 +18,7 @@
  */
 import {
   ContactGender,
+  FriendshipType,
 }                 from 'wechaty-puppet'
 
 // 1 when use WXSyncContact, 0 when use WXGetContact
@@ -438,6 +439,14 @@ export interface PadchatRoomMemberListPayload {
 //         sourcenickname: '' },
 //      brandlist: [ [Object] ] } }
 
+export interface PadchatRoomInvitationPayload {
+  id: string,
+  fromUser: string,
+  roomName: string,
+  timestamp: number,
+  url: string,
+}
+
 export interface PadchatFriendshipPayload {
   fromusername    : string,   // 'lizhuohuan'
   encryptusername : string,   // v1_xxx@stranger'
@@ -452,3 +461,36 @@ export interface PadchatRequestTokenPayload {
   share_url       : string,
   status          : number,
 }
+
+export interface PadchatRoomInviteEvent {
+  fromUser: string,
+  msgId: string,
+  roomName: string,
+  timestamp: number,
+  url: string,
+}
+
+export interface FriendshipPayloadBase {
+  id        : string,
+
+  contactId : string,
+  hello?    : string,
+}
+
+export type FriendshipPayloadConfirm = FriendshipPayloadBase & {
+  type      : FriendshipType.Confirm,
+}
+
+export type FriendshipPayloadReceive = FriendshipPayloadBase & {
+  stranger? : string,
+  ticket    : string,
+  type      : FriendshipType.Receive,
+}
+
+export type FriendshipPayloadVerify = FriendshipPayloadBase & {
+  type      : FriendshipType.Verify,
+}
+
+export type FriendshipPayload = FriendshipPayloadConfirm
+                                  | FriendshipPayloadReceive
+                                  | FriendshipPayloadVerify

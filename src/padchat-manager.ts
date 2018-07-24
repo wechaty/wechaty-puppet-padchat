@@ -14,6 +14,8 @@ import {
   PadchatContactPayload,
   PadchatContinue,
 
+  PadchatRoomInvitationPayload,
+  PadchatRoomInviteEvent,
   PadchatRoomMemberPayload,
   PadchatRoomPayload,
 }                             from './padchat-schemas'
@@ -70,6 +72,7 @@ export class PadchatManager extends PadchatRpc {
     [contactId: string]: PadchatRoomMemberPayload,
   }>
   private cacheRoomRawPayload?       : FlashStoreSync<string, PadchatRoomPayload>
+  private cacheRoomInvitationRawPayload? : FlashStoreSync<string, PadchatRoomInvitationPayload>
 
   private readonly state                  : StateSwitch
   private readonly delayQueueExecutor     : DelayQueueExector
@@ -106,6 +109,7 @@ export class PadchatManager extends PadchatRpc {
     if (   this.cacheContactRawPayload
         || this.cacheRoomMemberRawPayload
         || this.cacheRoomRawPayload
+        || this.cacheRoomInvitationRawPayload
     ) {
       throw new Error('cache exists')
     }
@@ -130,11 +134,13 @@ export class PadchatManager extends PadchatRpc {
     this.cacheContactRawPayload    = new FlashStoreSync(path.join(baseDir, 'contact-raw-payload'))
     this.cacheRoomMemberRawPayload = new FlashStoreSync(path.join(baseDir, 'room-member-raw-payload'))
     this.cacheRoomRawPayload       = new FlashStoreSync(path.join(baseDir, 'room-raw-payload'))
+    this.cacheRoomInvitationRawPayload = new FlashStoreSync(path.join(baseDir, 'room-invitation-raw-payload'))
 
     await Promise.all([
       this.cacheContactRawPayload.ready(),
       this.cacheRoomMemberRawPayload.ready(),
       this.cacheRoomRawPayload.ready(),
+      this.cacheRoomInvitationRawPayload.ready(),
     ])
 
     const roomMemberTotalNum = [...this.cacheRoomMemberRawPayload.values()].reduce(
@@ -158,6 +164,7 @@ export class PadchatManager extends PadchatRpc {
     if (   this.cacheContactRawPayload
         && this.cacheRoomMemberRawPayload
         && this.cacheRoomRawPayload
+        && this.cacheRoomInvitationRawPayload
     ) {
       log.silly('PuppetPadchatManager', 'releaseCache() closing caches ...')
 
@@ -165,11 +172,13 @@ export class PadchatManager extends PadchatRpc {
         this.cacheContactRawPayload.close(),
         this.cacheRoomMemberRawPayload.close(),
         this.cacheRoomRawPayload.close(),
+        this.cacheRoomInvitationRawPayload.close(),
       ])
 
       this.cacheContactRawPayload    = undefined
       this.cacheRoomMemberRawPayload = undefined
       this.cacheRoomRawPayload       = undefined
+      this.cacheRoomInvitationRawPayload = undefined
 
       log.silly('PuppetPadchatManager', 'releaseCache() cache closed.')
     } else {
@@ -985,6 +994,47 @@ export class PadchatManager extends PadchatRpc {
       throw new Error('no raw payload')
     }
     return rawPayload
+  }
+
+  public async roomInvitationRawPayload (roomInvitationId: string): Promise<PadchatRoomInvitationPayload> {
+    log.verbose('PuppetPadchatManager', 'roomInvitationRawPayload(%s)', roomInvitationId)
+    if (!this.cacheRoomInvitationRawPayload) {
+      throw new Error('no cache')
+    }
+
+    const payload = await this.cacheRoomInvitationRawPayload.get(roomInvitationId)
+
+    if (payload) {
+      return payload
+    } else {
+      throw new Error(`can not get invitation with invitation id: ${roomInvitationId}`)
+    }
+  }
+
+  public async roomInvitationRawPayloadDirty (roomInvitationId: string): Promise<void> {
+    log.verbose('PuppetPadchatManager', 'roomInvitationRawPayloadDirty(%s)', roomInvitationId)
+    if (!this.cacheRoomInvitationRawPayload) {
+      throw new Error('no cache')
+    }
+
+    await this.cacheRoomInvitationRawPayload.delete(roomInvitationId)
+  }
+
+  public async saveRoomInvitationRawPayload (roomInvitation: PadchatRoomInviteEvent): Promise<void> {
+    log.verbose('PuppetPadchatManager', 'saveRoomInvitationRawPayload(%s)', JSON.stringify(roomInvitation))
+    const { msgId, roomName, url, fromUser, timestamp } = roomInvitation
+
+    if (!this.cacheRoomInvitationRawPayload) {
+      throw new Error('no cache')
+    }
+
+    this.cacheRoomInvitationRawPayload.set(msgId, {
+      fromUser,
+      id: msgId,
+      roomName,
+      timestamp,
+      url,
+    })
   }
 
   public ding (data?: string): void {

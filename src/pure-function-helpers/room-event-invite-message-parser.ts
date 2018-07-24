@@ -1,11 +1,8 @@
 import { toJson } from 'xml2json'
 
 import {
-  PuppetRoomInviteEvent,
-}                         from 'wechaty-puppet'
-
-import {
-  PadchatMessagePayload
+  PadchatMessagePayload,
+  PadchatRoomInviteEvent,
 }                         from '../padchat-schemas'
 import { isPayload } from './is-type'
 
@@ -74,13 +71,13 @@ const ROOM_OTHER_INVITE_LIST_EN = [
 
 export const roomInviteEventMessageParser = (
   rawPayload: PadchatMessagePayload,
-): null | PuppetRoomInviteEvent => {
+): null | PadchatRoomInviteEvent => {
 
   if (!isPayload(rawPayload)) {
     return null
   }
 
-  const { content } = rawPayload
+  const { content, msg_id, timestamp, from_user } = rawPayload
   const tryXmlText = content.replace(/^[^\n]+\n/, '')
   interface XmlSchema {
     msg: {
@@ -90,7 +87,8 @@ export const roomInviteEventMessageParser = (
         des: string,
         url: string,
         thumburl: string,
-      }
+      },
+      fromusername: string
     }
   }
 
@@ -129,7 +127,10 @@ export const roomInviteEventMessageParser = (
   }
 
   return {
+    fromUser: from_user,
+    msgId: msg_id,
     roomName: matchInviteEvent![2],
-    url: jsonPayload.msg.appmsg.url
+    timestamp,
+    url: jsonPayload.msg.appmsg.url,
   }
 }

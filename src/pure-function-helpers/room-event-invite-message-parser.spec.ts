@@ -5,11 +5,8 @@
 import test  from 'blue-tape'
 
 import {
-  PuppetRoomInviteEvent,
-}                               from 'wechaty-puppet'
-
-import {
   PadchatMessagePayload,
+  PadchatRoomInviteEvent,
 }                                 from '../padchat-schemas'
 
 import { roomInviteEventMessageParser } from './room-event-invite-message-parser'
@@ -30,8 +27,11 @@ test('roomInviteEventMessageParser() ZH', async t => {
     uin: 3774860349,
   }
 
-  const EXPECTED_EVENT: PuppetRoomInviteEvent = {
+  const EXPECTED_EVENT: PadchatRoomInviteEvent = {
+    fromUser: 'lylezhuifeng',
+    msgId: '7724778097781555979',
     roomName: 'Wechaty Developers\' Home 2',
+    timestamp: 1532158619,
     url: 'http://support.weixin.qq.com/cgi-bin/mmsupport-bin/addchatroombyinvite?ticket=AVs3velIDxTkA0EOhKogxg%3D%3D',
   }
 
@@ -55,8 +55,11 @@ test('roomInviteEventMessageParser() EN', async t => {
     uin: 3774860349
   }
 
-  const EXPECTED_EVENT: PuppetRoomInviteEvent = {
+  const EXPECTED_EVENT: PadchatRoomInviteEvent = {
+    fromUser: 'lylezhuifeng',
+    msgId: '7969935287794034973',
     roomName: '💃🏻这个群特别炸💃🏻',
+    timestamp: 1532273578,
     url: 'http://support.weixin.qq.com/cgi-bin/mmsupport-bin/addchatroombyinvite?ticket=AV5L4pEpxU7L8XAEFRxuHw%3D%3D',
   }
 
