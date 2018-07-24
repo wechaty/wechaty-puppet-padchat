@@ -1,14 +1,14 @@
 import { toJson } from 'xml2json'
 
 import {
+  FriendshipType
+}                       from 'wechaty-puppet'
+
+import {
   FriendshipPayload,
   FriendshipPayloadConfirm,
   FriendshipPayloadReceive,
   FriendshipPayloadVerify,
-  FriendshipType,
-}                       from 'wechaty-puppet'
-
-import {
   PadchatFriendshipPayload,
   PadchatMessagePayload,
 }                                 from '../padchat-schemas'

@@ -17,6 +17,7 @@ npm install --production \
   @types/node \
   @types/normalize-package-data \
   @types/xml2json \
+  clone-class \
   brolog \
   file-box \
   fs-extra \
@@ -27,7 +28,7 @@ npm install --production \
   rx-queue \
   state-switch \
   typescript \
-  wechaty-puppet \
+  wechaty-puppet@next \
   watchdog \
   qr-image \
   xml2json \

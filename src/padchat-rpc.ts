@@ -29,6 +29,7 @@ import {
   PadchatPayload,
   PadchatPayloadType,
 
+  PadchatRequestTokenPayload,
   PadchatRoomMemberListPayload,
   PadchatRoomMemberPayload,
   PadchatRoomPayload,
@@ -1096,7 +1097,7 @@ export class PadchatRpc extends EventEmitter {
   // 公众号中获取url访问token, 给下面的函数使用[WXRequestUrl]
   // user			公众号用户名
   // url			访问的链接
-  public async WXGetRequestToken (id: string, url: string): Promise<any> {
+  public async WXGetRequestToken (id: string, url: string): Promise<PadchatRequestTokenPayload> {
     const result = await this.rpcCall('WXGetRequestToken', id, url)
     log.silly('PadchatRpc', 'WXGetRequestToken , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
