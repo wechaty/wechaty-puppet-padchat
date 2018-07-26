@@ -70,6 +70,8 @@ export enum PadchatContinue {
 export enum PadchatPayloadType {
   Logout = -1, // -1 when logout
   InvalidPadchatToken = -1111, // -1111 when the token pass to padchat server is invalid
+  OnlinePadchatToken = -1112, // -1112 when the token has already logged in to wechaty
+  ExpirePadchatToken = -1113, // -1113 when the token is expired
 }
 
 export interface PadchatPayload {
