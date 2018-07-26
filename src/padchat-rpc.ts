@@ -270,7 +270,7 @@ export class PadchatRpc extends EventEmitter {
       this.emit('heartbeat', e)
     })
 
-    this.debounceSubscription = this.debounceQueue.subscribe(e => {
+    this.debounceSubscription = this.debounceQueue.subscribe(async e => {
       /**
        * This block will be run when:
        *  the queue did not receive any message after a period.
@@ -279,14 +279,13 @@ export class PadchatRpc extends EventEmitter {
       if (!this.socket) {
         throw new Error('no socket')
       }
-      // expect the server will response a 'pong' message
-      this.socket.ping(`#${HEART_BEAT_COUNTER++} from debounceQueue`)
-
-      this.WXHeartBeat().catch(err => {
+      await this.WXHeartBeat().catch(err => {
         if (err) {
           log.error(err)
         }
       })
+      // expect the server will response a 'pong' message
+      this.socket.ping(`#${HEART_BEAT_COUNTER++} from debounceQueue`)
     })
 
   }
