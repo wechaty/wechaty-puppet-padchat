@@ -281,6 +281,12 @@ export class PadchatRpc extends EventEmitter {
       }
       // expect the server will response a 'pong' message
       this.socket.ping(`#${HEART_BEAT_COUNTER++} from debounceQueue`)
+
+      this.WXHeartBeat().catch(err => {
+        if (err) {
+          log.error(err)
+        }
+      })
     })
 
   }
