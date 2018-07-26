@@ -214,8 +214,8 @@ export class PuppetPadchat extends Puppet {
     }
     await super.login(selfId)
     await this.padchatManager.syncContactsAndRooms()
-    
-    this.emit('data-ready')
+
+    this.emit('ready')
   }
 
   public async startManager (manager: PadchatManager): Promise<void> {

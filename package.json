@@ -8,7 +8,7 @@
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
   "engines": {
-    "wechaty": ">=0.17.46"
+    "wechaty": ">=0.19.113"
   },
   "scripts": {
     "clean": "shx rm -fr dist/*",
@@ -69,8 +69,8 @@
     "tslint": "^5.10.0",
     "tslint-config-standard": "^7.1.0",
     "typescript": "^2.9.2",
-    "wechaty": "^0.19.107",
-    "wechaty-puppet": "^0.9.19"
+    "wechaty": "^0.19.113",
+    "wechaty-puppet": "^0.9.22"
   },
   "git": {
     "scripts": {
