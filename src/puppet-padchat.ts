@@ -823,22 +823,18 @@ export class PuppetPadchat extends Puppet {
     switch (payload.type) {
       case MessageType.Audio:
         result = await this.padchatManager.WXGetMsgVoice(rawText)
-        console.log(result)
         return FileBox.fromBase64(result.voice, `${attachmentName}.slk`)
 
       case MessageType.Emoticon:
         result = await this.padchatManager.WXGetMsgEmoticon(rawText)
-        console.log(result)
         return FileBox.fromBase64(result.image, `${attachmentName}.gif`)
 
       case MessageType.Image:
         result = await this.padchatManager.WXGetMsgImage(rawText)
-        console.log(result)
         return FileBox.fromBase64(result.image, `${attachmentName}.jpg`)
 
       case MessageType.Video:
         result = await this.padchatManager.WXGetMsgVideo(rawText)
-        console.log(result)
         return FileBox.fromBase64(result.video, `${attachmentName}.mp4`)
 
       case MessageType.Attachment:
@@ -1303,7 +1299,7 @@ export class PuppetPadchat extends Puppet {
     } catch (e) {
       throw new Error('UNKNOWN: Unexpected error happened when trying to accept invitation\n' + e)
     }
-    console.log(res)
+
     if (res.indexOf('你无法查看被转发过的邀请') !== -1 || res.indexOf('Unable to view forwarded invitations')) {
       throw new Error('FORWARDED: Accept invitation failed, this is a forwarded invitation, can not be accepted')
     } else if (res.indexOf('你未开通微信支') !== -1 || res.indexOf('You haven\'t enabled WeChat Pay')) {
