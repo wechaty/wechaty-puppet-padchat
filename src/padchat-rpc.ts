@@ -424,7 +424,22 @@ export class PadchatRpc extends EventEmitter {
                                 PadchatPayloadType[payload.type],
                                 payload.type,
                                 JSON.stringify(payload))
-      return
+      throw new Error(`
+
+
+===========================================================================================
+
+      The token is invalid, please use an valid token to access padchat
+      If you have question about this, please check out our wiki:
+      https://github.com/lijiarui/wechaty-puppet-padchat/wiki/Buy-Padchat-Token
+
+      您使用的Token是无效的，请您联系我们获取有效Token，详情请参考这个页面：
+      https://github.com/lijiarui/wechaty-puppet-padchat/wiki/%E8%B4%AD%E4%B9%B0token
+
+============================================================================================
+
+
+      `)
     }
 
     if (payload.type === PadchatPayloadType.OnlinePadchatToken) {
@@ -432,7 +447,48 @@ export class PadchatRpc extends EventEmitter {
                                 PadchatPayloadType[payload.type],
                                 payload.type,
                                 JSON.stringify(payload))
-      return
+      throw new Error(`
+
+
+===========================================================================================
+
+      The token you are using is logged in with another bot, please don't use the same
+      token to start multiple bots. If you have question about this, please check
+      out our wiki and contact us:
+      https://github.com/lijiarui/wechaty-puppet-padchat/wiki/Buy-Padchat-Token
+
+      您使用的Token已经登录了一个机器人，请不要使用同一个Token登录多个机器人，如果您对此有疑问，请
+      参考这个页面上的联系方式联系我们：
+      https://github.com/lijiarui/wechaty-puppet-padchat/wiki/%E8%B4%AD%E4%B9%B0token
+
+============================================================================================
+
+
+      `)
+    }
+
+    if (payload.type === PadchatPayloadType.ExpirePadchatToken) {
+      log.error('PadchatRpc', 'onSocket(payload.type=%s) token is expired, please renew the token, payload=%s(%s)',
+                                PadchatPayloadType[payload.type],
+                                payload.type,
+                                JSON.stringify(payload))
+      throw new Error(`
+
+
+===========================================================================================
+
+      The token you are using is expired, please contact us and renew this token
+      Here is our wiki, you can find the contact info here:
+      https://github.com/lijiarui/wechaty-puppet-padchat/wiki/Buy-Padchat-Token
+
+      您使用的Token已经过期了，如果您想继续使用wechaty-puppet-padchat，请续费您的Token
+      详情请参考以下这个页面
+      https://github.com/lijiarui/wechaty-puppet-padchat/wiki/%E8%B4%AD%E4%B9%B0token
+
+============================================================================================
+
+
+      `)
     }
 
     if (!payload.msgId && !payload.data) {
