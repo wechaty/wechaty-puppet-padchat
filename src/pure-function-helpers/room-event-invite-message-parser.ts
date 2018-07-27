@@ -92,8 +92,17 @@ export const roomInviteEventMessageParser = (
     }
   }
 
-  const jsonPayload = toJson(tryXmlText, { object: true }) as XmlSchema
-  console.log(JSON.stringify(jsonPayload, null, 2))
+  let jsonPayload: XmlSchema
+  try {
+    jsonPayload = toJson(tryXmlText, { object: true }) as XmlSchema
+  } catch (e) {
+    return null
+  }
+
+  // If no title or des, it is not a room invite event, skip further process
+  if (!jsonPayload.msg.appmsg.title || !jsonPayload.msg.appmsg.des) {
+    return null
+  }
 
   let matchesForOtherInviteTitleEn = null as null | string[]
   let matchesForOtherInviteTitleZh = null as null | string[]
