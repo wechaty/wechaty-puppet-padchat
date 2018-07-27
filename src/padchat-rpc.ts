@@ -67,6 +67,7 @@ import {
 import { log }          from './config'
 
 let HEART_BEAT_COUNTER = 0
+const CON_TIME_OUT = 10000
 
 export class PadchatRpc extends EventEmitter {
   private socket?          : WebSocket
@@ -279,11 +280,22 @@ export class PadchatRpc extends EventEmitter {
       if (!this.socket) {
         throw new Error('no socket')
       }
-      await this.WXHeartBeat().catch(err => {
-        if (err) {
-          log.error(err)
+      await Promise.race([
+        this.WXSyncMessage(),
+        new Promise((resolve) => {
+          const id = setTimeout(() => {
+            clearTimeout(id)
+            resolve({ timeout: true })
+          }, CON_TIME_OUT)
+        })
+      ]).then(res => {
+        if (res.timeout) {
+          this.reset('Sync Message Timed out in ' + CON_TIME_OUT + 'ms. Possible disconnected from Wechat.')
         }
+      }).catch(err => {
+        this.reset(err.message)
       })
+
       // expect the server will response a 'pong' message
       this.socket.ping(`#${HEART_BEAT_COUNTER++} from debounceQueue`)
     })
@@ -1007,10 +1019,10 @@ export class PadchatRpc extends EventEmitter {
   public async WXSyncMessage (): Promise<any> {
     const result = await this.rpcCall('WXSyncMessage')
     log.silly('PadchatRpc', 'WXSyncMessage result: %s', JSON.stringify(result))
-    if (!result || result.status !== 0) {
+    if (!result || !result[0] || (result[0].status !== 1 && result[0].status !== -1)) {
       throw Error('WXSyncMessage error! canot get result from websocket server')
     }
-    return result
+    return result[0]
   }
 
   // This function is used for add new friends by id
