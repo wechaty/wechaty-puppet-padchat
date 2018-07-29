@@ -1275,7 +1275,7 @@ export class PadchatRpc extends EventEmitter {
   // msg			收到的整个视频消息
   public async WXGetMsgVoice (msg: string): Promise<any> {
     const result = await this.rpcCall('WXGetMsgVoice', msg)
-    log.silly('PadchatRpc', 'WXGetMsgVoice , stranger,result: %s', JSON.stringify(result))
+    log.silly('PadchatRpc', 'WXGetMsgVoice ,result: %s', JSON.stringify(result).substr(0, 100))
     if (!result || result.status !== 0) {
       throw Error('WXGetMsgVoice , stranger,error! canot get result from websocket server')
     }
@@ -1552,7 +1552,7 @@ export class PadchatRpc extends EventEmitter {
   // voice_size	语音大小 (应该不需要)
   // voice_time	语音时间(毫秒，最大60 * 1000)
   public async WXSendVoice (user: string, data: string, time: number): Promise<any> {
-    const result = await this.rpcCall('WXSendVoice', user, data, String(time))
+    const result = await this.rpcCall('WXSendVoice', user, data, time)
     log.silly('PadchatRpc', 'WXSendVoice , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
       throw Error('WXSendVoice , stranger,error! canot get result from websocket server')
