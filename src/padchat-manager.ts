@@ -26,6 +26,9 @@ import {
 }                             from './padchat-rpc.type'
 
 import {
+  CONNECTED,
+  CONNECTING,
+  DISCONNECTED,
   PadchatRpc,
 }                 from './padchat-rpc'
 
@@ -65,8 +68,6 @@ export class PadchatManager extends PadchatRpc {
   private loginScanStatus? : number
   private loginScanTimer?  : NodeJS.Timer
 
-  private userId?: string
-
   private cacheContactRawPayload?    : FlashStoreSync<string, PadchatContactPayload>
   private cacheRoomMemberRawPayload? : FlashStoreSync<string, {
     [contactId: string]: PadchatRoomMemberPayload,
@@ -78,7 +79,9 @@ export class PadchatManager extends PadchatRpc {
   private readonly delayQueueExecutor     : DelayQueueExector
   private delayQueueExecutorSubscription? : Subscription
 
-  private syncContactAndRoomTimer?: NodeJS.Timer
+  private roomNeedsToBeSync : number
+
+  private contactListSynced : boolean
 
   constructor (
     public options: ManagerOptions,
@@ -98,6 +101,8 @@ export class PadchatManager extends PadchatRpc {
      */
     this.delayQueueExecutor = new DelayQueueExector(1000 * 15)
 
+    this.contactListSynced = false
+    this.roomNeedsToBeSync = 0
   }
 
   protected async initCache (
@@ -217,6 +222,11 @@ export class PadchatManager extends PadchatRpc {
     } else {
       this.delayQueueExecutorSubscription = this.delayQueueExecutor.subscribe(unit => {
         log.verbose('PuppetPadchatManager', 'startQueues() delayQueueExecutor.subscribe(%s) executed', unit.name)
+        if (this.roomNeedsToBeSync === 0 && this.contactListSynced) {
+          this.emit('ready')
+        } else {
+          log.verbose('PuppetPadchatManager', 'startQueues() delayQueueExecutor.subscribe(%s) %d rooms need to be synced', unit.name, this.roomNeedsToBeSync)
+        }
       })
     }
 
@@ -235,15 +245,38 @@ export class PadchatManager extends PadchatRpc {
     this.state.on(true)
   }
 
+  public async reconnect (): Promise<void> {
+    log.verbose('PuppetPadchat', 'reconnect(), retry attempt left: %d', this.connectionStatus.reconnectLeft)
+    this.updateConnectionStatus(CONNECTING)
+    try {
+      await super.reconnect()
+      await this.tryLoad62Data()
+      await this.tryAutoLogin(this.memorySlot)
+
+      this.memorySlot = await this.refreshMemorySlotData(
+        this.memorySlot,
+        this.userId!,
+      )
+      await this.options.memory.set(MEMORY_SLOT_NAME, this.memorySlot)
+      await this.options.memory.save()
+      this.updateConnectionStatus(CONNECTED)
+    } catch (e) {
+      if (this.connectionStatus.reconnectLeft === 0) {
+        this.updateConnectionStatus(DISCONNECTED)
+        throw new Error('Can not connect to wechaty-puppet-padchat server')
+      } else {
+        log.verbose('PuppetPadchat', 'reconnect(), failed to reconnect, retrying in %d seconds', this.connectionStatus.interval / 1000)
+        this.cleanConnection()
+        await new Promise(r => setTimeout(r, this.connectionStatus.interval))
+        return this.reconnect()
+      }
+    }
+  }
+
   public async stop (): Promise<void> {
     log.verbose('PuppetPadchatManager', `stop()`)
 
     this.state.off('pending')
-
-    if (this.syncContactAndRoomTimer) {
-      clearTimeout(this.syncContactAndRoomTimer)
-      this.syncContactAndRoomTimer = undefined
-    }
 
     if (this.delayQueueExecutorSubscription) {
       this.delayQueueExecutorSubscription.unsubscribe()
@@ -267,7 +300,8 @@ export class PadchatManager extends PadchatRpc {
     log.verbose('PuppetPadchatManager', `login(%s)`, userId)
 
     if (this.userId) {
-      throw new Error('userId exist')
+      log.info('PuppetPadchatManager', 'reconnected(%s)', userId)
+      return
     }
     this.userId = userId
 
@@ -296,6 +330,7 @@ export class PadchatManager extends PadchatRpc {
       await this.contactRawPayload(this.userId)
     }
 
+    this.updateConnectionStatus(CONNECTED)
     this.emit('login', this.userId)
   }
 
@@ -829,7 +864,7 @@ export class PadchatManager extends PadchatRpc {
     while (cont && this.state.on() && this.userId) {
       log.silly('PuppetPadchatManager', `syncContactsAndRooms() while() syncing WXSyncContact ...`)
 
-      await new Promise(r => setTimeout(r, 10 * 1000))
+      await new Promise(r => setTimeout(r, 3 * 1000))
       const syncContactList = await this.WXSyncContact()
 
       if (!Array.isArray(syncContactList) || syncContactList.length <= 0) {
@@ -855,8 +890,9 @@ export class PadchatManager extends PadchatRpc {
       for (const syncContact of syncContactList) {
 
         if (syncContact.continue !== PadchatContinue.Go) {
-          log.verbose('PuppetPadchatManager', 'syncContactsAndRooms() sync contact done!')
+          log.verbose('PuppetPadchatManager', 'syncContactsAndRooms() sync contact done! But rooms might be still syncing!')
           cont = false
+          this.contactListSynced = true
           break
         }
 
@@ -878,8 +914,12 @@ export class PadchatManager extends PadchatRpc {
              * Use delay queue executor to sync room:
              *  add syncRoomMember task to the queue
              */
-            await this.delayQueueExecutor.execute(
-              () => this.syncRoomMember(roomId),
+            this.roomNeedsToBeSync++
+            this.delayQueueExecutor.execute(
+              () => {
+                this.roomNeedsToBeSync--
+                return this.syncRoomMember(roomId)
+              },
               `syncRoomMember(${roomId})`,
             )
             log.silly('PuppetPadchatManager', 'syncContactsAndRooms() added sync room(%s) task to delayQueueExecutor', roomId)

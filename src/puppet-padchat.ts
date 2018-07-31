@@ -214,8 +214,6 @@ export class PuppetPadchat extends Puppet {
     }
     await super.login(selfId)
     await this.padchatManager.syncContactsAndRooms()
-
-    this.emit('ready')
   }
 
   public async startManager (manager: PadchatManager): Promise<void> {
@@ -231,12 +229,19 @@ export class PuppetPadchat extends Puppet {
     manager.on('login',   (userId: string)                                => this.login(userId))
     manager.on('message', (rawPayload: PadchatMessagePayload)             => this.onPadchatMessage(rawPayload))
     manager.on('logout',  ()                                              => this.logout())
-    manager.on('dong',  (data)                                            => this.emit('dong', data))
+    manager.on('dong',    (data)                                          => this.emit('dong', data))
+    manager.on('ready',   ()                                              => this.emit('ready'))
 
     manager.on('reset', async reason => {
       log.warn('PuppetPadchat', 'startManager() manager.on(reset) for %s. Restarting PuppetPadchat ... ', reason)
       // Puppet Base class will deal with this RESET event for you.
       await this.emit('reset', reason)
+    })
+    manager.on('reconnect', async msg => {
+      log.verbose('PuppetPadchat', 'startManager() manager.on(reconnect) for %s', msg)
+      // Slightly delay the reconnect after disconnected from the server
+      await new Promise(r => setTimeout(r, 500))
+      await manager.reconnect()
     })
 
     await manager.start()

@@ -20,6 +20,18 @@ const WECHATY_PUPPET_PADCHAT_ENDPOINT_ENV_VAR = 'WECHATY_PUPPET_PADCHAT_ENDPOINT
 export const WECHATY_PUPPET_PADCHAT_ENDPOINT = process.env[WECHATY_PUPPET_PADCHAT_ENDPOINT_ENV_VAR]  || 'ws://54.223.73.175:8788/wx'
 export const SELF_QRCODE_MAX_RETRY = 5
 
+export const CON_TIME_OUT = 10000
+export const RE_CON_RETRY = 6
+export const RE_CON_INTERVAL = 5000
+export const POST_LOGIN_API_CALL_INTERVAL = 100
+export const MAX_HEARTBEAT_TIMEOUT = 3
+
+const logLevel = process.env.WECHATY_LOG
+if (logLevel) {
+  log.level(logLevel.toLowerCase() as any)
+  log.silly('Config', 'WECHATY_LOG set level to %s', logLevel)
+}
+
 function padchatToken () {
   const token = process.env.WECHATY_PUPPET_PADCHAT_TOKEN as string
   if (!token) {
