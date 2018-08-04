@@ -13,6 +13,7 @@ cd $TMPDIR
 npm init -y
 npm install --production \
   *-*.*.*.tgz \
+  @babel/runtime@7.0.0-beta.39 \
   @types/lru-cache \
   @types/node \
   @types/normalize-package-data \
