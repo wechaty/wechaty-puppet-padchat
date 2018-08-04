@@ -263,7 +263,7 @@ export class PadchatManager extends PadchatRpc {
     } catch (e) {
       if (this.connectionStatus.reconnectLeft === 0) {
         this.updateConnectionStatus(DISCONNECTED)
-        throw new Error('Can not connect to wechaty-puppet-padchat server')
+        this.emit('error', new Error('Can not connect to wechaty-puppet-padchat server'))
       } else {
         log.verbose('PuppetPadchat', 'reconnect(), failed to reconnect, retrying in %d seconds', this.connectionStatus.interval / 1000)
         this.cleanConnection()

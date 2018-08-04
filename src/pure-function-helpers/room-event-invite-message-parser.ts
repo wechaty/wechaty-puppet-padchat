@@ -100,7 +100,10 @@ export const roomInviteEventMessageParser = (
   }
 
   // If no title or des, it is not a room invite event, skip further process
-  if (!jsonPayload.msg.appmsg.title || !jsonPayload.msg.appmsg.des) {
+  // tslint:disable-next-line:strict-type-predicates
+  if (!jsonPayload.msg.appmsg.title || typeof jsonPayload.msg.appmsg.title !== 'string'
+  // tslint:disable-next-line:strict-type-predicates
+    || !jsonPayload.msg.appmsg.des || typeof jsonPayload.msg.appmsg.des !== 'string') {
     return null
   }
 

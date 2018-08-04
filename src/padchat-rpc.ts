@@ -180,23 +180,26 @@ export class PadchatRpc extends EventEmitter {
   }
 
   private executeBufferedApiCalls () {
-    if (this.pendingApiCalls.length > 0) {
-      const apiCallsInOrder = this.pendingApiCalls.sort((a, b) => {
-        return a.timestamp - b.timestamp
-      })
-      apiCallsInOrder.map((api, index) => {
-        const id = setTimeout(() => {
-          clearTimeout(id)
-          this.jsonRpc.request(api.apiName, api.params)
-                      .then((res: any) => {
-                        api.resolve(res)
-                      }).catch((reason: any) => {
-                        api.reject(reason)
-                      })
-        }, POST_LOGIN_API_CALL_INTERVAL * index)
-      })
-      this.pendingApiCalls = []
-    }
+    const timer = setTimeout(() => {
+      clearTimeout(timer)
+      if (this.pendingApiCalls.length > 0) {
+        const apiCallsInOrder = this.pendingApiCalls.sort((a, b) => {
+          return a.timestamp - b.timestamp
+        })
+        apiCallsInOrder.map((api, index) => {
+          const id = setTimeout(() => {
+            clearTimeout(id)
+            this.jsonRpc.request(api.apiName, api.params)
+                        .then((res: any) => {
+                          api.resolve(res)
+                        }).catch((reason: any) => {
+                          api.reject(reason)
+                        })
+          }, POST_LOGIN_API_CALL_INTERVAL * index)
+        })
+        this.pendingApiCalls = []
+      }
+    }, 1000)
   }
 
   protected async initJsonRpc (): Promise<void> {
@@ -280,8 +283,10 @@ export class PadchatRpc extends EventEmitter {
         log.warn('PadchatRpc', 'initWebSocket() ws.on(message) throttleQueue or debounceQueue not exist')
         return
       }
-      this.throttleQueue.next('ws.on(message)')
-      this.debounceQueue.next('ws.on(message)')
+      if (this.connectionStatus.status === CONNECTED) {
+        this.debounceQueue.next('ws.on(message)')
+        this.throttleQueue.next('ws.on(message)')
+      }
     })
 
     /**
@@ -308,7 +313,9 @@ export class PadchatRpc extends EventEmitter {
         log.warn('PadchatRpc', 'initWebSocket() ws.on(close) reconnectThrottleQueue not exist')
         return
       }
-      this.reconnectThrottleQueue.next('ws.on(close, ' + code + ')')
+      if (this.connectionStatus.status === CONNECTED) {
+        this.reconnectThrottleQueue.next('ws.on(close, ' + code + ')')
+      }
     })
 
     /**
@@ -320,8 +327,10 @@ export class PadchatRpc extends EventEmitter {
         log.warn('PadchatRpc', 'initWebSocket() ws.on(pong) throttleQueue or debounceQueue not exist')
         return
       }
-      this.throttleQueue.next('pong: ' + data.toString())
-      this.debounceQueue.next('pong: ' + data.toString())
+      if (this.connectionStatus.status === CONNECTED) {
+        this.throttleQueue.next('pong: ' + data.toString())
+        this.debounceQueue.next('pong: ' + data.toString())
+      }
     })
 
     /**
@@ -371,7 +380,7 @@ export class PadchatRpc extends EventEmitter {
       this.emit('heartbeat', e)
     })
 
-    this.debounceSubscription = this.debounceQueue.subscribe(async e => {
+    this.debounceSubscription = this.debounceQueue.subscribe(e => {
       /**
        * This block will be run when:
        *  the queue did not receive any message after a period.
@@ -379,39 +388,35 @@ export class PadchatRpc extends EventEmitter {
       if (this.connectionStatus.status !== CONNECTED) {
         return
       }
-      const { socket } = this
+      const { socket, reconnectThrottleQueue } = this
 
       log.silly('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(%s)', e)
       if (!socket) {
         throw new Error('no socket')
       }
-      if (!this.reconnectThrottleQueue) {
-        log.warn('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(%s) reconnectThrottleQueue not exist')
+      if (!reconnectThrottleQueue) {
+        log.warn('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(%s) reconnectThrottleQueue not exist', e)
         return
       }
-      try {
-        await Promise.race([
-          this.WXSyncMessage(),
-          new Promise((resolve, reject) => {
-            const id = setTimeout(() => {
-              clearTimeout(id)
-              reject('timeout')
-            }, CON_TIME_OUT)
-          })
-        ])
+
+      // tslint:disable-next-line:no-floating-promises
+      this.WXSyncMessage().then(() => {
         RPC_TIMEOUT_COUNTER = 0
-        // expect the server will response a 'pong' message
-        socket.ping(`#${HEART_BEAT_COUNTER++} from debounceQueue`)
-      } catch (reason) {
+      }).catch(reason => {
         if (reason === 'timeout') {
+          log.info('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(s%) WXSyncMessage timeout', e)
           RPC_TIMEOUT_COUNTER++
           if (RPC_TIMEOUT_COUNTER >= MAX_HEARTBEAT_TIMEOUT) {
-            this.reconnectThrottleQueue.next(`Sync Message Timed out in ${CON_TIME_OUT}ms for ${MAX_HEARTBEAT_TIMEOUT} times. Possible disconnected from Wechat. So trigger reconnect.`)
+            RPC_TIMEOUT_COUNTER = 0
+            reconnectThrottleQueue.next(`Sync Message Timed out in ${CON_TIME_OUT}ms for ${MAX_HEARTBEAT_TIMEOUT} times. Possible disconnected from Wechat. So trigger reconnect.`)
           }
         } else {
           log.verbose('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(%s) error happened: %s', e, reason)
         }
-      }
+      }).finally(() => {
+        // expect the server will response a 'pong' message
+        socket.ping(`#${HEART_BEAT_COUNTER++} from debounceQueue`)
+      })
     })
   }
 
@@ -582,7 +587,7 @@ export class PadchatRpc extends EventEmitter {
                                 payload.type,
                                 JSON.stringify(payload),
                   )
-      if (this.reconnectThrottleQueue) {
+      if (this.reconnectThrottleQueue && this.connectionStatus.status === CONNECTED) {
         this.reconnectThrottleQueue.next(payload.msg || 'onSocket(logout)')
       } else {
         log.warn('PadchatRpc', 'onSocket() logout logoutThrottleQueue not exist')
@@ -705,6 +710,7 @@ export class PadchatRpc extends EventEmitter {
 
       this.onSocketTencent(tencentPayloadList)
     }
+    RPC_TIMEOUT_COUNTER = 0
   }
 
   protected onSocketPadchat (padchatPayload: PadchatPayload): void {
@@ -838,6 +844,7 @@ export class PadchatRpc extends EventEmitter {
    */
   public async WXLoadWxDat (wxData: string): Promise<WXLoadWxDatType> {
     const result = await this.rpcCall('WXLoadWxDat', wxData)
+    log.silly('PadchatRpc', 'WXLoadWxDat result: %s', JSON.stringify(result).substr(0, 100))
     if (!result || result.status !== 0) {
       throw Error('WXLoadWxDat error! canot get result from websocket server')
     }
@@ -1174,12 +1181,20 @@ export class PadchatRpc extends EventEmitter {
 
   // Sync Chat Message
   public async WXSyncMessage (): Promise<any> {
-    const result = await this.rpcCall('WXSyncMessage')
-    log.silly('PadchatRpc', 'WXSyncMessage result: %s', JSON.stringify(result))
-    if (!result || !result[0] || (result[0].status !== 1 && result[0].status !== -1)) {
-      return []
-    }
-    return result[0]
+    return new Promise((resolve, reject) => {
+      this.rpcCall('WXSyncMessage').then((result) => {
+        log.silly('PadchatRpc', 'WXSyncMessage result: %s', JSON.stringify(result))
+        if (!result || !result[0] || (result[0].status !== 1 && result[0].status !== -1)) {
+          return []
+        }
+        resolve(result[0])
+      }).catch(reject)
+
+      const timer = setTimeout(() => {
+        clearTimeout(timer)
+        reject('timeout')
+      }, CON_TIME_OUT)
+    })
   }
 
   // This function is used for add new friends by id
