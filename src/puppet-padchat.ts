@@ -650,7 +650,7 @@ export class PuppetPadchat extends Puppet {
     log.verbose('PuppetPadchat', 'contactQrcode(%s)', contactId)
 
     if (contactId !== this.selfId()) {
-      throw new Error('can not set avatar for others')
+      throw new Error('can not get qrcode for others')
     }
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
@@ -1473,6 +1473,22 @@ export class PuppetPadchat extends Puppet {
     if (this.padchatManager) {
       // TODO: this.padchatManager.unref()
     }
+  }
+
+  public async contactSelfName (newName: string) : Promise<boolean> {
+    if (!this.padchatManager) {
+      throw new Error('no padchat manager')
+    }
+
+    return this.padchatManager.updateSelfName(newName)
+  }
+
+  public async contactSelfSignature (signature: string) : Promise<boolean> {
+    if (!this.padchatManager) {
+      throw new Error('no padchat manager')
+    }
+
+    return this.padchatManager.updateSelfSignature(signature)
   }
 }
 
