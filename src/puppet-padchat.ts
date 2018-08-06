@@ -646,12 +646,11 @@ export class PuppetPadchat extends Puppet {
     return fileBox
   }
 
-  public async contactQrcode (contactId: string): Promise<string> {
-    log.verbose('PuppetPadchat', 'contactQrcode(%s)', contactId)
+  public async contactSelfQrcode (): Promise<string> {
+    log.verbose('PuppetPadchat', 'contactSelfQrcode()')
 
-    if (contactId !== this.selfId()) {
-      throw new Error('can not get qrcode for others')
-    }
+    const contactId = this.selfId()
+
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
     }
@@ -1475,20 +1474,20 @@ export class PuppetPadchat extends Puppet {
     }
   }
 
-  public async contactSelfName (newName: string) : Promise<boolean> {
+  public async contactSelfName (newName: string) : Promise<void> {
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
     }
 
-    return this.padchatManager.updateSelfName(newName)
+    await this.padchatManager.updateSelfName(newName)
   }
 
-  public async contactSelfSignature (signature: string) : Promise<boolean> {
+  public async contactSelfSignature (signature: string) : Promise<void> {
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
     }
 
-    return this.padchatManager.updateSelfSignature(signature)
+    await this.padchatManager.updateSelfSignature(signature)
   }
 }
 
