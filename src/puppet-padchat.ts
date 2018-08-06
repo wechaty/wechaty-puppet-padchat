@@ -646,12 +646,11 @@ export class PuppetPadchat extends Puppet {
     return fileBox
   }
 
-  public async contactQrcode (contactId: string): Promise<string> {
-    log.verbose('PuppetPadchat', 'contactQrcode(%s)', contactId)
+  public async contactSelfQrcode (): Promise<string> {
+    log.verbose('PuppetPadchat', 'contactSelfQrcode()')
 
-    if (contactId !== this.selfId()) {
-      throw new Error('can not get qrcode for others')
-    }
+    const contactId = this.selfId()
+
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
     }
