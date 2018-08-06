@@ -1084,36 +1084,26 @@ export class PadchatManager extends PadchatRpc {
     return
   }
 
-  public async updateSelfName (newName: string): Promise<boolean> {
+  public async updateSelfName (newName: string): Promise<void> {
     if (!this.userId) {
       throw Error('Can not update user self name since no user id exist. Probably user not logged in yet')
     }
     const self = await this.contactRawPayload(this.userId)
     const { signature, sex, country, provincia, city } = self
 
-    try {
-      await this.WXSetUserInfo(newName, signature, sex.toString(), country, provincia, city)
-      this.contactRawPayloadDirty(this.userId)
-      return true
-    } catch (e) {
-      return false
-    }
+    await this.WXSetUserInfo(newName, signature, sex.toString(), country, provincia, city)
+    this.contactRawPayloadDirty(this.userId)
   }
 
-  public async updateSelfSignature (signature: string): Promise<boolean> {
+  public async updateSelfSignature (signature: string): Promise<void> {
     if (!this.userId) {
       throw Error('Can not update user self signature since no user id exist. Probably user not logged in yet')
     }
     const self = await this.contactRawPayload(this.userId)
     const { nick_name, sex, country, provincia, city } = self
 
-    try {
-      await this.WXSetUserInfo(nick_name, signature, sex.toString(), country, provincia, city)
-      this.contactRawPayloadDirty(this.userId)
-      return true
-    } catch (e) {
-      return false
-    }
+    await this.WXSetUserInfo(nick_name, signature, sex.toString(), country, provincia, city)
+    this.contactRawPayloadDirty(this.userId)
   }
 }
 
