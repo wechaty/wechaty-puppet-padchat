@@ -17,7 +17,7 @@ npm install --production \
   @types/lru-cache \
   @types/node \
   @types/normalize-package-data \
-  @types/xml2json \
+  @types/xml2js \
   clone-class \
   brolog \
   file-box \
@@ -32,7 +32,7 @@ npm install --production \
   wechaty-puppet@next \
   watchdog \
   qr-image \
-  xml2json \
+  xml2js \
 
 ./node_modules/.bin/tsc \
   --esModuleInterop \

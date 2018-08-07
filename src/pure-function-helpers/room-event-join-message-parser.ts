@@ -1,4 +1,4 @@
-import { toJson } from 'xml2json'
+import { xml2json } from './xml2json'
 
 import {
   PuppetRoomJoinEvent,
@@ -80,9 +80,9 @@ const ROOM_JOIN_OTHER_INVITE_OTHER_QRCODE_REGEX_LIST_EN = [
   /^"(.+)" joined the group chat via the QR Code shared by "(.+)"/,
 ]
 
-export function roomJoinEventMessageParser (
+export async function roomJoinEventMessageParser (
   rawPayload: PadchatMessagePayload,
-): null | PuppetRoomJoinEvent {
+): Promise<null | PuppetRoomJoinEvent> {
 
   if (!isPayload(rawPayload)) {
     return null
@@ -124,7 +124,7 @@ export function roomJoinEventMessageParser (
         },
       }
     }
-    const jsonPayload = toJson(tryXmlText, { object: true }) as XmlSchema
+    const jsonPayload: XmlSchema = await xml2json(tryXmlText) // toJson(tryXmlText, { object: true }) as XmlSchema
     try {
       if (jsonPayload.sysmsg.type === 'delchatroommember') {
         content = jsonPayload.sysmsg.delchatroommember!.plain

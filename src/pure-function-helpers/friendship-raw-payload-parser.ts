@@ -1,4 +1,4 @@
-import { toJson } from 'xml2json'
+import { xml2json } from './xml2json'
 
 import {
   FriendshipType
@@ -19,9 +19,9 @@ import {
   friendshipVerifyEventMessageParser,
 }                                         from './friendship-event-message-parser'
 
-export function friendshipRawPayloadParser (
+export async function friendshipRawPayloadParser (
   rawPayload: PadchatMessagePayload,
-) : FriendshipPayload {
+) : Promise<FriendshipPayload> {
 
   if (friendshipConfirmEventMessageParser(rawPayload)) {
     /**
@@ -46,9 +46,9 @@ export function friendshipRawPayloadParser (
   }
 }
 
-function friendshipRawPayloadParserConfirm (
+async function friendshipRawPayloadParserConfirm (
   rawPayload: PadchatMessagePayload,
-): FriendshipPayload {
+): Promise<FriendshipPayload> {
   const payload: FriendshipPayloadConfirm = {
     contactId : rawPayload.from_user,
     id        : rawPayload.msg_id,
@@ -68,7 +68,7 @@ function friendshipRawPayloadParserVerify (
   return payload
 }
 
-function friendshipRawPayloadParserReceive (
+async function friendshipRawPayloadParserReceive (
   rawPayload: PadchatMessagePayload,
 ) {
   const tryXmlText = rawPayload.content
@@ -77,7 +77,7 @@ function friendshipRawPayloadParserReceive (
     msg?: PadchatFriendshipPayload,
   }
 
-  const jsonPayload: XmlSchema = toJson(tryXmlText, { object: true })
+  const jsonPayload: XmlSchema = await xml2json(tryXmlText) // , { object: true })
 
   if (!jsonPayload.msg) {
     throw new Error('no msg found')
