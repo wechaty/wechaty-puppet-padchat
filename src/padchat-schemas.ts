@@ -19,6 +19,7 @@
 import {
   ContactGender,
   FriendshipType,
+  AppType
 }                 from 'wechaty-puppet'
 
 // 1 when use WXSyncContact, 0 when use WXGetContact
@@ -447,6 +448,14 @@ export interface PadchatRoomInvitationPayload {
   roomName: string,
   timestamp: number,
   url: string,
+}
+
+export interface PadchatAppMessagePayload {
+  des?: string,
+  thumburl?: string,
+  title: string,
+  url: string,
+  type: AppType
 }
 
 export interface PadchatFriendshipPayload {

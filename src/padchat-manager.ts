@@ -742,7 +742,7 @@ export class PadchatManager extends PadchatRpc {
     if (!this.cacheRoomRawPayload) {
       throw new Error('cache not inited' )
     }
-    const roomIdList = [...this.cacheRoomRawPayload.keys()]
+    const roomIdList = [...this.cacheRoomRawPayload.keys()].filter(id => !!id)
     log.verbose('PuppetPadchatManager', 'getRoomIdList()=%d', roomIdList.length)
     return roomIdList
   }

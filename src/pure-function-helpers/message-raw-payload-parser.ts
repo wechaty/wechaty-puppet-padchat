@@ -1,6 +1,7 @@
 import {
   MessagePayload,
   MessageType,
+  AppType,
 }                         from 'wechaty-puppet'
 
 import {
@@ -19,6 +20,7 @@ import {
 import {
   messageType,
 }                         from './message-type'
+import { appMessageParser } from '.';
 
 export function messageRawPayloadParser (
   rawPayload: PadchatMessagePayload,
@@ -183,6 +185,22 @@ export function messageRawPayloadParser (
     }
   } else {
     throw new Error('neither toId nor roomId')
+  }
+
+  if (type === MessageType.Attachment) {
+    const appPayload = appMessageParser(rawPayload)
+    if (appPayload) {
+      if (appPayload.type === AppType.Link) {
+        payload.type = MessageType.Link
+      }
+      payload.appPayload = {
+        title: appPayload.title,
+        des: appPayload.des,
+        url: appPayload.url,
+        thumburl: appPayload.thumburl,
+        appType: appPayload.type
+      }
+    }
   }
 
   return payload

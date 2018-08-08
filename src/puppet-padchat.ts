@@ -67,6 +67,7 @@ import {
   roomLeaveEventMessageParser,
   roomRawPayloadParser,
   roomTopicEventMessageParser,
+  appMessageParser,
 }                                         from './pure-function-helpers'
 
 import {
@@ -330,6 +331,14 @@ export class PuppetPadchat extends Puppet {
     }
   }
 
+  protected async onPadchatAppMessage (rawPayload: PadchatMessagePayload): Promise<void> {
+    log.info('PuppetPadchat', JSON.stringify(rawPayload, null, 2))
+
+    const appMsg = appMessageParser(rawPayload)
+    log.info('PuppetPadchat', JSON.stringify(appMsg, null, 2))
+    this.emit('message', rawPayload.msg_id)
+  }
+
   protected async onPadchatMessageRoomInvitation (rawPayload: PadchatMessagePayload): Promise<void> {
     log.verbose('PuppetPadchat', 'onPadchatMessageRoomInvitation(%s)', rawPayload)
     const roomInviteEvent = await roomInviteEventMessageParser(rawPayload)
@@ -342,6 +351,8 @@ export class PuppetPadchat extends Puppet {
       await this.padchatManager.saveRoomInvitationRawPayload(roomInviteEvent)
 
       this.emit('room-invite', roomInviteEvent.msgId)
+    } else {
+      this.emit('message', rawPayload.msg_id)
     }
   }
 
