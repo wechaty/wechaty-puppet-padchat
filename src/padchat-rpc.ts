@@ -403,8 +403,8 @@ export class PadchatRpc extends EventEmitter {
       this.WXSyncMessage().then(() => {
         RPC_TIMEOUT_COUNTER = 0
       }).catch(reason => {
-        if (reason === 'timeout') {
-          log.info('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(s%) WXSyncMessage timeout', e)
+        if (reason === 'timeout' || reason === 'parsed-data-not-array') {
+          log.info('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(s%) WXSyncMessage %s', e, reason)
           RPC_TIMEOUT_COUNTER++
           if (RPC_TIMEOUT_COUNTER >= MAX_HEARTBEAT_TIMEOUT) {
             RPC_TIMEOUT_COUNTER = 0
@@ -1185,9 +1185,16 @@ export class PadchatRpc extends EventEmitter {
       this.rpcCall('WXSyncMessage').then((result) => {
         log.silly('PadchatRpc', 'WXSyncMessage result: %s', JSON.stringify(result))
         if (!result || !result[0] || (result[0].status !== 1 && result[0].status !== -1)) {
-          return []
+          resolve()
+        } else {
+          const tencentPayloadList: PadchatMessagePayload[] = padchatDecode(result)
+          if (!Array.isArray(tencentPayloadList)) {
+            log.warn('PadchatRpc', 'WXSyncMessage() parsed data is not an array: %s', JSON.stringify(tencentPayloadList))
+            reject('parsed-data-not-array')
+          }
+          this.onSocketTencent(tencentPayloadList)
+          resolve()
         }
-        resolve(result[0])
       }).catch(reject)
 
       const timer = setTimeout(() => {
