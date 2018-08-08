@@ -400,15 +400,15 @@ export class PadchatRpc extends EventEmitter {
       }
 
       // tslint:disable-next-line:no-floating-promises
-      this.WXSyncMessage().then(() => {
+      this.WXHeartBeat().then(() => {
         RPC_TIMEOUT_COUNTER = 0
       }).catch(reason => {
         if (reason === 'timeout' || reason === 'parsed-data-not-array') {
-          log.info('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(s%) WXSyncMessage %s', e, reason)
+          log.info('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(s%) WXHeartBeat %s', e, reason)
           RPC_TIMEOUT_COUNTER++
           if (RPC_TIMEOUT_COUNTER >= MAX_HEARTBEAT_TIMEOUT) {
             RPC_TIMEOUT_COUNTER = 0
-            reconnectThrottleQueue.next(`Sync Message Timed out in ${CON_TIME_OUT}ms for ${MAX_HEARTBEAT_TIMEOUT} times. Possible disconnected from Wechat. So trigger reconnect.`)
+            reconnectThrottleQueue.next(`WXHeartBeat Timed out in ${CON_TIME_OUT}ms for ${MAX_HEARTBEAT_TIMEOUT} times. Possible disconnected from Wechat. So trigger reconnect.`)
           }
         } else {
           log.verbose('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(%s) error happened: %s', e, reason)
@@ -568,9 +568,7 @@ export class PadchatRpc extends EventEmitter {
       log.silly('PadchatRpc', 'pre login rpcCall(%s, %s)', apiName, JSON.stringify(params).substr(0,200))
       return this.jsonRpc.request(apiName, params)
     } else {
-      // WXSyncMessage api will be deliver here
-      // use this api as heartbeat to keep the connection alive and check the health
-      return this.jsonRpc.request(apiName, params)
+      log.error('PadchatRpc', 'unexpected api call: %s', apiName)
     }
   }
 
