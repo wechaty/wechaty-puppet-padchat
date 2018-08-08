@@ -181,7 +181,7 @@ export class PuppetPadchat extends Puppet {
   }
 
   public async start (): Promise<void> {
-    log.verbose('PuppetPadchat', `start() with ${this.memory.options!.name}`)
+    log.verbose('PuppetPadchat', `start() with ${this.memory.name}`)
 
     if (this.state.on()) {
       log.warn('PuppetPadchat', 'start() already on(pending)?')
