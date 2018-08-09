@@ -300,7 +300,7 @@ export class PadchatManager extends PadchatRpc {
     log.verbose('PuppetPadchatManager', `login(%s)`, userId)
 
     if (this.userId) {
-      log.info('PuppetPadchatManager', 'reconnected(%s)', userId)
+      log.verbose('PuppetPadchatManager', 'reconnected(%s)', userId)
       return
     }
     this.userId = userId
@@ -1082,6 +1082,28 @@ export class PadchatManager extends PadchatRpc {
     // TODO: healthy check
     this.emit('dong')
     return
+  }
+
+  public async updateSelfName (newName: string): Promise<void> {
+    if (!this.userId) {
+      throw Error('Can not update user self name since no user id exist. Probably user not logged in yet')
+    }
+    const self = await this.contactRawPayload(this.userId)
+    const { signature, sex, country, provincia, city } = self
+
+    await this.WXSetUserInfo(newName, signature, sex.toString(), country, provincia, city)
+    this.contactRawPayloadDirty(this.userId)
+  }
+
+  public async updateSelfSignature (signature: string): Promise<void> {
+    if (!this.userId) {
+      throw Error('Can not update user self signature since no user id exist. Probably user not logged in yet')
+    }
+    const self = await this.contactRawPayload(this.userId)
+    const { nick_name, sex, country, provincia, city } = self
+
+    await this.WXSetUserInfo(nick_name, signature, sex.toString(), country, provincia, city)
+    this.contactRawPayloadDirty(this.userId)
   }
 }
 

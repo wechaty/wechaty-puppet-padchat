@@ -400,15 +400,15 @@ export class PadchatRpc extends EventEmitter {
       }
 
       // tslint:disable-next-line:no-floating-promises
-      this.WXSyncMessage().then(() => {
+      this.WXHeartBeat().then(() => {
         RPC_TIMEOUT_COUNTER = 0
       }).catch(reason => {
-        if (reason === 'timeout') {
-          log.info('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(s%) WXSyncMessage timeout', e)
+        if (reason === 'timeout' || reason === 'parsed-data-not-array') {
+          log.verbose('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(s%) WXHeartBeat %s', e, reason)
           RPC_TIMEOUT_COUNTER++
           if (RPC_TIMEOUT_COUNTER >= MAX_HEARTBEAT_TIMEOUT) {
             RPC_TIMEOUT_COUNTER = 0
-            reconnectThrottleQueue.next(`Sync Message Timed out in ${CON_TIME_OUT}ms for ${MAX_HEARTBEAT_TIMEOUT} times. Possible disconnected from Wechat. So trigger reconnect.`)
+            reconnectThrottleQueue.next(`WXHeartBeat Timed out in ${CON_TIME_OUT}ms for ${MAX_HEARTBEAT_TIMEOUT} times. Possible disconnected from Wechat. So trigger reconnect.`)
           }
         } else {
           log.verbose('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(%s) error happened: %s', e, reason)
@@ -539,7 +539,7 @@ export class PadchatRpc extends EventEmitter {
                       })
                       .catch((reason: any) => {
                         if (reason === DISCONNECTED) {
-                          log.info('PadchatRpc', 'rpcCall(%s) interrupted by connection broken, scheduled this api call. This call will be made again when connection restored', apiName)
+                          log.verbose('PadchatRpc', 'rpcCall(%s) interrupted by connection broken, scheduled this api call. This call will be made again when connection restored', apiName)
                           this.pendingApiCalls.push({
                             apiName,
                             params,
@@ -553,7 +553,7 @@ export class PadchatRpc extends EventEmitter {
                       })
         })
       } else {
-        log.info('PadchatRpc', 'puppet-padchat is disconnected, rpcCall(%s) is scheduled. This call will be made again when connection restored', apiName)
+        log.verbose('PadchatRpc', 'puppet-padchat is disconnected, rpcCall(%s) is scheduled. This call will be made again when connection restored', apiName)
         return new Promise((resolve, reject) => {
           this.pendingApiCalls.push({
             apiName,
@@ -568,9 +568,7 @@ export class PadchatRpc extends EventEmitter {
       log.silly('PadchatRpc', 'pre login rpcCall(%s, %s)', apiName, JSON.stringify(params).substr(0,200))
       return this.jsonRpc.request(apiName, params)
     } else {
-      // WXSyncMessage api will be deliver here
-      // use this api as heartbeat to keep the connection alive and check the health
-      return this.jsonRpc.request(apiName, params)
+      log.error('PadchatRpc', 'unexpected api call: %s', apiName)
     }
   }
 
@@ -920,7 +918,7 @@ export class PadchatRpc extends EventEmitter {
     log.silly('PadchatRpc', 'WXGetContact(%s) result: %s', id, JSON.stringify(result))
 
     if (!result.user_name) {
-      log.warn('PadchatRpc', 'WXGetContact cannot get user_name, id: %s, "%s"', id, JSON.stringify(result))
+      log.silly('PadchatRpc', 'WXGetContact cannot get user_name, id: %s, "%s"', id, JSON.stringify(result))
     }
     return result
   }
@@ -1185,9 +1183,16 @@ export class PadchatRpc extends EventEmitter {
       this.rpcCall('WXSyncMessage').then((result) => {
         log.silly('PadchatRpc', 'WXSyncMessage result: %s', JSON.stringify(result))
         if (!result || !result[0] || (result[0].status !== 1 && result[0].status !== -1)) {
-          return []
+          resolve()
+        } else {
+          const tencentPayloadList: PadchatMessagePayload[] = padchatDecode(result)
+          if (!Array.isArray(tencentPayloadList)) {
+            log.warn('PadchatRpc', 'WXSyncMessage() parsed data is not an array: %s', JSON.stringify(tencentPayloadList))
+            reject('parsed-data-not-array')
+          }
+          this.onSocketTencent(tencentPayloadList)
+          resolve()
         }
-        resolve(result[0])
       }).catch(reject)
 
       const timer = setTimeout(() => {
@@ -1207,11 +1212,11 @@ export class PadchatRpc extends EventEmitter {
     }
 
     if (result.status === WXSearchContactTypeStatus.Searchable) {
-      log.info('PadchatRpc', 'WXSearchContact wxid: %s can be searched', id)
+      log.verbose('PadchatRpc', 'WXSearchContact wxid: %s can be searched', id)
     }
 
     if (result.status === WXSearchContactTypeStatus.UnSearchable) {
-      log.info('PadchatRpc', 'WXSearchContact wxid: %s cannot be searched', id)
+      log.verbose('PadchatRpc', 'WXSearchContact wxid: %s cannot be searched', id)
     }
     return result
   }

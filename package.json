@@ -1,6 +1,6 @@
 {
   "name": "wechaty-puppet-padchat",
-  "version": "0.9.13",
+  "version": "0.9.18",
   "description": "Padchat Puppet for Wechaty",
   "directories": {
     "example": "examples"
@@ -8,7 +8,7 @@
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
   "engines": {
-    "wechaty": ">=0.19.113"
+    "wechaty": ">=0.19.127"
   },
   "scripts": {
     "clean": "shx rm -fr dist/*",
@@ -58,10 +58,10 @@
     "@types/ws": "^5.1.2",
     "@types/xml2js": "^0.4.3",
     "blue-tape": "^1.0.0",
-    "file-box": "^0.8.22",
+    "file-box": "^0.8.23",
     "git-scripts": "^0.2.1",
     "markdownlint-cli": "^0.10.0",
-    "memory-card": "^0.4.9",
+    "memory-card": "^0.5.5",
     "qrcode-terminal": "^0.12.0",
     "shx": "^0.3.1",
     "sinon": "^6.0.1",
@@ -78,8 +78,8 @@
     }
   },
   "peerDependencies": {
-    "file-box": "^0.8.22",
-    "wechaty-puppet": "^0.9.19"
+    "file-box": "^0.8.23",
+    "wechaty-puppet": "^0.11.4"
   },
   "homepage": "https://github.com/lijiarui/wechaty-puppet-padchat#readme",
   "dependencies": {

@@ -28,7 +28,7 @@ export const POST_LOGIN_API = [
   'WXAcceptUser',
   'WXLogout',
   'WXSendMoments',
-  // 'WXSyncMessage', used for check connection health
+  'WXSyncMessage',
   'WXSearchContact',
   'WXSayHello',
   'WXDeleteUser',
