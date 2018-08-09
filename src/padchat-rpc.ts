@@ -404,7 +404,7 @@ export class PadchatRpc extends EventEmitter {
         RPC_TIMEOUT_COUNTER = 0
       }).catch(reason => {
         if (reason === 'timeout' || reason === 'parsed-data-not-array') {
-          log.info('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(s%) WXHeartBeat %s', e, reason)
+          log.verbose('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(s%) WXHeartBeat %s', e, reason)
           RPC_TIMEOUT_COUNTER++
           if (RPC_TIMEOUT_COUNTER >= MAX_HEARTBEAT_TIMEOUT) {
             RPC_TIMEOUT_COUNTER = 0
@@ -539,7 +539,7 @@ export class PadchatRpc extends EventEmitter {
                       })
                       .catch((reason: any) => {
                         if (reason === DISCONNECTED) {
-                          log.info('PadchatRpc', 'rpcCall(%s) interrupted by connection broken, scheduled this api call. This call will be made again when connection restored', apiName)
+                          log.verbose('PadchatRpc', 'rpcCall(%s) interrupted by connection broken, scheduled this api call. This call will be made again when connection restored', apiName)
                           this.pendingApiCalls.push({
                             apiName,
                             params,
@@ -553,7 +553,7 @@ export class PadchatRpc extends EventEmitter {
                       })
         })
       } else {
-        log.info('PadchatRpc', 'puppet-padchat is disconnected, rpcCall(%s) is scheduled. This call will be made again when connection restored', apiName)
+        log.verbose('PadchatRpc', 'puppet-padchat is disconnected, rpcCall(%s) is scheduled. This call will be made again when connection restored', apiName)
         return new Promise((resolve, reject) => {
           this.pendingApiCalls.push({
             apiName,
@@ -918,7 +918,7 @@ export class PadchatRpc extends EventEmitter {
     log.silly('PadchatRpc', 'WXGetContact(%s) result: %s', id, JSON.stringify(result))
 
     if (!result.user_name) {
-      log.warn('PadchatRpc', 'WXGetContact cannot get user_name, id: %s, "%s"', id, JSON.stringify(result))
+      log.silly('PadchatRpc', 'WXGetContact cannot get user_name, id: %s, "%s"', id, JSON.stringify(result))
     }
     return result
   }
@@ -1212,11 +1212,11 @@ export class PadchatRpc extends EventEmitter {
     }
 
     if (result.status === WXSearchContactTypeStatus.Searchable) {
-      log.info('PadchatRpc', 'WXSearchContact wxid: %s can be searched', id)
+      log.verbose('PadchatRpc', 'WXSearchContact wxid: %s can be searched', id)
     }
 
     if (result.status === WXSearchContactTypeStatus.UnSearchable) {
-      log.info('PadchatRpc', 'WXSearchContact wxid: %s cannot be searched', id)
+      log.verbose('PadchatRpc', 'WXSearchContact wxid: %s cannot be searched', id)
     }
     return result
   }
