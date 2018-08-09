@@ -300,7 +300,7 @@ export class PadchatManager extends PadchatRpc {
     log.verbose('PuppetPadchatManager', `login(%s)`, userId)
 
     if (this.userId) {
-      log.info('PuppetPadchatManager', 'reconnected(%s)', userId)
+      log.verbose('PuppetPadchatManager', 'reconnected(%s)', userId)
       return
     }
     this.userId = userId
