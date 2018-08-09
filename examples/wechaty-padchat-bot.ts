@@ -19,7 +19,7 @@ import { generate } from 'qrcode-terminal'
 const puppet = new PuppetPadchat()
 
 const bot = new Wechaty({
-  profile : 'padchat-demo',
+  name : 'padchat-demo',
   puppet,
 })
 
