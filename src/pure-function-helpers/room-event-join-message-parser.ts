@@ -111,7 +111,9 @@ export async function roomJoinEventMessageParser (
     const tryXmlText = content.replace(/^[^\n]+\n/, '')
     interface XmlSchema {
       sysmsg: {
-        type: 'revokemsg' | 'delchatroommember',
+        $: {
+          type: 'revokemsg' | 'delchatroommember',
+        },
         delchatroommember?: {
           plain : string,
           text  : string,
@@ -126,12 +128,12 @@ export async function roomJoinEventMessageParser (
     }
     const jsonPayload: XmlSchema = await xml2json(tryXmlText) // toJson(tryXmlText, { object: true }) as XmlSchema
     try {
-      if (jsonPayload.sysmsg.type === 'delchatroommember') {
+      if (jsonPayload.sysmsg.$.type === 'delchatroommember') {
         content = jsonPayload.sysmsg.delchatroommember!.plain
-      } else if (jsonPayload.sysmsg.type === 'revokemsg') {
+      } else if (jsonPayload.sysmsg.$.type === 'revokemsg') {
         content = jsonPayload.sysmsg.revokemsg!.replacemsg
       } else {
-        throw new Error('unknown jsonPayload sysmsg type: ' + jsonPayload.sysmsg.type)
+        throw new Error('unknown jsonPayload sysmsg type: ' + jsonPayload.sysmsg.$.type)
       }
     } catch (e) {
       console.error(e)

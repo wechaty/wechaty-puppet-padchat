@@ -35,7 +35,7 @@ export async function friendshipRawPayloadParser (
      */
     return friendshipRawPayloadParserVerify(rawPayload)
 
-  } else if (friendshipReceiveEventMessageParser(rawPayload)) {
+  } else if (await friendshipReceiveEventMessageParser(rawPayload)) {
     /**
      * 3. Receive Event
      */
@@ -74,7 +74,9 @@ async function friendshipRawPayloadParserReceive (
   const tryXmlText = rawPayload.content
 
   interface XmlSchema {
-    msg?: PadchatFriendshipPayload,
+    msg?: {
+      $: PadchatFriendshipPayload,
+    },
   }
 
   const jsonPayload: XmlSchema = await xml2json(tryXmlText) // , { object: true })
@@ -82,7 +84,7 @@ async function friendshipRawPayloadParserReceive (
   if (!jsonPayload.msg) {
     throw new Error('no msg found')
   }
-  const padchatFriendshipPayload: PadchatFriendshipPayload = jsonPayload.msg
+  const padchatFriendshipPayload: PadchatFriendshipPayload = jsonPayload.msg.$
 
   const friendshipPayload: FriendshipPayloadReceive = {
     contactId : padchatFriendshipPayload.fromusername,

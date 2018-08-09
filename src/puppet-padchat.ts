@@ -491,7 +491,7 @@ export class PuppetPadchat extends Puppet {
     /**
      * 2. Look for friendship receive event
      */
-    const friendshipReceiveContactId = friendshipReceiveEventMessageParser(rawPayload)
+    const friendshipReceiveContactId = await friendshipReceiveEventMessageParser(rawPayload)
     /**
      * 3. Look for friendship verify event
      */

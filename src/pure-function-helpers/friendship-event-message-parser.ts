@@ -62,10 +62,12 @@ export async function friendshipReceiveEventMessageParser (
 
   interface XmlSchema {
     msg: {
-      fromusername    : string,
-      encryptusername : string,
-      content         : string,
-      ticket          : string,
+      $: {
+        fromusername    : string,
+        encryptusername : string,
+        content         : string,
+        ticket          : string,
+      },
     }
   }
 
@@ -74,7 +76,7 @@ export async function friendshipReceiveEventMessageParser (
       rawPayload.content,
     )
 
-    const contactId = jsonPayload.msg.fromusername
+    const contactId = jsonPayload.msg.$.fromusername
 
     if (isContactId(contactId)) {
       return contactId
