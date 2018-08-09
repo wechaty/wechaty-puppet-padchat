@@ -1,4 +1,4 @@
-import { xml2json } from './xml2json'
+import { xmlToJson } from './xml-to-json'
 
 import {
   FriendshipType
@@ -79,7 +79,7 @@ async function friendshipRawPayloadParserReceive (
     },
   }
 
-  const jsonPayload: XmlSchema = await xml2json(tryXmlText) // , { object: true })
+  const jsonPayload: XmlSchema = await xmlToJson(tryXmlText) // , { object: true })
 
   if (!jsonPayload.msg) {
     throw new Error('no msg found')

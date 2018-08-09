@@ -4,14 +4,14 @@
 import test  from 'blue-tape'
 
 import {
-  xml2json,
-}                           from './xml2json'
+  xmlToJson,
+}                           from './xml-to-json'
 
 test('xml2json()', async t => {
   const TEXT         = '<mol>42</mol>'
   const EXPECTED_OBJ = { mol: '42' }
 
-  const json = await xml2json(TEXT)
+  const json = await xmlToJson(TEXT)
   t.deepEqual(json, EXPECTED_OBJ, 'should parse xml to json right')
 })
 
@@ -19,6 +19,6 @@ test('xml2json() $', async t => {
   const TEXT         = '<mol meaning="42"><life>17</life></mol>'
   const EXPECTED_OBJ = { mol: { $: { meaning: '42' }, life: '17' } }
 
-  const json = await xml2json(TEXT)
+  const json = await xmlToJson(TEXT)
   t.deepEqual(json, EXPECTED_OBJ, 'should parse xml to json right')
 })

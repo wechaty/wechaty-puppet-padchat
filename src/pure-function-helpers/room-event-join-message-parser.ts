@@ -1,4 +1,4 @@
-import { xml2json } from './xml2json'
+import { xmlToJson } from './xml-to-json'
 
 import {
   PuppetRoomJoinEvent,
@@ -126,7 +126,7 @@ export async function roomJoinEventMessageParser (
         },
       }
     }
-    const jsonPayload: XmlSchema = await xml2json(tryXmlText) // toJson(tryXmlText, { object: true }) as XmlSchema
+    const jsonPayload: XmlSchema = await xmlToJson(tryXmlText) // toJson(tryXmlText, { object: true }) as XmlSchema
     try {
       if (jsonPayload.sysmsg.$.type === 'delchatroommember') {
         content = jsonPayload.sysmsg.delchatroommember!.plain

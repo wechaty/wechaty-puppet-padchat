@@ -1,4 +1,4 @@
-import { xml2json } from './xml2json'
+import { xmlToJson } from './xml-to-json'
 
 import {
   PadchatMessagePayload,
@@ -94,7 +94,7 @@ export const roomInviteEventMessageParser = async (
 
   let jsonPayload: XmlSchema
   try {
-    jsonPayload = await xml2json(tryXmlText) // toJson(tryXmlText, { object: true }) as XmlSchema
+    jsonPayload = await xmlToJson(tryXmlText) // toJson(tryXmlText, { object: true }) as XmlSchema
   } catch (e) {
     return null
   }

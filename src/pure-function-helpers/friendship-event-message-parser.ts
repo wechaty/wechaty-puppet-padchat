@@ -1,4 +1,4 @@
-import { xml2json } from './xml2json'
+import { xmlToJson } from './xml-to-json'
 
 import { PadchatMessagePayload } from '../padchat-schemas'
 
@@ -72,7 +72,7 @@ export async function friendshipReceiveEventMessageParser (
   }
 
   try {
-    const jsonPayload: XmlSchema = await xml2json(
+    const jsonPayload: XmlSchema = await xmlToJson(
       rawPayload.content,
     )
 
