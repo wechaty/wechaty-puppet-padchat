@@ -918,7 +918,7 @@ export class PadchatRpc extends EventEmitter {
     log.silly('PadchatRpc', 'WXGetContact(%s) result: %s', id, JSON.stringify(result))
 
     if (!result.user_name) {
-      log.warn('PadchatRpc', 'WXGetContact cannot get user_name, id: %s, "%s"', id, JSON.stringify(result))
+      log.silly('PadchatRpc', 'WXGetContact cannot get user_name, id: %s, "%s"', id, JSON.stringify(result))
     }
     return result
   }
