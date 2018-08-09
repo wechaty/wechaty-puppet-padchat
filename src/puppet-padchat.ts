@@ -330,7 +330,7 @@ export class PuppetPadchat extends Puppet {
 
   protected async onPadchatMessageRoomInvitation (rawPayload: PadchatMessagePayload): Promise<void> {
     log.verbose('PuppetPadchat', 'onPadchatMessageRoomInvitation(%s)', rawPayload)
-    const roomInviteEvent = roomInviteEventMessageParser(rawPayload)
+    const roomInviteEvent = await roomInviteEventMessageParser(rawPayload)
 
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
@@ -349,7 +349,7 @@ export class PuppetPadchat extends Puppet {
   protected async onPadchatMessageRoomEventJoin (rawPayload: PadchatMessagePayload): Promise<void> {
     log.verbose('PuppetPadchat', 'onPadchatMessageRoomEventJoin({id=%s})', rawPayload.msg_id)
 
-    const roomJoinEvent = roomJoinEventMessageParser(rawPayload)
+    const roomJoinEvent = await roomJoinEventMessageParser(rawPayload)
 
     if (roomJoinEvent) {
       const inviteeNameList = roomJoinEvent.inviteeNameList
