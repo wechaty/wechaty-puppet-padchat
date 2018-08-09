@@ -14,3 +14,11 @@ test('xml2json()', async t => {
   const json = await xml2json(TEXT)
   t.deepEqual(json, EXPECTED_OBJ, 'should parse xml to json right')
 })
+
+test('xml2json() $', async t => {
+  const TEXT         = '<mol meaning="42"><life>17</life></mol>'
+  const EXPECTED_OBJ = { mol: { $: { meaning: '42' }, life: '17' } }
+
+  const json = await xml2json(TEXT)
+  t.deepEqual(json, EXPECTED_OBJ, 'should parse xml to json right')
+})
