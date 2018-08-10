@@ -1107,6 +1107,8 @@ export class PuppetPadchat extends Puppet {
     }
 
     const rawPayload = await this.padchatManager.roomRawPayload(roomId)
+
+    if (!rawPayload.user_name) rawPayload.user_name = roomId
     return rawPayload
   }
 
