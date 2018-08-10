@@ -1,13 +1,13 @@
-import { AppPayload } from "wechaty-puppet";
+import { LinkPayload } from "wechaty-puppet";
 
-export const generateAppXMLMessage = ({ title, des, url, thumburl, appType }: AppPayload): string => {
+export const generateAppXMLMessage = ({ title, des, url, thumburl }: LinkPayload): string => {
   return `
     <appmsg appid="" sdkver="0">
       <title>${title}</title>
       <des>${des}</des>
       <username></username>
       <action>view</action>
-      <type>${appType}</type>
+      <type>5</type>
       <showtype>0</showtype>
       <url>${url}</url>
       <contentattr>0</contentattr>

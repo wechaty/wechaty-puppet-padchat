@@ -22,9 +22,9 @@ import {
 }                         from './message-type'
 import { appMessageParser } from '.';
 
-export function messageRawPayloadParser (
+export async function messageRawPayloadParser (
   rawPayload: PadchatMessagePayload,
-): MessagePayload {
+): Promise<MessagePayload> {
 
   // console.log('messageRawPayloadParser:', rawPayload)
 
@@ -188,17 +188,28 @@ export function messageRawPayloadParser (
   }
 
   if (type === MessageType.Attachment) {
-    const appPayload = appMessageParser(rawPayload)
+    const appPayload = await appMessageParser(rawPayload)
     if (appPayload) {
-      if (appPayload.type === AppType.Link) {
-        payload.type = MessageType.Link
-      }
-      payload.appPayload = {
-        title: appPayload.title,
-        des: appPayload.des,
-        url: appPayload.url,
-        thumburl: appPayload.thumburl,
-        appType: appPayload.type
+      switch (appPayload.type) {
+        case AppType.Link:
+          // Process link message, append linkPayload to payload
+          payload.type = MessageType.Link
+          payload.linkPayload = {
+            title: appPayload.title,
+            des: appPayload.des,
+            url: appPayload.url,
+            thumburl: appPayload.thumburl,
+          }
+          break
+        case AppType.File:
+          // TODO: add file message process here
+        case AppType.ChatHistory:
+          // TODO: add chat history process here
+        case AppType.MiniProgram:
+          // TODO: add mini program process here
+
+        default:
+          break
       }
     }
   }
