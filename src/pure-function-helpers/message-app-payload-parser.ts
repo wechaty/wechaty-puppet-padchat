@@ -1,4 +1,4 @@
-import { toJson } from 'xml2json'
+import { xmlToJson } from './xml-to-json'
 
 import {
   PadchatMessagePayload, PadchatAppMessagePayload
@@ -7,19 +7,19 @@ import {
 import { isPayload } from './is-type'
 import { AppType } from 'wechaty-puppet'
 
-export function appMessageParser(rawPayload: PadchatMessagePayload): PadchatAppMessagePayload | null {
+export async function appMessageParser(rawPayload: PadchatMessagePayload): Promise<PadchatAppMessagePayload | null> {
   if (!isPayload(rawPayload)) {
     return null
   }
 
-  const { content, msg_id, timestamp, from_user } = rawPayload
+  const { content } = rawPayload
 
   interface XmlSchema {
     msg: {
       appmsg: {
         title: string,
         des: string,
-        type: number,
+        type: string,
         url: string,
         appattach: {
           totallen: string,
@@ -43,18 +43,12 @@ export function appMessageParser(rawPayload: PadchatMessagePayload): PadchatAppM
   const tryXmlText = content.replace(/^[^\n]+\n/, '')
 
   try {
-    const jsonPayload = toJson(tryXmlText, { object: true }) as XmlSchema
+    const jsonPayload: XmlSchema = await xmlToJson(tryXmlText)
 
-    console.log(jsonPayload.msg.appmsg.type === AppType.Link)
-    return {
-      title: jsonPayload.msg.appmsg.title,
-      des: jsonPayload.msg.appmsg.des,
-      url: jsonPayload.msg.appmsg.url,
-      thumburl: jsonPayload.msg.appmsg.thumburl,
-      type: jsonPayload.msg.appmsg.type
-    }
+    const { title, des, url, thumburl, type } = jsonPayload.msg.appmsg
+    
+    return { title, des, url, thumburl, type: parseInt(type) }
   } catch (e) {
-    console.error(e)
     return null
   }
 }

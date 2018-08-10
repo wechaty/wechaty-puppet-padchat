@@ -42,6 +42,7 @@ import {
   RoomInvitationPayload,
   RoomMemberPayload,
   RoomPayload,
+  LinkPayload,
 }                                 from 'wechaty-puppet'
 
 import {
@@ -95,6 +96,7 @@ import {
 import {
   WXSearchContactTypeStatus,
 }                           from './padchat-rpc.type'
+import { generateAppXMLMessage } from './pure-function-helpers/app-message-generator';
 
 let PADCHAT_COUNTER = 0 // PuppetPadchat Instance Counter
 
@@ -910,7 +912,7 @@ export class PuppetPadchat extends Puppet {
   public async messageRawPayloadParser (rawPayload: PadchatMessagePayload): Promise<MessagePayload> {
     log.verbose('PuppetPadChat', 'messageRawPayloadParser({msg_id="%s"})', rawPayload.msg_id)
 
-    const payload: MessagePayload = messageRawPayloadParser(rawPayload)
+    const payload: MessagePayload = await messageRawPayloadParser(rawPayload)
 
     log.silly('PuppetPadchat', 'messagePayload(%s)', JSON.stringify(payload))
     return payload
@@ -980,7 +982,7 @@ export class PuppetPadchat extends Puppet {
     receiver  : Receiver,
     contactId : string,
   ): Promise<void> {
-    log.verbose('PuppetPadchat', 'messageSend("%s", %s)', JSON.stringify(receiver), contactId)
+    log.verbose('PuppetPadchat', 'messageSendContact("%s", %s)', JSON.stringify(receiver), contactId)
 
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
@@ -996,6 +998,26 @@ export class PuppetPadchat extends Puppet {
     const payload = await this.contactPayload(contactId)
     const title = payload.name + '名片'
     await this.padchatManager.WXShareCard(id, contactId, title)
+  }
+
+  public async messageSendLink (
+    receiver: Receiver,
+    link: LinkPayload,
+  ): Promise<void> {
+    log.verbose('PuppetPadchat', 'messageSendLink("%s", %s)', JSON.stringify(receiver), JSON.stringify(link))
+
+    if (!this.padchatManager) {
+      throw new Error('no padchat manager')
+    }
+
+    // Send to the Room if there's a roomId
+    const id = receiver.roomId || receiver.contactId
+
+    if (!id) {
+      throw Error('no id')
+    }
+
+    await this.padchatManager.WXSendAppMsg(id, generateAppXMLMessage(link))
   }
 
   public async messageForward (
