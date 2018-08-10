@@ -297,8 +297,8 @@ test.skip('attachment file with ext .xlsx', async t => {
   const payload = messageRawPayloadParser(MESSAGE_PAYLOAD)
   console.log(payload)
 
-  const { toJson } = require('xml2json')
-  console.log(JSON.parse(toJson(payload.text)))
+  const { xml2json } = require('./xml-to-json')
+  console.log(await xml2json(payload.text))
 
   t.deepEqual(payload, EXPECTED_PAYLOAD, 'should parse share card message peer to peer')
 })

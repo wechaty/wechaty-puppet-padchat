@@ -1,13 +1,12 @@
 {
-  "typescript.tsdk": "./node_modules/typescript/lib"
-  , "update.channel": "none"
-, "files.exclude": {
-    "dist/": true
-  , "doc/": true
-  , "node_modules/": true
-  , "package/": true
-}
-, "alignment": {
+    "typescript.tsdk": "./node_modules/typescript/lib"
+  , "files.exclude": {
+      "dist/": true
+    , "doc/": true
+    , "node_modules/": true
+    , "package/": true
+  }
+  , "alignment": {
       "operatorPadding": "right"
     , "indentBase":      "firstline"
     , "surroundSpace":   {
@@ -18,8 +17,4 @@
                              // If this value is negative, it means don't align the trailing comment.
     }
   }
-  , "eslint.autoFixOnSave": false
-  , "tslint.autoFixOnSave": false
-  , "editor.formatOnSave": false
-  , "typescript.extension.sortImports.sortOnSave": false
 }

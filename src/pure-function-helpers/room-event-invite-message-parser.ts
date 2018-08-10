@@ -1,4 +1,4 @@
-import { toJson } from 'xml2json'
+import { xmlToJson } from './xml-to-json'
 
 import {
   PadchatMessagePayload,
@@ -69,9 +69,9 @@ const ROOM_OTHER_INVITE_LIST_EN = [
   /"(.+)" invited you to join the group chat "(.+)"\. Enter to view details\./
 ]
 
-export const roomInviteEventMessageParser = (
+export const roomInviteEventMessageParser = async (
   rawPayload: PadchatMessagePayload,
-): null | PadchatRoomInviteEvent => {
+): Promise<null | PadchatRoomInviteEvent> => {
 
   if (!isPayload(rawPayload)) {
     return null
@@ -94,7 +94,7 @@ export const roomInviteEventMessageParser = (
 
   let jsonPayload: XmlSchema
   try {
-    jsonPayload = toJson(tryXmlText, { object: true }) as XmlSchema
+    jsonPayload = await xmlToJson(tryXmlText) // toJson(tryXmlText, { object: true }) as XmlSchema
   } catch (e) {
     return null
   }

@@ -1,5 +1,3 @@
-// import { toJson } from 'xml2json'
-
 import {
   MessagePayload,
   MessageType,

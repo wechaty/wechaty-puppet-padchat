@@ -1,6 +1,6 @@
 {
   "name": "wechaty-puppet-padchat",
-  "version": "0.9.18",
+  "version": "0.9.21",
   "description": "Padchat Puppet for Wechaty",
   "directories": {
     "example": "examples"
@@ -56,7 +56,7 @@
     "@types/semver": "^5.5.0",
     "@types/sinon": "^5.0.1",
     "@types/ws": "^5.1.2",
-    "@types/xml2json": "^0.10.0",
+    "@types/xml2js": "^0.4.3",
     "blue-tape": "^1.0.0",
     "file-box": "^0.8.23",
     "git-scripts": "^0.2.1",
@@ -68,8 +68,8 @@
     "ts-node": "^7.0.0",
     "tslint": "^5.10.0",
     "tslint-config-standard": "^7.1.0",
-    "typescript": "^2.9.2",
-    "wechaty": "^0.19.127",
+    "typescript": "^3.0.1",
+    "wechaty": "^0.19.139",
     "wechaty-puppet": "^0.11.4"
   },
   "git": {
@@ -99,6 +99,6 @@
     "rx-queue": "^0.4.26",
     "rxjs": "^6.2.1",
     "ws": "^5.2.1",
-    "xml2json": "^0.11.2"
+    "xml2js": "^0.4.19"
   }
 }

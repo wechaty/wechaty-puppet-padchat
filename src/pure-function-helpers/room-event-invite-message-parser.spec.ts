@@ -35,7 +35,7 @@ test('roomInviteEventMessageParser() ZH', async t => {
     url: 'http://support.weixin.qq.com/cgi-bin/mmsupport-bin/addchatroombyinvite?ticket=AVs3velIDxTkA0EOhKogxg%3D%3D',
   }
 
-  const event = roomInviteEventMessageParser(MESSAGE_PAYLOAD)
+  const event = await roomInviteEventMessageParser(MESSAGE_PAYLOAD)
   t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
 })
 
@@ -63,6 +63,6 @@ test('roomInviteEventMessageParser() EN', async t => {
     url: 'http://support.weixin.qq.com/cgi-bin/mmsupport-bin/addchatroombyinvite?ticket=AV5L4pEpxU7L8XAEFRxuHw%3D%3D',
   }
 
-  const event = roomInviteEventMessageParser(MESSAGE_PAYLOAD)
+  const event = await roomInviteEventMessageParser(MESSAGE_PAYLOAD)
   t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
 })

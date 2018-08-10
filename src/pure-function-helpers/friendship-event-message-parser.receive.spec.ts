@@ -29,6 +29,6 @@ test('friendshipReceiveEventMessageParser()', async t => {
 
   const EXPECTED_CONTACT_ID = 'lizhuohuan'
 
-  const contactName = friendshipReceiveEventMessageParser(MESSAGE_PAYLOAD)
+  const contactName = await friendshipReceiveEventMessageParser(MESSAGE_PAYLOAD)
   t.equal(contactName, EXPECTED_CONTACT_ID, 'should parse message to receive contact id')
 })
