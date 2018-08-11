@@ -42,6 +42,8 @@ import {
   RoomInvitationPayload,
   RoomMemberPayload,
   RoomPayload,
+
+  UrlLinkPayload,
 }                                 from 'wechaty-puppet'
 
 import {
@@ -860,6 +862,13 @@ export class PuppetPadchat extends Puppet {
     }
   }
 
+  /**
+   * TODO: implment it
+   */
+  public async messageUrl (messageId: string)  : Promise<UrlLinkPayload> {
+    return { messageId } as any
+  }
+
   private async getVoiceFileBoxFromRawPayload (rawPayload: PadchatMessagePayload, attachmentName: string): Promise<FileBox> {
     const data = await this.getVoiceDataFromRawPayload(rawPayload)
     const result = FileBox.fromBase64(data, attachmentName)
@@ -963,6 +972,13 @@ export class PuppetPadchat extends Puppet {
         )
         break
     }
+  }
+
+  /**
+   * TODO: implment it
+   */
+  public async messageSendUrl (to: Receiver, urlLinkPayload: UrlLinkPayload) : Promise<void> {
+    return { to, urlLinkPayload } as any
   }
 
   public async messageSendContact (
