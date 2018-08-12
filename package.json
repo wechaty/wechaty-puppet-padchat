@@ -8,7 +8,7 @@
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
   "engines": {
-    "wechaty": ">=0.19.127"
+    "wechaty": ">=0.19.145"
   },
   "scripts": {
     "clean": "shx rm -fr dist/*",

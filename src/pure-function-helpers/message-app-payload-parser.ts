@@ -1,13 +1,13 @@
 import { xmlToJson } from './xml-to-json'
 
 import {
-  PadchatMessagePayload, PadchatAppMessagePayload
+  PadchatAppMessagePayload,
+  PadchatMessagePayload,
 }                       from '../padchat-schemas'
 
 import { isPayload } from './is-type'
-import { AppType } from 'wechaty-puppet'
 
-export async function appMessageParser(rawPayload: PadchatMessagePayload): Promise<PadchatAppMessagePayload | null> {
+export async function appMessageParser (rawPayload: PadchatMessagePayload): Promise<PadchatAppMessagePayload | null> {
   if (!isPayload(rawPayload)) {
     return null
   }
@@ -46,8 +46,8 @@ export async function appMessageParser(rawPayload: PadchatMessagePayload): Promi
     const jsonPayload: XmlSchema = await xmlToJson(tryXmlText)
 
     const { title, des, url, thumburl, type } = jsonPayload.msg.appmsg
-    
-    return { title, des, url, thumburl, type: parseInt(type) }
+
+    return { title, des, url, thumburl, type: parseInt(type, 10) }
   } catch (e) {
     return null
   }

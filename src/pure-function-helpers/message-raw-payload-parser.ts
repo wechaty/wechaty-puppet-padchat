@@ -1,13 +1,13 @@
 import {
   MessagePayload,
   MessageType,
-  AppType,
 }                         from 'wechaty-puppet'
+
+import { appMessageParser } from '.'
 
 import {
   PadchatMessagePayload,
-  // PadchatMessageType,
-  // PadchatContactPayload,
+  WechatAppMessageType,
 }                         from '../padchat-schemas'
 
 import {
@@ -20,7 +20,6 @@ import {
 import {
   messageType,
 }                         from './message-type'
-import { appMessageParser } from '.';
 
 export async function messageRawPayloadParser (
   rawPayload: PadchatMessagePayload,
@@ -191,22 +190,18 @@ export async function messageRawPayloadParser (
     const appPayload = await appMessageParser(rawPayload)
     if (appPayload) {
       switch (appPayload.type) {
-        case AppType.Link:
-          // Process link message, append linkPayload to payload
-          payload.type = MessageType.Link
-          payload.linkPayload = {
-            title: appPayload.title,
-            des: appPayload.des,
-            url: appPayload.url,
-            thumburl: appPayload.thumburl,
-          }
+        case WechatAppMessageType.Url:
+          payload.type = MessageType.Url
           break
-        case AppType.File:
-          // TODO: add file message process here
-        case AppType.ChatHistory:
-          // TODO: add chat history process here
-        case AppType.MiniProgram:
-          // TODO: add mini program process here
+        case WechatAppMessageType.Attach:
+          payload.type = MessageType.Attachment
+          break
+        case WechatAppMessageType.ChatHistory:
+          payload.type = MessageType.ChatHistory
+          break
+        case WechatAppMessageType.MiniProgram:
+          payload.type = MessageType.MiniProgram
+          break
 
         default:
           break

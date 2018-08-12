@@ -42,10 +42,11 @@ import {
   RoomInvitationPayload,
   RoomMemberPayload,
   RoomPayload,
-  LinkPayload,
+  UrlLinkPayload,
 }                                 from 'wechaty-puppet'
 
 import {
+  appMessageParser,
   contactRawPayloadParser,
 
   fileBoxToQrcode,
@@ -66,7 +67,6 @@ import {
   roomLeaveEventMessageParser,
   roomRawPayloadParser,
   roomTopicEventMessageParser,
-  appMessageParser,
 }                                         from './pure-function-helpers'
 
 import {
@@ -96,7 +96,7 @@ import {
 import {
   WXSearchContactTypeStatus,
 }                           from './padchat-rpc.type'
-import { generateAppXMLMessage } from './pure-function-helpers/app-message-generator';
+import { generateAppXMLMessage } from './pure-function-helpers/app-message-generator'
 
 let PADCHAT_COUNTER = 0 // PuppetPadchat Instance Counter
 
@@ -873,11 +873,26 @@ export class PuppetPadchat extends Puppet {
     }
   }
 
-  /**
-   * TODO: implment it
-   */
-  public async messageUrl (messageId: string)  : Promise<UrlLinkPayload> {
-    return { messageId } as any
+  public async messageUrl (messageId: string): Promise<UrlLinkPayload> {
+
+    const rawPayload = await this.messageRawPayload(messageId)
+    const payload = await this.messagePayload(messageId)
+
+    if (payload.type !== MessageType.Url) {
+      throw new Error('Can not get url from non url payload')
+    } else {
+      const appPayload = await appMessageParser(rawPayload)
+      if (appPayload) {
+        return {
+          description: appPayload.des,
+          thumbnailUrl: appPayload.thumburl,
+          title: appPayload.title,
+          url: appPayload.url,
+        }
+      } else {
+        throw new Error('Can not parse url message payload')
+      }
+    }
   }
 
   private async getVoiceFileBoxFromRawPayload (rawPayload: PadchatMessagePayload, attachmentName: string): Promise<FileBox> {
@@ -985,13 +1000,6 @@ export class PuppetPadchat extends Puppet {
     }
   }
 
-  /**
-   * TODO: implment it
-   */
-  public async messageSendUrl (to: Receiver, urlLinkPayload: UrlLinkPayload) : Promise<void> {
-    return { to, urlLinkPayload } as any
-  }
-
   public async messageSendContact (
     receiver  : Receiver,
     contactId : string,
@@ -1014,11 +1022,11 @@ export class PuppetPadchat extends Puppet {
     await this.padchatManager.WXShareCard(id, contactId, title)
   }
 
-  public async messageSendLink (
+  public async messageSendUrl (
     receiver: Receiver,
-    link: LinkPayload,
+    urlLinkPayload: UrlLinkPayload
   ): Promise<void> {
-    log.verbose('PuppetPadchat', 'messageSendLink("%s", %s)', JSON.stringify(receiver), JSON.stringify(link))
+    log.verbose('PuppetPadchat', 'messageSendLink("%s", %s)', JSON.stringify(receiver), JSON.stringify(urlLinkPayload))
 
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
@@ -1031,7 +1039,7 @@ export class PuppetPadchat extends Puppet {
       throw Error('no id')
     }
 
-    await this.padchatManager.WXSendAppMsg(id, generateAppXMLMessage(link))
+    await this.padchatManager.WXSendAppMsg(id, generateAppXMLMessage(urlLinkPayload))
   }
 
   public async messageForward (

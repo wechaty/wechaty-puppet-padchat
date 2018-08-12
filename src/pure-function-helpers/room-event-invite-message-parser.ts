@@ -100,7 +100,7 @@ export const roomInviteEventMessageParser = async (
   }
 
   // If no title or des, it is not a room invite event, skip further process
-  
+
   if (!jsonPayload.msg || !jsonPayload.msg.appmsg || !jsonPayload.msg.appmsg.title || !jsonPayload.msg.appmsg.des
     // tslint:disable-next-line:strict-type-predicates
     || typeof jsonPayload.msg.appmsg.title !== 'string' ||  typeof jsonPayload.msg.appmsg.des !== 'string') {

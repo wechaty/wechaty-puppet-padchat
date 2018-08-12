@@ -19,7 +19,6 @@
 import {
   ContactGender,
   FriendshipType,
-  AppType
 }                 from 'wechaty-puppet'
 
 // 1 when use WXSyncContact, 0 when use WXGetContact
@@ -73,6 +72,28 @@ export enum PadchatPayloadType {
   InvalidPadchatToken = -1111, // -1111 when the token pass to padchat server is invalid
   OnlinePadchatToken = -1112, // -1112 when the token has already logged in to wechaty
   ExpirePadchatToken = -1113, // -1113 when the token is expired
+}
+
+export enum WechatAppMessageType {
+  Text                  = 1,
+  Img                   = 2,
+  Audio                 = 3,
+  Video                 = 4,
+  Url                   = 5,
+  Attach                = 6,
+  Open                  = 7,
+  Emoji                 = 8,
+  VoiceRemind           = 9,
+  ScanGood              = 10,
+  Good                  = 13,
+  Emotion               = 15,
+  CardTicket            = 16,
+  RealtimeShareLocation = 17,
+  ChatHistory           = 19,
+  MiniProgram           = 33,
+  Transfers             = 2000,
+  RedEnvelopes          = 2001,
+  ReaderType            = 100001,
 }
 
 export interface PadchatPayload {
@@ -455,7 +476,7 @@ export interface PadchatAppMessagePayload {
   thumburl?: string,
   title: string,
   url: string,
-  type: AppType
+  type: WechatAppMessageType,
 }
 
 export interface PadchatFriendshipPayload {
