@@ -1088,6 +1088,11 @@ export class PuppetPadchat extends Puppet {
         voiceLength,
       )
       log.error(res)
+    } else if (payload.type === MessageType.Url) {
+      await this.messageSendUrl(
+        receiver,
+        await this.messageUrl(messageId)
+      )
     } else {
       await this.messageSendFile(
         receiver,
