@@ -3,10 +3,11 @@ import {
   MessageType,
 }                         from 'wechaty-puppet'
 
+import { appMessageParser } from '.'
+
 import {
   PadchatMessagePayload,
-  // PadchatMessageType,
-  // PadchatContactPayload,
+  WechatAppMessageType,
 }                         from '../padchat-schemas'
 
 import {
@@ -20,9 +21,9 @@ import {
   messageType,
 }                         from './message-type'
 
-export function messageRawPayloadParser (
+export async function messageRawPayloadParser (
   rawPayload: PadchatMessagePayload,
-): MessagePayload {
+): Promise<MessagePayload> {
 
   // console.log('messageRawPayloadParser:', rawPayload)
 
@@ -183,6 +184,29 @@ export function messageRawPayloadParser (
     }
   } else {
     throw new Error('neither toId nor roomId')
+  }
+
+  if (type === MessageType.Attachment) {
+    const appPayload = await appMessageParser(rawPayload)
+    if (appPayload) {
+      switch (appPayload.type) {
+        case WechatAppMessageType.Url:
+          payload.type = MessageType.Url
+          break
+        case WechatAppMessageType.Attach:
+          payload.type = MessageType.Attachment
+          break
+        case WechatAppMessageType.ChatHistory:
+          payload.type = MessageType.ChatHistory
+          break
+        case WechatAppMessageType.MiniProgram:
+          payload.type = MessageType.MiniProgram
+          break
+
+        default:
+          break
+      }
+    }
   }
 
   return payload

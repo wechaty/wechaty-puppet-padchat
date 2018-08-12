@@ -88,7 +88,7 @@ test('sys', async t => {
     type      : 0,
   }
 
-  const payload = messageRawPayloadParser(PADCHAT_MESSAGE_PAYLOAD_SYS)
+  const payload = await messageRawPayloadParser(PADCHAT_MESSAGE_PAYLOAD_SYS)
   // console.log('payload:', payload)
   t.deepEqual(payload, EXPECTED_MESSAGE_PAYLOAD_SYS, 'should parse sys message payload')
 })
@@ -120,8 +120,8 @@ test('status notify', async t => {
     type      : 0,
   }
 
-  const payload = messageRawPayloadParser(MESSAGE_PAYLOAD)
-  // console.log('payload:', payload)
+  const payload = await messageRawPayloadParser(MESSAGE_PAYLOAD)
+
   t.deepEqual(payload, EXPECTED_MESSAGE_PAYLOAD, 'should parse status notify message payload')
 })
 
@@ -151,8 +151,8 @@ test('room invitation created by bot', async t => {
     type      : 0,
   }
 
-  const payload = messageRawPayloadParser(MESSAGE_PAYLOAD)
-  // console.log('payload:', payload)
+  const payload = await messageRawPayloadParser(MESSAGE_PAYLOAD)
+
   t.deepEqual(payload, EXPECTED_PAYLOAD, 'should parse room invitation message payload')
 })
 
@@ -182,7 +182,7 @@ test('room ownership transfer message', async t => {
     type      : 0,
   }
 
-  const payload = messageRawPayloadParser(MESSAGE_PAYLOAD)
+  const payload = await messageRawPayloadParser(MESSAGE_PAYLOAD)
   t.deepEqual(payload, EXPECTED_PAYLOAD, 'should parse ower transfer message')
 })
 
@@ -211,7 +211,7 @@ test('StatusNotify to roomId', async t => {
     type      : 0,
   }
 
-  const payload = messageRawPayloadParser(MESSAGE_PAYLOAD)
+  const payload = await messageRawPayloadParser(MESSAGE_PAYLOAD)
   t.deepEqual(payload, EXPECTED_PAYLOAD, 'should parse status notify message to room id')
 })
 
@@ -240,7 +240,7 @@ test('share card peer to peer', async t => {
     type      : 3,
   }
 
-  const payload = messageRawPayloadParser(MESSAGE_PAYLOAD)
+  const payload = await messageRawPayloadParser(MESSAGE_PAYLOAD)
   t.deepEqual(payload, EXPECTED_PAYLOAD, 'should parse share card message peer to peer')
 })
 
@@ -270,7 +270,7 @@ test('share card in room', async t => {
     type      : 3,
   }
 
-  const payload = messageRawPayloadParser(MESSAGE_PAYLOAD)
+  const payload = await messageRawPayloadParser(MESSAGE_PAYLOAD)
   t.deepEqual(payload, EXPECTED_PAYLOAD, 'should parse share card message peer to peer')
 })
 
@@ -294,7 +294,7 @@ test.skip('attachment file with ext .xlsx', async t => {
     //
   } as any
 
-  const payload = messageRawPayloadParser(MESSAGE_PAYLOAD)
+  const payload = await messageRawPayloadParser(MESSAGE_PAYLOAD)
   console.log(payload)
 
   const { xml2json } = require('./xml-to-json')
