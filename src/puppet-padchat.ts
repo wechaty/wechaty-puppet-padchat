@@ -231,7 +231,7 @@ export class PuppetPadchat extends Puppet {
     manager.on('scan',    (qrcode: string, status: number, data?: string) => this.emit('scan', qrcode, status, data))
     manager.on('login',   (userId: string)                                => this.login(userId))
     manager.on('message', (rawPayload: PadchatMessagePayload)             => this.onPadchatMessage(rawPayload))
-    manager.on('logout',  ()                                              => this.logout())
+    manager.on('logout',  ()                                              => this.logout(true))
     manager.on('dong',    (data)                                          => this.emit('dong', data))
     manager.on('ready',   ()                                              => this.emit('ready'))
 
@@ -535,7 +535,7 @@ export class PuppetPadchat extends Puppet {
     this.state.off('pending')
 
     // this.watchdog.sleep()
-    await this.logout()
+    await this.logout(true)
 
     await this.padchatManager.stop()
 
@@ -545,7 +545,7 @@ export class PuppetPadchat extends Puppet {
     this.state.off(true)
   }
 
-  public async logout (): Promise<void> {
+  public async logout (shallow = false): Promise<void> {
     log.verbose('PuppetPadchat', 'logout()')
 
     if (!this.id) {
@@ -560,10 +560,9 @@ export class PuppetPadchat extends Puppet {
     this.emit('logout', this.id) // becore we will throw above by logonoff() when this.user===undefined
     this.id = undefined
 
-    // TODO
-    // if (!passive) {
-    //   await this.padchatManager.WXLogout()
-    // }
+    if (!shallow) {
+      await this.padchatManager.WXLogout()
+    }
 
     await this.padchatManager.logout()
   }

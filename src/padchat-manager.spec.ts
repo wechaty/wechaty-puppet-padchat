@@ -75,9 +75,12 @@ test('PadchatManager() cache release 10 instances for the same time', async t =>
 test('PadchatManager() should can be able to restart() many times for one instance', async t => {
   const MAX_NUM = 3
 
+  const memory = new MemoryCard()
+  await memory.load()
+
   const manager = new PadchatManager({
     endpoint : WECHATY_PUPPET_PADCHAT_ENDPOINT,
-    memory   : new MemoryCard(),
+    memory,
     token    : 'test-mock-token',
   })
   try {
@@ -97,12 +100,15 @@ test('PadchatManager() stop many instances for the same time', async t => {
   const MAX_NUM = 3
   const managerList = [] as PadchatManagerTest[]
 
+  const memory = new MemoryCard()
+  await memory.load()
+
   const sandbox = sinon.createSandbox()
 
   for (let i = 0; i < MAX_NUM; i++ ) {
     const manager = new PadchatManagerTest({
       endpoint : WECHATY_PUPPET_PADCHAT_ENDPOINT,
-      memory   : new MemoryCard(),
+      memory,
       token    : 'mock token ' + i,
     })
     await manager.start()

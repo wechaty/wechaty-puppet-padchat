@@ -103,13 +103,15 @@ export class PadchatRpc extends EventEmitter {
   private socket?          : WebSocket
   private readonly jsonRpc : any // Peer
 
-  private throttleQueue?       : ThrottleQueue<string>
-  private debounceQueue?       : DebounceQueue<string>
-  private reconnectThrottleQueue? : ThrottleQueue<string>
+  private throttleQueue?            : ThrottleQueue<string>
+  private debounceQueue?            : DebounceQueue<string>
+  private reconnectThrottleQueue?   : ThrottleQueue<string>
+  private resetThrottleQueue?       : ThrottleQueue<string>
 
-  private throttleSubscription?       : Subscription
-  private debounceSubscription?       : Subscription
+  private throttleSubscription?          : Subscription
+  private debounceSubscription?          : Subscription
   private reconnectThrottleSubscription? : Subscription
+  private resetThrottleSubscription?     : Subscription
 
   private pendingApiCalls : PendingAPICall[]
 
@@ -458,11 +460,18 @@ export class PadchatRpc extends EventEmitter {
     this.debounceQueue = new DebounceQueue<string>(1000 * 10 * 2)
 
     /**
-     * Throttle for 5 seconds for the `logout` event:
-     *  we should only fire once for logout,
-     *  but the server will send many events of 'logout'
+     * Throttle for 5 seconds for the `reconnect` event:
+     *  we should only fire once for reconnect,
+     *  but many events might be triggered
      */
     this.reconnectThrottleQueue = new ThrottleQueue<string>(1000 * 5)
+
+    /**
+     * Throttle for 5 seconds for the `reset` event:
+     *  we should only fire once for reset,
+     *  but the server will send many events of 'reset'
+     */
+    this.resetThrottleQueue = new ThrottleQueue<string>(1000 * 5)
 
     this.initHeartbeat()
 
@@ -477,6 +486,16 @@ export class PadchatRpc extends EventEmitter {
         }
       })
     }
+
+    if (this.resetThrottleSubscription) {
+      throw new Error('this.reconnectThrottleSubscription exist')
+    } else {
+      this.resetThrottleSubscription = this.resetThrottleQueue.subscribe(msg => {
+        if (this.connectionStatus.status === CONNECTED) {
+          this.reset(msg)
+        }
+      })
+    }
   }
 
   private stopQueues () {
@@ -485,19 +504,23 @@ export class PadchatRpc extends EventEmitter {
     if (   this.throttleSubscription
       && this.debounceSubscription
       && this.reconnectThrottleSubscription
+      && this.resetThrottleSubscription
     ) {
       // Clean external subscriptions
       this.debounceSubscription.unsubscribe()
       this.reconnectThrottleSubscription.unsubscribe()
       this.throttleSubscription.unsubscribe()
+      this.resetThrottleSubscription.unsubscribe()
 
       this.debounceSubscription          = undefined
       this.reconnectThrottleSubscription = undefined
       this.throttleSubscription          = undefined
+      this.resetThrottleSubscription     = undefined
     }
 
     if (   this.debounceQueue
         && this.reconnectThrottleQueue
+        && this.resetThrottleQueue
         && this.throttleQueue
     ) {
       /**
@@ -506,10 +529,12 @@ export class PadchatRpc extends EventEmitter {
       this.debounceQueue.unsubscribe()
       this.reconnectThrottleQueue.unsubscribe()
       this.throttleQueue.unsubscribe()
+      this.resetThrottleQueue.unsubscribe()
 
-      this.debounceQueue       = undefined
+      this.debounceQueue          = undefined
       this.reconnectThrottleQueue = undefined
-      this.throttleQueue       = undefined
+      this.throttleQueue          = undefined
+      this.resetThrottleQueue     = undefined
 
     } else {
       log.warn('PadchatRpc', 'stop() subscript not exist')
@@ -585,10 +610,12 @@ export class PadchatRpc extends EventEmitter {
                                 payload.type,
                                 JSON.stringify(payload),
                   )
-      if (this.reconnectThrottleQueue && this.connectionStatus.status === CONNECTED) {
-        this.reconnectThrottleQueue.next(payload.msg || 'onSocket(logout)')
+      // When receive this message, the bot should be logged out from the mobile phone
+      // So do a full reset here
+      if (this.resetThrottleQueue && this.connectionStatus.status === CONNECTED) {
+        this.resetThrottleQueue.next(payload.msg || 'onSocket(logout)')
       } else {
-        log.warn('PadchatRpc', 'onSocket() logout logoutThrottleQueue not exist')
+        log.warn('PadchatRpc', 'onSocket() resetThrottleQueue not exist')
       }
       return
     }

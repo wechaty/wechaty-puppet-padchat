@@ -342,6 +342,13 @@ export class PadchatManager extends PadchatRpc {
       return
     }
 
+    if (this.delayQueueExecutorSubscription) {
+      this.delayQueueExecutorSubscription.unsubscribe()
+      this.delayQueueExecutorSubscription = undefined
+    } else {
+      log.warn('PuppetPadchatManager', 'logout() subscript not exist')
+    }
+
     this.userId = undefined
     await this.releaseCache()
 
