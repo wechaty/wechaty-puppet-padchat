@@ -1,6 +1,5 @@
 import { EventEmitter } from 'events'
 
-// import cuid        from 'cuid'
 import Peer, {
   parse,
 }                       from 'json-rpc-peer'
