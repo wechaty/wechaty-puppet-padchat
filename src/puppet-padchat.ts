@@ -97,6 +97,7 @@ import {
   WXSearchContactTypeStatus,
 }                           from './padchat-rpc.type'
 import { generateAppXMLMessage } from './pure-function-helpers/app-message-generator'
+import { emojiPayloadParser } from './pure-function-helpers/message-emoji-payload-parser'
 
 let PADCHAT_COUNTER = 0 // PuppetPadchat Instance Counter
 
@@ -842,8 +843,12 @@ export class PuppetPadchat extends Puppet {
         return this.getVoiceFileBoxFromRawPayload(rawPayload, attachmentName)
 
       case MessageType.Emoticon:
-        result = await this.padchatManager.WXGetMsgEmoticon(rawText)
-        return FileBox.fromBase64(result.image, `${attachmentName}.gif`)
+        const emojiPayload = await emojiPayloadParser(rawPayload)
+        if (emojiPayload) {
+          return FileBox.fromUrl(emojiPayload.cdnurl, `${attachmentName}.gif`)
+        } else {
+          throw new Error('Can not get emoji file from the message')
+        }
 
       case MessageType.Image:
         result = await this.padchatManager.WXGetMsgImage(rawText)

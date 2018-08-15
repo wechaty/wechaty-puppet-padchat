@@ -332,6 +332,12 @@ export enum PadchatMessageType {
   Recalled          = 10002,
 }
 
+export enum PadchatEmojiType {
+  Unknown = 0,
+  Static  = 1,    // emoji that does not have animation
+  Dynamic = 2,    // emoji with animation
+}
+
 /**
  * from Message
  */
@@ -477,6 +483,14 @@ export interface PadchatAppMessagePayload {
   title: string,
   url: string,
   type: WechatAppMessageType,
+}
+
+export interface PadchatEmojiMessagePayload {
+  cdnurl: string,
+  type: PadchatEmojiType,
+  len: number,
+  width: number,
+  height: number,
 }
 
 export interface PadchatFriendshipPayload {
