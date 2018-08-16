@@ -404,6 +404,12 @@ export class PuppetPadchat extends Puppet {
 
       const inviterId = inviterIdList[0]
 
+      /**
+       * Set Cache Dirty
+       */
+      await this.roomMemberPayloadDirty(roomId)
+      await this.roomPayloadDirty(roomId)
+
       this.emit('room-join', roomId, inviteeIdList,  inviterId)
     }
   }
