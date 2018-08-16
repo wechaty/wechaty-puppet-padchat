@@ -256,7 +256,7 @@ export class PadchatRpc extends EventEmitter {
 
     const ws = new WebSocket(
       this.endpoint,
-      { perMessageDeflate: true },
+      { perMessageDeflate: true, maxPayload: 100 * 1024 * 1024 },
     )
 
     /**
