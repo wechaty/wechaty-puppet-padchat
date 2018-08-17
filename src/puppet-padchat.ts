@@ -97,6 +97,7 @@ import {
   WXSearchContactTypeStatus,
 }                           from './padchat-rpc.type'
 import { generateAppXMLMessage } from './pure-function-helpers/app-message-generator'
+import { emojiPayloadParser } from './pure-function-helpers/message-emoji-payload-parser'
 
 let PADCHAT_COUNTER = 0 // PuppetPadchat Instance Counter
 
@@ -331,14 +332,6 @@ export class PuppetPadchat extends Puppet {
     }
   }
 
-  protected async onPadchatAppMessage (rawPayload: PadchatMessagePayload): Promise<void> {
-    log.info('PuppetPadchat', JSON.stringify(rawPayload, null, 2))
-
-    const appMsg = appMessageParser(rawPayload)
-    log.info('PuppetPadchat', JSON.stringify(appMsg, null, 2))
-    this.emit('message', rawPayload.msg_id)
-  }
-
   protected async onPadchatMessageRoomInvitation (rawPayload: PadchatMessagePayload): Promise<void> {
     log.verbose('PuppetPadchat', 'onPadchatMessageRoomInvitation(%s)', rawPayload)
     const roomInviteEvent = await roomInviteEventMessageParser(rawPayload)
@@ -410,6 +403,12 @@ export class PuppetPadchat extends Puppet {
       }
 
       const inviterId = inviterIdList[0]
+
+      /**
+       * Set Cache Dirty
+       */
+      await this.roomMemberPayloadDirty(roomId)
+      await this.roomPayloadDirty(roomId)
 
       this.emit('room-join', roomId, inviteeIdList,  inviterId)
     }
@@ -842,8 +841,12 @@ export class PuppetPadchat extends Puppet {
         return this.getVoiceFileBoxFromRawPayload(rawPayload, attachmentName)
 
       case MessageType.Emoticon:
-        result = await this.padchatManager.WXGetMsgEmoticon(rawText)
-        return FileBox.fromBase64(result.image, `${attachmentName}.gif`)
+        const emojiPayload = await emojiPayloadParser(rawPayload)
+        if (emojiPayload) {
+          return FileBox.fromUrl(emojiPayload.cdnurl, `${attachmentName}.gif`)
+        } else {
+          throw new Error('Can not get emoji file from the message')
+        }
 
       case MessageType.Image:
         result = await this.padchatManager.WXGetMsgImage(rawText)

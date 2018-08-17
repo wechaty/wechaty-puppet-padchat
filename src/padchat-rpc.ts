@@ -1,6 +1,5 @@
 import { EventEmitter } from 'events'
 
-// import cuid        from 'cuid'
 import Peer, {
   parse,
 }                       from 'json-rpc-peer'
@@ -257,7 +256,7 @@ export class PadchatRpc extends EventEmitter {
 
     const ws = new WebSocket(
       this.endpoint,
-      { perMessageDeflate: true },
+      { perMessageDeflate: true, maxPayload: 100 * 1024 * 1024 },
     )
 
     /**
@@ -1436,16 +1435,6 @@ export class PadchatRpc extends EventEmitter {
     log.silly('PadchatRpc', 'WXTransferOperation , stranger,result: %s', JSON.stringify(result))
     if (!result || result.status !== 0) {
       throw Error('WXTransferOperation , stranger,error! canot get result from websocket server')
-    }
-    return result
-  }
-
-  // TODO: check if this WXGetMsgEmoticon exist in protocol, Huan LI 201806
-  public async WXGetMsgEmoticon (msg: string): Promise<any> {
-    const result = await this.rpcCall('WXGetMsgEmoticon', msg)
-    log.silly('PadchatRpc', 'WXGetMsgEmoticon(), result: %s', JSON.stringify(result))
-    if (!result || result.status !== 0) {
-      throw Error('WXGetMsgEmoticon error! canot get result from websocket server')
     }
     return result
   }
