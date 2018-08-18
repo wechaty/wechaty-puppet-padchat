@@ -1,6 +1,6 @@
 {
   "name": "wechaty-puppet-padchat",
-  "version": "0.9.32",
+  "version": "0.14.0",
   "description": "Padchat Puppet for Wechaty",
   "directories": {
     "example": "examples"
@@ -70,7 +70,7 @@
     "tslint-config-standard": "^7.1.0",
     "typescript": "^3.0.1",
     "wechaty": "^0.19.148",
-    "wechaty-puppet": "^0.13.14"
+    "wechaty-puppet": "^0.14.1"
   },
   "git": {
     "scripts": {
@@ -79,7 +79,7 @@
   },
   "peerDependencies": {
     "file-box": "^0.8.23",
-    "wechaty-puppet": "^0.13.14"
+    "wechaty-puppet": "^0.14.1"
   },
   "homepage": "https://github.com/lijiarui/wechaty-puppet-padchat#readme",
   "dependencies": {
