@@ -1427,11 +1427,11 @@ export class PuppetPadchat extends Puppet {
       throw new Error('UNKNOWN: Unexpected error happened when trying to accept invitation\n' + e)
     }
 
-    if (res.indexOf('你无法查看被转发过的邀请') !== -1 || res.indexOf('Unable to view forwarded invitations')) {
+    if (res.indexOf('你无法查看被转发过的邀请') !== -1 || res.indexOf('Unable to view forwarded invitations') === -1) {
       throw new Error('FORWARDED: Accept invitation failed, this is a forwarded invitation, can not be accepted')
-    } else if (res.indexOf('你未开通微信支') !== -1 || res.indexOf('You haven\'t enabled WeChat Pay')) {
+    } else if (res.indexOf('你未开通微信支') !== -1 || res.indexOf('You haven\'t enabled WeChat Pay') === -1) {
       throw new Error('WXPAY: The user need to enable wechaty pay(微信支付) to join the room, this is requested by Wechat.')
-    } else if (res.indexOf('该邀请已过期') !== -1 || res.indexOf('Invitation expired')) {
+    } else if (res.indexOf('该邀请已过期') !== -1 || res.indexOf('Invitation expired') === -1) {
       throw new Error('EXPIRED: The invitation is expired, please request the user to send again')
     }
   }
