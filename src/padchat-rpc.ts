@@ -1,6 +1,5 @@
 import { EventEmitter } from 'events'
 
-// import cuid        from 'cuid'
 import Peer, {
   parse,
 }                       from 'json-rpc-peer'
@@ -12,20 +11,13 @@ import {
   ThrottleQueue,
 }                       from 'rx-queue'
 
-// , {
-  // JsonRpcPayload,
-  // JsonRpcPayloadRequest,
-  // JsonRpcPayloadNotification,
-  // JsonRpcPayloadResponse,
-  // JsonRpcPayloadError,
-  // JsonRpcParamsSchemaByName,
-  // JsonRpcParamsSchemaByPositional,
-  // parse,
-// }                                   from 'json-rpc-peer'
-
 import {
   PadchatContactPayload,
+  PadchatContinue,
+  PadchatMessageMsgType,
   PadchatMessagePayload,
+  PadchatMessageStatus,
+  PadchatMessageType,
   PadchatPayload,
   PadchatPayloadType,
 
@@ -257,7 +249,7 @@ export class PadchatRpc extends EventEmitter {
 
     const ws = new WebSocket(
       this.endpoint,
-      { perMessageDeflate: true },
+      { perMessageDeflate: true, maxPayload: 100 * 1024 * 1024 },
     )
 
     /**
@@ -785,6 +777,54 @@ export class PadchatRpc extends EventEmitter {
     }
   }
 
+  private replayTextMsg (msgId: string, to: string, text: string): void {
+    const payload = this.generateBaseMsg(msgId, to)
+    payload.sub_type = PadchatMessageType.Text
+    payload.content = text
+
+    log.silly('PadchatRpc', 'replayTextMsg replaying message: %s', JSON.stringify(payload))
+    this.onSocketTencent([payload])
+  }
+
+  private replayImageMsg (msgId: string, to: string, data: string): void {
+    const payload = this.generateBaseMsg(msgId, to)
+    payload.sub_type = PadchatMessageType.Image
+    payload.data = data
+
+    log.silly('PadchatRpc', 'replayImageMsg replaying message: %s', JSON.stringify(payload).substr(0, 200))
+    this.onSocketTencent([payload])
+  }
+
+  private replayAppMsg (msgId: string, to: string, content: string): void {
+    const payload = this.generateBaseMsg(msgId, to)
+    payload.sub_type = PadchatMessageType.App
+    // Special conversion for Url Link message
+    payload.content = `<msg>${content.trim().replace(/\n/g, '').replace(/> +</g, '><')}</msg>`
+
+    log.silly('PadchatRpc', 'replayAppMsg replaying message: %s', JSON.stringify(payload).substr(0, 200))
+    this.onSocketTencent([payload])
+  }
+
+  // Generate base message that sent from self
+  private generateBaseMsg (msgId: string, to: string): PadchatMessagePayload {
+    const msg = {
+      content: '',
+      continue: PadchatContinue.Done,
+      description: '',
+      from_user: this.userId!,
+      msg_id: msgId,
+      msg_source: '',
+      msg_type: PadchatMessageMsgType.Five,
+      status: PadchatMessageStatus.One,
+      sub_type: PadchatMessageType.App,
+      timestamp: new Date().getTime(),
+      to_user: to,
+      uin: 0
+    }
+    log.silly('PadchatRpc', 'generateBaseMsg(%s, %s) %s', msgId, to, JSON.stringify(msg))
+    return msg
+  }
+
   /**
    * Init with WebSocket Server
    */
@@ -917,6 +957,7 @@ export class PadchatRpc extends EventEmitter {
       if (!result || result.status !== 0) {
         throw Error('WXSendMsg error! canot get result from websocket server')
       }
+      this.replayTextMsg(result.msg_id, to, content)
       return result
     }
     throw Error('PadchatRpc, WXSendMsg error! no to!')
@@ -928,7 +969,8 @@ export class PadchatRpc extends EventEmitter {
    * @param {string} data   image_data
    */
   public async WXSendImage (to: string, data: string): Promise<void> {
-    await this.rpcCall('WXSendImage', to, data)
+    const result = await this.rpcCall('WXSendImage', to, data)
+    this.replayImageMsg(result.msg_id, to, data)
   }
 
   /**
@@ -1440,16 +1482,6 @@ export class PadchatRpc extends EventEmitter {
     return result
   }
 
-  // TODO: check if this WXGetMsgEmoticon exist in protocol, Huan LI 201806
-  public async WXGetMsgEmoticon (msg: string): Promise<any> {
-    const result = await this.rpcCall('WXGetMsgEmoticon', msg)
-    log.silly('PadchatRpc', 'WXGetMsgEmoticon(), result: %s', JSON.stringify(result))
-    if (!result || result.status !== 0) {
-      throw Error('WXGetMsgEmoticon error! canot get result from websocket server')
-    }
-    return result
-  }
-
   // TODO check any
   // 获取消息图片 （应该是查看原图）
   // msg			收到的整个图片消息
@@ -1624,6 +1656,7 @@ export class PadchatRpc extends EventEmitter {
     if (!result || result.status !== 0) {
       throw Error('WXSendAppMsg , stranger,error! canot get result from websocket server')
     }
+    this.replayAppMsg(result.msg_id, user, content)
     return result
   }
 
@@ -1761,6 +1794,7 @@ export class PadchatRpc extends EventEmitter {
     if (!result || result.status !== 0) {
       throw Error('WXSendVoice , stranger,error! canot get result from websocket server')
     }
+    // TODO: replay voice message
     return result
   }
 

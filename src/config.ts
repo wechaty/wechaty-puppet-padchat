@@ -26,12 +26,6 @@ export const RE_CON_INTERVAL = 5000
 export const POST_LOGIN_API_CALL_INTERVAL = 100
 export const MAX_HEARTBEAT_TIMEOUT = 3
 
-const logLevel = process.env.WECHATY_LOG
-if (logLevel) {
-  log.level(logLevel.toLowerCase() as any)
-  log.silly('Config', 'WECHATY_LOG set level to %s', logLevel)
-}
-
 function padchatToken () {
   const token = process.env.WECHATY_PUPPET_PADCHAT_TOKEN as string
   if (!token) {

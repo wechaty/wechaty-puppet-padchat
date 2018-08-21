@@ -16,6 +16,7 @@ export const POST_LOGIN_API = [
   'WXSyncContact',
   'WXSendMsg',
   'WXSendImage',
+  'WXSendVoice',
   'WXGetContact',
   'WXGetChatRoomMember',
   'WXSetUserRemark',

@@ -9,9 +9,9 @@ export const generateAppXMLMessage = ({ title, description, url, thumbnailUrl }:
       <action>view</action>
       <type>5</type>
       <showtype>0</showtype>
-      <url>${url}</url>
+      <url>${url.replace(/&/g, '&amp;')}</url>
       <contentattr>0</contentattr>
-      ${thumbnailUrl ? '<thumburl>' + thumbnailUrl + '</thumburl>' : ''}
+      ${thumbnailUrl ? '<thumburl>' + thumbnailUrl.replace(/&/g, '&amp;') + '</thumburl>' : ''}
     </appmsg>
   `
 }
