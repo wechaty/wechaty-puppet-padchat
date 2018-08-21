@@ -19,16 +19,16 @@ npm install wechaty-puppet-padchat
 
 ```ts
 import { Wechaty } from 'wechaty'
-import { PuppetPadchat } from 'wechaty-puppet-padchat'
 
 const WECHATY_PUPPET_PADCHAT_TOKEN = 'your-token-here'
 
-const puppet = new PuppetPadchat({
-  token: WECHATY_PUPPET_PADCHAT_TOKEN,
-})
+const puppet = new PuppetPadchat(
 
 const bot = new Wechaty({
-  puppet,
+  puppet: 'wechaty-puppet-padchat',
+  puppetOptions: {
+    token: WECHATY_PUPPET_PADCHAT_TOKEN,
+  },
 })
 
 // You are all set
