@@ -19,7 +19,7 @@ npm init -y
 npm install --production \
   *-*.*.*.tgz \
   @babel/runtime@7.0.0-beta.39 \
-  @types/lru-cache \
+  @types/quick-lru \
   @types/node \
   @types/normalize-package-data \
   @types/xml2js \
@@ -28,7 +28,7 @@ npm install --production \
   file-box \
   fs-extra \
   hot-import \
-  lru-cache \
+  quick-lru \
   memory-card \
   normalize-package-data \
   rx-queue \
