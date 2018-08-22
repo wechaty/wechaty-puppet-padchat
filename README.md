@@ -22,8 +22,6 @@ import { Wechaty } from 'wechaty'
 
 const WECHATY_PUPPET_PADCHAT_TOKEN = 'your-token-here'
 
-const puppet = new PuppetPadchat(
-
 const bot = new Wechaty({
   puppet: 'wechaty-puppet-padchat',
   puppetOptions: {
