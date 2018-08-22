@@ -22,11 +22,14 @@ import { Wechaty } from 'wechaty'
 
 const WECHATY_PUPPET_PADCHAT_TOKEN = 'your-token-here'
 
+const puppet = 'wechaty-puppet-padchat'
+const puppetOptions = {
+  token: WECHATY_PUPPET_PADCHAT_TOKEN,
+}
+  
 const bot = new Wechaty({
-  puppet: 'wechaty-puppet-padchat',
-  puppetOptions: {
-    token: WECHATY_PUPPET_PADCHAT_TOKEN,
-  },
+  puppet,
+  puppetOptions,
 })
 
 // You are all set
