@@ -8,10 +8,12 @@ import { MemoryCard }         from 'memory-card'
 import { DelayQueueExector }  from 'rx-queue'
 import { Subscription }       from 'rxjs'
 import { StateSwitch }        from 'state-switch'
+import { ContactGender }      from 'wechaty-puppet'
 
 import {
   PadchatContactMsgType,
   PadchatContactPayload,
+  PadchatContactRoomStatus,
   PadchatContinue,
 
   PadchatRoomInvitationPayload,
@@ -848,6 +850,38 @@ export class PadchatManager extends PadchatRpc {
     for (const memberPayload of memberListPayload.member) {
       const      contactId  = memberPayload.user_name
       memberDict[contactId] = memberPayload
+      const contact: PadchatContactPayload = {
+        big_head: memberPayload.big_head,
+        city: '',
+        country: '',
+        intro: '',
+        label: '',
+        nick_name: memberPayload.nick_name,
+        provincia: '',
+        py_initial: '',
+        remark: '',
+        remark_py_initial: '',
+        remark_quan_pin: '',
+        sex: ContactGender.Unknown,
+        signature: '',
+
+        small_head: memberPayload.small_head,
+        status: PadchatContactRoomStatus.Sync,
+        stranger: '',
+        ticket: '',
+        user_name: memberPayload.user_name,
+
+        message: '',
+        quan_pin: '',
+      }
+      if (!this.cacheContactRawPayload) {
+        throw new Error('cache not inited')
+      }
+
+      if (!this.cacheContactRawPayload.has(contactId)) {
+        log.silly('PadchatManager', `syncRoomMember() adding room member ${contactId} into contact cache`)
+        this.cacheContactRawPayload.set(contactId, contact)
+      }
     }
 
     if (!this.cacheRoomMemberRawPayload) {
