@@ -1836,16 +1836,4 @@ export class PadchatRpc extends EventEmitter {
     console.log('WXSetChatroomAnnouncement result:', result)
     return result
   }
-
-  // FIXME: does Get exist?
-  // FIXME2: what's the structure of result? result.data???
-  public async WXGetChatroomAnnouncement (chatroom: string): Promise<string> {
-    const result = await this.rpcCall('WXGetChatroomAnnouncement', chatroom)
-    log.silly('PadchatRpc', 'WXGetChatroomAnnouncement ,result: %s', JSON.stringify(result))
-    if (!result || result.status !== 0) {
-      throw Error('WXGetChatroomAnnouncement , error! canot get result from websocket server')
-    }
-    return result.data
-  }
-
 }

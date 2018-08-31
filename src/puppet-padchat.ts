@@ -1382,7 +1382,8 @@ export class PuppetPadchat extends Puppet {
     if (text) {
       await this.padchatManager.WXSetChatroomAnnouncement(roomId, text)
     } else {
-      return this.padchatManager.WXGetChatroomAnnouncement(roomId)
+      log.warn('Getting room announcement is not supported by wechaty-puppet-padchat.')
+      return ''
     }
   }
 
