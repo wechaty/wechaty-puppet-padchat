@@ -457,6 +457,10 @@ export class PadchatManager extends PadchatRpc {
             waitUserResponse = false
             break
 
+          case WXCheckQRCodeStatus.Ignore:
+            log.silly('PuppetPadchatManager', 'ignore status -2')
+            break
+
           default:
             log.warn('PuppetPadchatManager', 'startCheckScan() unknown WXCheckQRCodeStatus: ' + result.status)
             this.loginScanQrcode = undefined

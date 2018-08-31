@@ -32,6 +32,7 @@ export interface WXGetQRCodeType {
 }
 
 export enum WXCheckQRCodeStatus {
+  Ignore      = -2,
   Unknown     = -1,
   WaitScan    = 0,
   WaitConfirm = 1,
