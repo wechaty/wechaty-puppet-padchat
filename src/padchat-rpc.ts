@@ -141,7 +141,7 @@ export class PadchatRpc extends EventEmitter {
   }
 
   protected async reconnect (): Promise<void> {
-    log.verbose('PadchatRpc', 'reconnect()')
+    log.info('PadchatRpc', 'reconnect()')
 
     this.cleanConnection()
 
