@@ -1551,6 +1551,7 @@ export class PuppetPadchat extends Puppet {
     }
 
     await this.padchatManager.updateSelfName(newName)
+    await this.contactPayloadDirty(this.selfId())
   }
 
   public async contactSelfSignature (signature: string) : Promise<void> {
@@ -1559,6 +1560,7 @@ export class PuppetPadchat extends Puppet {
     }
 
     await this.padchatManager.updateSelfSignature(signature)
+    await this.contactPayloadDirty(this.selfId())
   }
 }
 
