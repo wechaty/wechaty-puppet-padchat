@@ -1111,11 +1111,11 @@ export class PuppetPadchat extends Puppet {
   public async roomMemberPayloadDirty (roomId: string) {
     log.silly('PuppetPadchat', 'roomMemberRawPayloadDirty(%s)', roomId)
 
+    await super.roomMemberPayloadDirty(roomId)
+
     if (this.padchatManager) {
       await this.padchatManager.roomMemberRawPayloadDirty(roomId)
     }
-
-    await super.roomMemberPayloadDirty(roomId)
   }
 
   public async roomMemberRawPayload (
@@ -1301,10 +1301,11 @@ export class PuppetPadchat extends Puppet {
       await this.padchatManager.WXInviteChatRoomMember(roomId, contactId)
     }
 
-    // Reload room information here
-    await new Promise(r => setTimeout(r, 1000))
-    await this.roomMemberPayloadDirty(roomId)
-    await this.roomMemberPayload(roomId, contactId)
+    // Will reload room information when receive room-join event
+    // instead of here, since the room information might not be updated yet
+    // await new Promise(r => setTimeout(r, 1000))
+    // await this.roomMemberPayloadDirty(roomId)
+    // await this.roomMemberPayload(roomId, contactId)
   }
 
   public async roomTopic (roomId: string)                : Promise<string>
