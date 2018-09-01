@@ -244,7 +244,7 @@ export class PuppetPadchat extends Puppet {
     manager.on('reconnect', async msg => {
       log.verbose('PuppetPadchat', 'startManager() manager.on(reconnect) for %s', msg)
       // Slightly delay the reconnect after disconnected from the server
-      await new Promise(r => setTimeout(r, 500))
+      await new Promise(r => setTimeout(r, 2000))
       await manager.reconnect()
     })
 
