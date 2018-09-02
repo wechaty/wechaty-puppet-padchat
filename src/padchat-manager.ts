@@ -294,6 +294,8 @@ export class PadchatManager extends PadchatRpc {
     this.userId          = undefined
     this.loginScanQrcode = undefined
     this.loginScanStatus = undefined
+    this.contactListSynced = false
+    this.roomNeedsToBeSync = 0
 
     this.state.off(true)
   }
@@ -459,6 +461,9 @@ export class PadchatManager extends PadchatRpc {
 
           case WXCheckQRCodeStatus.Ignore:
             log.silly('PuppetPadchatManager', 'ignore status -2')
+            this.loginScanQrcode = undefined
+            this.loginScanStatus = undefined
+            waitUserResponse = false
             break
 
           default:
