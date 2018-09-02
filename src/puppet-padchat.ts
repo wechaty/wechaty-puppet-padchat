@@ -1464,7 +1464,7 @@ export class PuppetPadchat extends Puppet {
     try {
       rawSearchPayload = await this.padchatManager.WXSearchContact(contactId)
     } catch (e) {
-      throw Error(`Can not add user ${contactId}, this contactId is not searchable`)
+      throw Error(`Can not add user ${contactId}, this contactId is not searchable. Please refer to issue: https://github.com/lijiarui/wechaty-puppet-padchat/issues/166`)
     }
 
     /**
