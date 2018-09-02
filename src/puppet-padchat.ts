@@ -94,6 +94,7 @@ import {
 }                           from './padchat-schemas'
 
 import {
+  WXSearchContactType,
   WXSearchContactTypeStatus,
 }                           from './padchat-rpc.type'
 import { generateAppXMLMessage } from './pure-function-helpers/app-message-generator'
@@ -1459,8 +1460,12 @@ export class PuppetPadchat extends Puppet {
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
     }
-
-    const rawSearchPayload = await this.padchatManager.WXSearchContact(contactId)
+    let rawSearchPayload: WXSearchContactType
+    try {
+      rawSearchPayload = await this.padchatManager.WXSearchContact(contactId)
+    } catch (e) {
+      throw Error(`Can not add user ${contactId}, this contactId is not searchable`)
+    }
 
     /**
      * If the contact is not stranger, than ussing WXSearchContact can get user_name

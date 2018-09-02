@@ -1286,6 +1286,7 @@ export class PadchatRpc extends EventEmitter {
 
     if (result.status === WXSearchContactTypeStatus.UnSearchable) {
       log.verbose('PadchatRpc', 'WXSearchContact wxid: %s cannot be searched', id)
+      throw Error(`ContactId ${id} is not searchable`)
     }
     return result
   }
