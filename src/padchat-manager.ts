@@ -971,7 +971,9 @@ export class PadchatManager extends PadchatRpc {
                 return this.syncRoomMember(roomId)
               },
               `syncRoomMember(${roomId})`,
-            )
+            ).catch((e: Error) => {
+              log.error('PuppetPadchatManager', 'syncContactsAndRooms() failed to process %s: %s', roomId, e)
+            })
             log.silly('PuppetPadchatManager', 'syncContactsAndRooms() added sync room(%s) task to delayQueueExecutor', roomId)
 
           } else if (isContactId(syncContact.user_name)) {
