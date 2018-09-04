@@ -42,9 +42,11 @@ import {
   RoomInvitationPayload,
   RoomMemberPayload,
   RoomPayload,
+  UrlLinkPayload,
 }                                 from 'wechaty-puppet'
 
 import {
+  appMessageParser,
   contactRawPayloadParser,
 
   fileBoxToQrcode,
@@ -92,8 +94,11 @@ import {
 }                           from './padchat-schemas'
 
 import {
+  WXSearchContactType,
   WXSearchContactTypeStatus,
 }                           from './padchat-rpc.type'
+import { generateAppXMLMessage } from './pure-function-helpers/app-message-generator'
+import { emojiPayloadParser } from './pure-function-helpers/message-emoji-payload-parser'
 
 let PADCHAT_COUNTER = 0 // PuppetPadchat Instance Counter
 
@@ -228,7 +233,7 @@ export class PuppetPadchat extends Puppet {
     manager.on('scan',    (qrcode: string, status: number, data?: string) => this.emit('scan', qrcode, status, data))
     manager.on('login',   (userId: string)                                => this.login(userId))
     manager.on('message', (rawPayload: PadchatMessagePayload)             => this.onPadchatMessage(rawPayload))
-    manager.on('logout',  ()                                              => this.logout())
+    manager.on('logout',  ()                                              => this.logout(true))
     manager.on('dong',    (data)                                          => this.emit('dong', data))
     manager.on('ready',   ()                                              => this.emit('ready'))
 
@@ -240,7 +245,7 @@ export class PuppetPadchat extends Puppet {
     manager.on('reconnect', async msg => {
       log.verbose('PuppetPadchat', 'startManager() manager.on(reconnect) for %s', msg)
       // Slightly delay the reconnect after disconnected from the server
-      await new Promise(r => setTimeout(r, 500))
+      await new Promise(r => setTimeout(r, 2000))
       await manager.reconnect()
     })
 
@@ -330,7 +335,7 @@ export class PuppetPadchat extends Puppet {
 
   protected async onPadchatMessageRoomInvitation (rawPayload: PadchatMessagePayload): Promise<void> {
     log.verbose('PuppetPadchat', 'onPadchatMessageRoomInvitation(%s)', rawPayload)
-    const roomInviteEvent = roomInviteEventMessageParser(rawPayload)
+    const roomInviteEvent = await roomInviteEventMessageParser(rawPayload)
 
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
@@ -340,6 +345,8 @@ export class PuppetPadchat extends Puppet {
       await this.padchatManager.saveRoomInvitationRawPayload(roomInviteEvent)
 
       this.emit('room-invite', roomInviteEvent.msgId)
+    } else {
+      this.emit('message', rawPayload.msg_id)
     }
   }
 
@@ -349,7 +356,7 @@ export class PuppetPadchat extends Puppet {
   protected async onPadchatMessageRoomEventJoin (rawPayload: PadchatMessagePayload): Promise<void> {
     log.verbose('PuppetPadchat', 'onPadchatMessageRoomEventJoin({id=%s})', rawPayload.msg_id)
 
-    const roomJoinEvent = roomJoinEventMessageParser(rawPayload)
+    const roomJoinEvent = await roomJoinEventMessageParser(rawPayload)
 
     if (roomJoinEvent) {
       const inviteeNameList = roomJoinEvent.inviteeNameList
@@ -397,6 +404,12 @@ export class PuppetPadchat extends Puppet {
       }
 
       const inviterId = inviterIdList[0]
+
+      /**
+       * Set Cache Dirty
+       */
+      await this.roomMemberPayloadDirty(roomId)
+      await this.roomPayloadDirty(roomId)
 
       this.emit('room-join', roomId, inviteeIdList,  inviterId)
     }
@@ -491,7 +504,7 @@ export class PuppetPadchat extends Puppet {
     /**
      * 2. Look for friendship receive event
      */
-    const friendshipReceiveContactId = friendshipReceiveEventMessageParser(rawPayload)
+    const friendshipReceiveContactId = await friendshipReceiveEventMessageParser(rawPayload)
     /**
      * 3. Look for friendship verify event
      */
@@ -522,7 +535,7 @@ export class PuppetPadchat extends Puppet {
     this.state.off('pending')
 
     // this.watchdog.sleep()
-    await this.logout()
+    await this.logout(true)
 
     await this.padchatManager.stop()
 
@@ -532,7 +545,7 @@ export class PuppetPadchat extends Puppet {
     this.state.off(true)
   }
 
-  public async logout (): Promise<void> {
+  public async logout (shallow = false): Promise<void> {
     log.verbose('PuppetPadchat', 'logout()')
 
     if (!this.id) {
@@ -547,10 +560,9 @@ export class PuppetPadchat extends Puppet {
     this.emit('logout', this.id) // becore we will throw above by logonoff() when this.user===undefined
     this.id = undefined
 
-    // TODO
-    // if (!passive) {
-    //   await this.padchatManager.WXLogout()
-    // }
+    if (!shallow) {
+      await this.padchatManager.WXLogout()
+    }
 
     await this.padchatManager.logout()
   }
@@ -646,12 +658,11 @@ export class PuppetPadchat extends Puppet {
     return fileBox
   }
 
-  public async contactQrcode (contactId: string): Promise<string> {
-    log.verbose('PuppetPadchat', 'contactQrcode(%s)', contactId)
+  public async contactSelfQrcode (): Promise<string> {
+    log.verbose('PuppetPadchat', 'contactSelfQrcode()')
 
-    if (contactId !== this.selfId()) {
-      throw new Error('can not set avatar for others')
-    }
+    const contactId = this.selfId()
+
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
     }
@@ -831,8 +842,12 @@ export class PuppetPadchat extends Puppet {
         return this.getVoiceFileBoxFromRawPayload(rawPayload, attachmentName)
 
       case MessageType.Emoticon:
-        result = await this.padchatManager.WXGetMsgEmoticon(rawText)
-        return FileBox.fromBase64(result.image, `${attachmentName}.gif`)
+        const emojiPayload = await emojiPayloadParser(rawPayload)
+        if (emojiPayload) {
+          return FileBox.fromUrl(emojiPayload.cdnurl, `${attachmentName}.gif`)
+        } else {
+          throw new Error('Can not get emoji file from the message')
+        }
 
       case MessageType.Image:
         result = await this.padchatManager.WXGetMsgImage(rawText)
@@ -858,6 +873,28 @@ export class PuppetPadchat extends Puppet {
         )
 
         return file
+    }
+  }
+
+  public async messageUrl (messageId: string): Promise<UrlLinkPayload> {
+
+    const rawPayload = await this.messageRawPayload(messageId)
+    const payload = await this.messagePayload(messageId)
+
+    if (payload.type !== MessageType.Url) {
+      throw new Error('Can not get url from non url payload')
+    } else {
+      const appPayload = await appMessageParser(rawPayload)
+      if (appPayload) {
+        return {
+          description: appPayload.des,
+          thumbnailUrl: appPayload.thumburl,
+          title: appPayload.title,
+          url: appPayload.url,
+        }
+      } else {
+        throw new Error('Can not parse url message payload')
+      }
     }
   }
 
@@ -900,7 +937,7 @@ export class PuppetPadchat extends Puppet {
   public async messageRawPayloadParser (rawPayload: PadchatMessagePayload): Promise<MessagePayload> {
     log.verbose('PuppetPadChat', 'messageRawPayloadParser({msg_id="%s"})', rawPayload.msg_id)
 
-    const payload: MessagePayload = messageRawPayloadParser(rawPayload)
+    const payload: MessagePayload = await messageRawPayloadParser(rawPayload)
 
     log.silly('PuppetPadchat', 'messagePayload(%s)', JSON.stringify(payload))
     return payload
@@ -970,7 +1007,7 @@ export class PuppetPadchat extends Puppet {
     receiver  : Receiver,
     contactId : string,
   ): Promise<void> {
-    log.verbose('PuppetPadchat', 'messageSend("%s", %s)', JSON.stringify(receiver), contactId)
+    log.verbose('PuppetPadchat', 'messageSendContact("%s", %s)', JSON.stringify(receiver), contactId)
 
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
@@ -986,6 +1023,26 @@ export class PuppetPadchat extends Puppet {
     const payload = await this.contactPayload(contactId)
     const title = payload.name + '名片'
     await this.padchatManager.WXShareCard(id, contactId, title)
+  }
+
+  public async messageSendUrl (
+    receiver: Receiver,
+    urlLinkPayload: UrlLinkPayload
+  ): Promise<void> {
+    log.verbose('PuppetPadchat', 'messageSendLink("%s", %s)', JSON.stringify(receiver), JSON.stringify(urlLinkPayload))
+
+    if (!this.padchatManager) {
+      throw new Error('no padchat manager')
+    }
+
+    // Send to the Room if there's a roomId
+    const id = receiver.roomId || receiver.contactId
+
+    if (!id) {
+      throw Error('no id')
+    }
+
+    await this.padchatManager.WXSendAppMsg(id, generateAppXMLMessage(urlLinkPayload))
   }
 
   public async messageForward (
@@ -1034,6 +1091,11 @@ export class PuppetPadchat extends Puppet {
         voiceLength,
       )
       log.error(res)
+    } else if (payload.type === MessageType.Url) {
+      await this.messageSendUrl(
+        receiver,
+        await this.messageUrl(messageId)
+      )
     } else {
       await this.messageSendFile(
         receiver,
@@ -1050,11 +1112,11 @@ export class PuppetPadchat extends Puppet {
   public async roomMemberPayloadDirty (roomId: string) {
     log.silly('PuppetPadchat', 'roomMemberRawPayloadDirty(%s)', roomId)
 
+    await super.roomMemberPayloadDirty(roomId)
+
     if (this.padchatManager) {
       await this.padchatManager.roomMemberRawPayloadDirty(roomId)
     }
-
-    await super.roomMemberPayloadDirty(roomId)
   }
 
   public async roomMemberRawPayload (
@@ -1108,6 +1170,8 @@ export class PuppetPadchat extends Puppet {
     }
 
     const rawPayload = await this.padchatManager.roomRawPayload(roomId)
+
+    if (!rawPayload.user_name) rawPayload.user_name = roomId
     return rawPayload
   }
 
@@ -1238,10 +1302,11 @@ export class PuppetPadchat extends Puppet {
       await this.padchatManager.WXInviteChatRoomMember(roomId, contactId)
     }
 
-    // Reload room information here
-    await new Promise(r => setTimeout(r, 1000))
-    await this.roomMemberPayloadDirty(roomId)
-    await this.roomMemberPayload(roomId, contactId)
+    // Will reload room information when receive room-join event
+    // instead of here, since the room information might not be updated yet
+    // await new Promise(r => setTimeout(r, 1000))
+    // await this.roomMemberPayloadDirty(roomId)
+    // await this.roomMemberPayload(roomId, contactId)
   }
 
   public async roomTopic (roomId: string)                : Promise<string>
@@ -1319,7 +1384,8 @@ export class PuppetPadchat extends Puppet {
     if (text) {
       await this.padchatManager.WXSetChatroomAnnouncement(roomId, text)
     } else {
-      return this.padchatManager.WXGetChatroomAnnouncement(roomId)
+      log.warn('Getting room announcement is not supported by wechaty-puppet-padchat.')
+      return ''
     }
   }
 
@@ -1364,12 +1430,19 @@ export class PuppetPadchat extends Puppet {
       throw new Error('UNKNOWN: Unexpected error happened when trying to accept invitation\n' + e)
     }
 
-    if (res.indexOf('你无法查看被转发过的邀请') !== -1 || res.indexOf('Unable to view forwarded invitations')) {
+    if (res.indexOf('你无法查看被转发过的邀请') !== -1 || res.indexOf('Unable to view forwarded invitations') === -1) {
       throw new Error('FORWARDED: Accept invitation failed, this is a forwarded invitation, can not be accepted')
-    } else if (res.indexOf('你未开通微信支') !== -1 || res.indexOf('You haven\'t enabled WeChat Pay')) {
+    } else if (res.indexOf('你未开通微信支付') !== -1 || res.indexOf('You haven\'t enabled WeChat Pay') === -1
+              || res.indexOf('你需要实名验证后才能接受邀请') !== -1) {
       throw new Error('WXPAY: The user need to enable wechaty pay(微信支付) to join the room, this is requested by Wechat.')
-    } else if (res.indexOf('该邀请已过期') !== -1 || res.indexOf('Invitation expired')) {
+    } else if (res.indexOf('该邀请已过期') !== -1 || res.indexOf('Invitation expired') === -1) {
       throw new Error('EXPIRED: The invitation is expired, please request the user to send again')
+    } else if (res.indexOf('群聊邀请操作太频繁请稍后再试') !== -1 || res.indexOf('操作太频繁，请稍后再试') !== -1) {
+      throw new Error('FREQUENT: Room invitation operation too frequent.')
+    } else if (res.indexOf('已达群聊人数上限') !== -1) {
+      throw new Error('LIMIT: The room member count has reached the limit.')
+    } else if (res.indexOf('该群因违规已被限制使用，无法添加群成员') !== -1) {
+      throw new Error('INVALID: This room has been mal used, can not add new members.')
     }
   }
 
@@ -1387,8 +1460,12 @@ export class PuppetPadchat extends Puppet {
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
     }
-
-    const rawSearchPayload = await this.padchatManager.WXSearchContact(contactId)
+    let rawSearchPayload: WXSearchContactType
+    try {
+      rawSearchPayload = await this.padchatManager.WXSearchContact(contactId)
+    } catch (e) {
+      throw Error(`Can not add user ${contactId}, this contactId is not searchable. Please refer to issue: https://github.com/lijiarui/wechaty-puppet-padchat/issues/166`)
+    }
 
     /**
      * If the contact is not stranger, than ussing WXSearchContact can get user_name
@@ -1473,6 +1550,24 @@ export class PuppetPadchat extends Puppet {
     if (this.padchatManager) {
       // TODO: this.padchatManager.unref()
     }
+  }
+
+  public async contactSelfName (newName: string) : Promise<void> {
+    if (!this.padchatManager) {
+      throw new Error('no padchat manager')
+    }
+
+    await this.padchatManager.updateSelfName(newName)
+    await this.contactPayloadDirty(this.selfId())
+  }
+
+  public async contactSelfSignature (signature: string) : Promise<void> {
+    if (!this.padchatManager) {
+      throw new Error('no padchat manager')
+    }
+
+    await this.padchatManager.updateSelfSignature(signature)
+    await this.contactPayloadDirty(this.selfId())
   }
 }
 

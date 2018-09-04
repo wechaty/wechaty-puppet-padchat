@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
+NPM_TAG=latest
+if [ ./development-release.ts ]; then
+  NPM_TAG=next
+fi
+
 npm run dist
 npm run pack
 
@@ -14,25 +19,25 @@ npm init -y
 npm install --production \
   *-*.*.*.tgz \
   @babel/runtime@7.0.0-beta.39 \
-  @types/lru-cache \
+  @types/quick-lru \
   @types/node \
   @types/normalize-package-data \
-  @types/xml2json \
+  @types/xml2js \
   clone-class \
   brolog \
   file-box \
   fs-extra \
   hot-import \
-  lru-cache \
+  quick-lru \
   memory-card \
   normalize-package-data \
   rx-queue \
   state-switch \
   typescript \
-  wechaty-puppet@next \
+  "wechaty-puppet@$NPM_TAG" \
   watchdog \
   qr-image \
-  xml2json \
+  xml2js \
 
 ./node_modules/.bin/tsc \
   --esModuleInterop \

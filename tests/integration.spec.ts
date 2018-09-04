@@ -43,7 +43,7 @@ test('PuppetPadchat Integration test', async t => {
 
   await puppet.start()
 
-  puppet.on('login', async contactId => {
+  puppet.on('login', async () => {
     const validateResult = await puppet.contactValidate('id')
     t.ok(!validateResult, 'validate result should be false')
 

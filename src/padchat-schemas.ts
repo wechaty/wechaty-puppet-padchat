@@ -74,6 +74,28 @@ export enum PadchatPayloadType {
   ExpirePadchatToken = -1113, // -1113 when the token is expired
 }
 
+export enum WechatAppMessageType {
+  Text                  = 1,
+  Img                   = 2,
+  Audio                 = 3,
+  Video                 = 4,
+  Url                   = 5,
+  Attach                = 6,
+  Open                  = 7,
+  Emoji                 = 8,
+  VoiceRemind           = 9,
+  ScanGood              = 10,
+  Good                  = 13,
+  Emotion               = 15,
+  CardTicket            = 16,
+  RealtimeShareLocation = 17,
+  ChatHistory           = 19,
+  MiniProgram           = 33,
+  Transfers             = 2000,
+  RedEnvelopes          = 2001,
+  ReaderType            = 100001,
+}
+
 export interface PadchatPayload {
   msg_type? : PadchatMsgType,
   continue? : PadchatContinue,
@@ -310,6 +332,12 @@ export enum PadchatMessageType {
   Recalled          = 10002,
 }
 
+export enum PadchatEmojiType {
+  Unknown = 0,
+  Static  = 1,    // emoji that does not have animation
+  Dynamic = 2,    // emoji with animation
+}
+
 /**
  * from Message
  */
@@ -447,6 +475,22 @@ export interface PadchatRoomInvitationPayload {
   roomName: string,
   timestamp: number,
   url: string,
+}
+
+export interface PadchatAppMessagePayload {
+  des?: string,
+  thumburl?: string,
+  title: string,
+  url: string,
+  type: WechatAppMessageType,
+}
+
+export interface PadchatEmojiMessagePayload {
+  cdnurl: string,
+  type: PadchatEmojiType,
+  len: number,
+  width: number,
+  height: number,
 }
 
 export interface PadchatFriendshipPayload {

@@ -1,4 +1,4 @@
-import { toJson } from 'xml2json'
+import { xmlToJson } from './xml-to-json'
 
 import { PadchatMessagePayload } from '../padchat-schemas'
 
@@ -52,9 +52,9 @@ export function friendshipConfirmEventMessageParser (
  *
  */
 
-export function friendshipReceiveEventMessageParser (
+export async function friendshipReceiveEventMessageParser (
   rawPayload: PadchatMessagePayload,
-): null | string {
+): Promise<null | string> {
 
   if (!isPayload(rawPayload)) {
     return null
@@ -62,21 +62,21 @@ export function friendshipReceiveEventMessageParser (
 
   interface XmlSchema {
     msg: {
-      fromusername: string,
-      encryptusername: string,
-      content: string,
-      ticket: string,
+      $: {
+        fromusername    : string,
+        encryptusername : string,
+        content         : string,
+        ticket          : string,
+      },
     }
   }
 
   try {
-    const jsonPayload: XmlSchema = JSON.parse(
-      toJson(
-        rawPayload.content,
-      ),
+    const jsonPayload: XmlSchema = await xmlToJson(
+      rawPayload.content,
     )
 
-    const contactId = jsonPayload.msg.fromusername
+    const contactId = jsonPayload.msg.$.fromusername
 
     if (isContactId(contactId)) {
       return contactId

@@ -1,4 +1,4 @@
-import { toJson } from 'xml2json'
+import { xmlToJson } from './xml-to-json'
 
 import {
   FriendshipType
@@ -19,9 +19,9 @@ import {
   friendshipVerifyEventMessageParser,
 }                                         from './friendship-event-message-parser'
 
-export function friendshipRawPayloadParser (
+export async function friendshipRawPayloadParser (
   rawPayload: PadchatMessagePayload,
-) : FriendshipPayload {
+) : Promise<FriendshipPayload> {
 
   if (friendshipConfirmEventMessageParser(rawPayload)) {
     /**
@@ -35,7 +35,7 @@ export function friendshipRawPayloadParser (
      */
     return friendshipRawPayloadParserVerify(rawPayload)
 
-  } else if (friendshipReceiveEventMessageParser(rawPayload)) {
+  } else if (await friendshipReceiveEventMessageParser(rawPayload)) {
     /**
      * 3. Receive Event
      */
@@ -46,9 +46,9 @@ export function friendshipRawPayloadParser (
   }
 }
 
-function friendshipRawPayloadParserConfirm (
+async function friendshipRawPayloadParserConfirm (
   rawPayload: PadchatMessagePayload,
-): FriendshipPayload {
+): Promise<FriendshipPayload> {
   const payload: FriendshipPayloadConfirm = {
     contactId : rawPayload.from_user,
     id        : rawPayload.msg_id,
@@ -68,21 +68,23 @@ function friendshipRawPayloadParserVerify (
   return payload
 }
 
-function friendshipRawPayloadParserReceive (
+async function friendshipRawPayloadParserReceive (
   rawPayload: PadchatMessagePayload,
 ) {
   const tryXmlText = rawPayload.content
 
   interface XmlSchema {
-    msg?: PadchatFriendshipPayload,
+    msg?: {
+      $: PadchatFriendshipPayload,
+    },
   }
 
-  const jsonPayload: XmlSchema = toJson(tryXmlText, { object: true })
+  const jsonPayload: XmlSchema = await xmlToJson(tryXmlText) // , { object: true })
 
   if (!jsonPayload.msg) {
     throw new Error('no msg found')
   }
-  const padchatFriendshipPayload: PadchatFriendshipPayload = jsonPayload.msg
+  const padchatFriendshipPayload: PadchatFriendshipPayload = jsonPayload.msg.$
 
   const friendshipPayload: FriendshipPayloadReceive = {
     contactId : padchatFriendshipPayload.fromusername,

@@ -36,7 +36,7 @@ test('roomJoinEventMessageParser() EN-other-invite-other', async t => {
     roomId          : '5967138682@chatroom',
   }
 
-  const event = roomJoinEventMessageParser(MESSAGE_PAYLOAD)
+  const event = await roomJoinEventMessageParser(MESSAGE_PAYLOAD)
   t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
 })
 
@@ -61,7 +61,7 @@ test('roomJoinEventMessageParser() EN-other-invite-others', async t => {
     roomId          : '5178377660@chatroom',
   }
 
-  const event = roomJoinEventMessageParser(MESSAGE_PAYLOAD)
+  const event = await roomJoinEventMessageParser(MESSAGE_PAYLOAD)
   t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
 })
 
@@ -86,7 +86,7 @@ test('roomJoinEventMessageParser() EN-other-invite-bot', async t => {
     roomId          : '3453262102@chatroom',
   }
 
-  const event = roomJoinEventMessageParser(MESSAGE_PAYLOAD)
+  const event = await roomJoinEventMessageParser(MESSAGE_PAYLOAD)
   t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
 })
 
@@ -111,7 +111,7 @@ test('roomJoinEventMessageParser() EN-other-invite-bot-with-2-others', async t =
     roomId          : '5178377660@chatroom',
   }
 
-  const event = roomJoinEventMessageParser(MESSAGE_PAYLOAD)
+  const event = await roomJoinEventMessageParser(MESSAGE_PAYLOAD)
   t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
 })
 
@@ -137,7 +137,7 @@ test('roomJoinEventMessageParser() EN-bot-invite-one', async t => {
     roomId          : '3453262102@chatroom',
   }
 
-  const event = roomJoinEventMessageParser(MESSAGE_PAYLOAD)
+  const event = await roomJoinEventMessageParser(MESSAGE_PAYLOAD)
   t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
 })
 
@@ -165,7 +165,7 @@ test('roomJoinEventMessageParser() EN-bot-invite-three-bot-is-owner', async t =>
     roomId          : '6350854677@chatroom',
   }
 
-  const event = roomJoinEventMessageParser(MESSAGE_PAYLOAD)
+  const event = await roomJoinEventMessageParser(MESSAGE_PAYLOAD)
   t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
 })
 
@@ -190,7 +190,7 @@ test('roomJoinEventMessageParser() EN-bot-invite-three-bot-is-not-owner', async 
     roomId          : '12740017638@chatroom',
   }
 
-  const event = roomJoinEventMessageParser(MESSAGE_PAYLOAD)
+  const event = await roomJoinEventMessageParser(MESSAGE_PAYLOAD)
   t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
 })
 
@@ -215,7 +215,7 @@ test('roomJoinEventMessageParser() EN-other-invite-bot-and-two', async t => {
     roomId          : '12740017638@chatroom',
   }
 
-  const event = roomJoinEventMessageParser(MESSAGE_PAYLOAD)
+  const event = await roomJoinEventMessageParser(MESSAGE_PAYLOAD)
   t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
 })
 
@@ -240,7 +240,7 @@ test('roomJoinEventMessageParser() EN-scan-qrcode-shared-by-bot-when-bot-is-owne
     roomId          : '6350854677@chatroom',
   }
 
-  const event = roomJoinEventMessageParser(MESSAGE_PAYLOAD)
+  const event = await roomJoinEventMessageParser(MESSAGE_PAYLOAD)
   t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
 })
 
@@ -265,7 +265,7 @@ test('roomJoinEventMessageParser() EN-scan-qrcode-shared-by-bot-when-bot-not-own
     roomId          : '9967013206@chatroom',
   }
 
-  const event = roomJoinEventMessageParser(MESSAGE_PAYLOAD)
+  const event = await roomJoinEventMessageParser(MESSAGE_PAYLOAD)
   t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
 })
 
@@ -290,7 +290,7 @@ test('roomJoinEventMessageParser() EN-scan-qrcode-shared-by-other-when-bot-is-ow
     roomId          : '5616634434@chatroom',
   }
 
-  const event = roomJoinEventMessageParser(MESSAGE_PAYLOAD)
+  const event = await roomJoinEventMessageParser(MESSAGE_PAYLOAD)
   t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
 })
 
@@ -315,7 +315,7 @@ test('roomJoinEventMessageParser() EN-scan-qrcode-shared-by-other-when-bot-no-ow
     roomId          : '6350854677@chatroom',
   }
 
-  const event = roomJoinEventMessageParser(MESSAGE_PAYLOAD)
+  const event = await roomJoinEventMessageParser(MESSAGE_PAYLOAD)
   t.deepEqual(event, EXPECTED_EVENT, 'should parse event')
 })
 

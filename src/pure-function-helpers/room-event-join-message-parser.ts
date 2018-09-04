@@ -1,4 +1,4 @@
-import { toJson } from 'xml2json'
+import { xmlToJson } from './xml-to-json'
 
 import {
   PuppetRoomJoinEvent,
@@ -80,9 +80,9 @@ const ROOM_JOIN_OTHER_INVITE_OTHER_QRCODE_REGEX_LIST_EN = [
   /^"(.+)" joined the group chat via the QR Code shared by "(.+)"/,
 ]
 
-export function roomJoinEventMessageParser (
+export async function roomJoinEventMessageParser (
   rawPayload: PadchatMessagePayload,
-): null | PuppetRoomJoinEvent {
+): Promise<null | PuppetRoomJoinEvent> {
 
   if (!isPayload(rawPayload)) {
     return null
@@ -111,7 +111,9 @@ export function roomJoinEventMessageParser (
     const tryXmlText = content.replace(/^[^\n]+\n/, '')
     interface XmlSchema {
       sysmsg: {
-        type: 'revokemsg' | 'delchatroommember',
+        $: {
+          type: 'revokemsg' | 'delchatroommember',
+        },
         delchatroommember?: {
           plain : string,
           text  : string,
@@ -124,14 +126,14 @@ export function roomJoinEventMessageParser (
         },
       }
     }
-    const jsonPayload = toJson(tryXmlText, { object: true }) as XmlSchema
+    const jsonPayload: XmlSchema = await xmlToJson(tryXmlText) // toJson(tryXmlText, { object: true }) as XmlSchema
     try {
-      if (jsonPayload.sysmsg.type === 'delchatroommember') {
+      if (jsonPayload.sysmsg.$.type === 'delchatroommember') {
         content = jsonPayload.sysmsg.delchatroommember!.plain
-      } else if (jsonPayload.sysmsg.type === 'revokemsg') {
+      } else if (jsonPayload.sysmsg.$.type === 'revokemsg') {
         content = jsonPayload.sysmsg.revokemsg!.replacemsg
       } else {
-        throw new Error('unknown jsonPayload sysmsg type: ' + jsonPayload.sysmsg.type)
+        throw new Error('unknown jsonPayload sysmsg type: ' + jsonPayload.sysmsg.$.type)
       }
     } catch (e) {
       console.error(e)

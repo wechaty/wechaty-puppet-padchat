@@ -1,6 +1,5 @@
 import { EventEmitter } from 'events'
 
-// import cuid        from 'cuid'
 import Peer, {
   parse,
 }                       from 'json-rpc-peer'
@@ -12,20 +11,13 @@ import {
   ThrottleQueue,
 }                       from 'rx-queue'
 
-// , {
-  // JsonRpcPayload,
-  // JsonRpcPayloadRequest,
-  // JsonRpcPayloadNotification,
-  // JsonRpcPayloadResponse,
-  // JsonRpcPayloadError,
-  // JsonRpcParamsSchemaByName,
-  // JsonRpcParamsSchemaByPositional,
-  // parse,
-// }                                   from 'json-rpc-peer'
-
 import {
   PadchatContactPayload,
+  PadchatContinue,
+  PadchatMessageMsgType,
   PadchatMessagePayload,
+  PadchatMessageStatus,
+  PadchatMessageType,
   PadchatPayload,
   PadchatPayloadType,
 
@@ -103,13 +95,15 @@ export class PadchatRpc extends EventEmitter {
   private socket?          : WebSocket
   private readonly jsonRpc : any // Peer
 
-  private throttleQueue?       : ThrottleQueue<string>
-  private debounceQueue?       : DebounceQueue<string>
-  private reconnectThrottleQueue? : ThrottleQueue<string>
+  private throttleQueue?            : ThrottleQueue<string>
+  private debounceQueue?            : DebounceQueue<string>
+  private reconnectThrottleQueue?   : ThrottleQueue<string>
+  private resetThrottleQueue?       : ThrottleQueue<string>
 
-  private throttleSubscription?       : Subscription
-  private debounceSubscription?       : Subscription
+  private throttleSubscription?          : Subscription
+  private debounceSubscription?          : Subscription
   private reconnectThrottleSubscription? : Subscription
+  private resetThrottleSubscription?     : Subscription
 
   private pendingApiCalls : PendingAPICall[]
 
@@ -147,7 +141,7 @@ export class PadchatRpc extends EventEmitter {
   }
 
   protected async reconnect (): Promise<void> {
-    log.verbose('PadchatRpc', 'reconnect()')
+    log.info('PadchatRpc', 'reconnect()')
 
     this.cleanConnection()
 
@@ -255,7 +249,7 @@ export class PadchatRpc extends EventEmitter {
 
     const ws = new WebSocket(
       this.endpoint,
-      { perMessageDeflate: true },
+      { perMessageDeflate: true, maxPayload: 100 * 1024 * 1024 },
     )
 
     /**
@@ -400,15 +394,15 @@ export class PadchatRpc extends EventEmitter {
       }
 
       // tslint:disable-next-line:no-floating-promises
-      this.WXSyncMessage().then(() => {
+      this.WXHeartBeat().then(() => {
         RPC_TIMEOUT_COUNTER = 0
       }).catch(reason => {
-        if (reason === 'timeout') {
-          log.info('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(s%) WXSyncMessage timeout', e)
+        if (reason === 'timeout' || reason === 'parsed-data-not-array') {
+          log.verbose('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(s%) WXHeartBeat %s', e, reason)
           RPC_TIMEOUT_COUNTER++
           if (RPC_TIMEOUT_COUNTER >= MAX_HEARTBEAT_TIMEOUT) {
             RPC_TIMEOUT_COUNTER = 0
-            reconnectThrottleQueue.next(`Sync Message Timed out in ${CON_TIME_OUT}ms for ${MAX_HEARTBEAT_TIMEOUT} times. Possible disconnected from Wechat. So trigger reconnect.`)
+            reconnectThrottleQueue.next(`WXHeartBeat Timed out in ${CON_TIME_OUT}ms for ${MAX_HEARTBEAT_TIMEOUT} times. Possible disconnected from Wechat. So trigger reconnect.`)
           }
         } else {
           log.verbose('PadchatRpc', 'initHeartbeat() debounceQueue.subscribe(%s) error happened: %s', e, reason)
@@ -458,11 +452,18 @@ export class PadchatRpc extends EventEmitter {
     this.debounceQueue = new DebounceQueue<string>(1000 * 10 * 2)
 
     /**
-     * Throttle for 5 seconds for the `logout` event:
-     *  we should only fire once for logout,
-     *  but the server will send many events of 'logout'
+     * Throttle for 5 seconds for the `reconnect` event:
+     *  we should only fire once for reconnect,
+     *  but many events might be triggered
      */
     this.reconnectThrottleQueue = new ThrottleQueue<string>(1000 * 5)
+
+    /**
+     * Throttle for 5 seconds for the `reset` event:
+     *  we should only fire once for reset,
+     *  but the server will send many events of 'reset'
+     */
+    this.resetThrottleQueue = new ThrottleQueue<string>(1000 * 5)
 
     this.initHeartbeat()
 
@@ -477,6 +478,16 @@ export class PadchatRpc extends EventEmitter {
         }
       })
     }
+
+    if (this.resetThrottleSubscription) {
+      throw new Error('this.reconnectThrottleSubscription exist')
+    } else {
+      this.resetThrottleSubscription = this.resetThrottleQueue.subscribe(msg => {
+        if (this.connectionStatus.status === CONNECTED) {
+          this.reset(msg)
+        }
+      })
+    }
   }
 
   private stopQueues () {
@@ -485,19 +496,23 @@ export class PadchatRpc extends EventEmitter {
     if (   this.throttleSubscription
       && this.debounceSubscription
       && this.reconnectThrottleSubscription
+      && this.resetThrottleSubscription
     ) {
       // Clean external subscriptions
       this.debounceSubscription.unsubscribe()
       this.reconnectThrottleSubscription.unsubscribe()
       this.throttleSubscription.unsubscribe()
+      this.resetThrottleSubscription.unsubscribe()
 
       this.debounceSubscription          = undefined
       this.reconnectThrottleSubscription = undefined
       this.throttleSubscription          = undefined
+      this.resetThrottleSubscription     = undefined
     }
 
     if (   this.debounceQueue
         && this.reconnectThrottleQueue
+        && this.resetThrottleQueue
         && this.throttleQueue
     ) {
       /**
@@ -506,10 +521,12 @@ export class PadchatRpc extends EventEmitter {
       this.debounceQueue.unsubscribe()
       this.reconnectThrottleQueue.unsubscribe()
       this.throttleQueue.unsubscribe()
+      this.resetThrottleQueue.unsubscribe()
 
-      this.debounceQueue       = undefined
+      this.debounceQueue          = undefined
       this.reconnectThrottleQueue = undefined
-      this.throttleQueue       = undefined
+      this.throttleQueue          = undefined
+      this.resetThrottleQueue     = undefined
 
     } else {
       log.warn('PadchatRpc', 'stop() subscript not exist')
@@ -539,7 +556,7 @@ export class PadchatRpc extends EventEmitter {
                       })
                       .catch((reason: any) => {
                         if (reason === DISCONNECTED) {
-                          log.info('PadchatRpc', 'rpcCall(%s) interrupted by connection broken, scheduled this api call. This call will be made again when connection restored', apiName)
+                          log.verbose('PadchatRpc', 'rpcCall(%s) interrupted by connection broken, scheduled this api call. This call will be made again when connection restored', apiName)
                           this.pendingApiCalls.push({
                             apiName,
                             params,
@@ -553,7 +570,7 @@ export class PadchatRpc extends EventEmitter {
                       })
         })
       } else {
-        log.info('PadchatRpc', 'puppet-padchat is disconnected, rpcCall(%s) is scheduled. This call will be made again when connection restored', apiName)
+        log.verbose('PadchatRpc', 'puppet-padchat is disconnected, rpcCall(%s) is scheduled. This call will be made again when connection restored', apiName)
         return new Promise((resolve, reject) => {
           this.pendingApiCalls.push({
             apiName,
@@ -568,9 +585,7 @@ export class PadchatRpc extends EventEmitter {
       log.silly('PadchatRpc', 'pre login rpcCall(%s, %s)', apiName, JSON.stringify(params).substr(0,200))
       return this.jsonRpc.request(apiName, params)
     } else {
-      // WXSyncMessage api will be deliver here
-      // use this api as heartbeat to keep the connection alive and check the health
-      return this.jsonRpc.request(apiName, params)
+      log.error('PadchatRpc', 'unexpected api call: %s', apiName)
     }
   }
 
@@ -587,10 +602,12 @@ export class PadchatRpc extends EventEmitter {
                                 payload.type,
                                 JSON.stringify(payload),
                   )
-      if (this.reconnectThrottleQueue && this.connectionStatus.status === CONNECTED) {
-        this.reconnectThrottleQueue.next(payload.msg || 'onSocket(logout)')
+      // When receive this message, the bot should be logged out from the mobile phone
+      // So do a full reset here
+      if (this.resetThrottleQueue && this.connectionStatus.status === CONNECTED) {
+        this.resetThrottleQueue.next(payload.msg || 'onSocket(logout)')
       } else {
-        log.warn('PadchatRpc', 'onSocket() logout logoutThrottleQueue not exist')
+        log.warn('PadchatRpc', 'onSocket() resetThrottleQueue not exist')
       }
       return
     }
@@ -760,6 +777,54 @@ export class PadchatRpc extends EventEmitter {
     }
   }
 
+  private replayTextMsg (msgId: string, to: string, text: string): void {
+    const payload = this.generateBaseMsg(msgId, to)
+    payload.sub_type = PadchatMessageType.Text
+    payload.content = text
+
+    log.silly('PadchatRpc', 'replayTextMsg replaying message: %s', JSON.stringify(payload))
+    this.onSocketTencent([payload])
+  }
+
+  private replayImageMsg (msgId: string, to: string, data: string): void {
+    const payload = this.generateBaseMsg(msgId, to)
+    payload.sub_type = PadchatMessageType.Image
+    payload.data = data
+
+    log.silly('PadchatRpc', 'replayImageMsg replaying message: %s', JSON.stringify(payload).substr(0, 200))
+    this.onSocketTencent([payload])
+  }
+
+  private replayAppMsg (msgId: string, to: string, content: string): void {
+    const payload = this.generateBaseMsg(msgId, to)
+    payload.sub_type = PadchatMessageType.App
+    // Special conversion for Url Link message
+    payload.content = `<msg>${content.trim().replace(/\n/g, '').replace(/> +</g, '><')}</msg>`
+
+    log.silly('PadchatRpc', 'replayAppMsg replaying message: %s', JSON.stringify(payload).substr(0, 200))
+    this.onSocketTencent([payload])
+  }
+
+  // Generate base message that sent from self
+  private generateBaseMsg (msgId: string, to: string): PadchatMessagePayload {
+    const msg = {
+      content: '',
+      continue: PadchatContinue.Done,
+      description: '',
+      from_user: this.userId!,
+      msg_id: msgId,
+      msg_source: '',
+      msg_type: PadchatMessageMsgType.Five,
+      status: PadchatMessageStatus.One,
+      sub_type: PadchatMessageType.App,
+      timestamp: new Date().getTime(),
+      to_user: to,
+      uin: 0
+    }
+    log.silly('PadchatRpc', 'generateBaseMsg(%s, %s) %s', msgId, to, JSON.stringify(msg))
+    return msg
+  }
+
   /**
    * Init with WebSocket Server
    */
@@ -892,6 +957,7 @@ export class PadchatRpc extends EventEmitter {
       if (!result || result.status !== 0) {
         throw Error('WXSendMsg error! canot get result from websocket server')
       }
+      this.replayTextMsg(result.msg_id, to, content)
       return result
     }
     throw Error('PadchatRpc, WXSendMsg error! no to!')
@@ -903,7 +969,8 @@ export class PadchatRpc extends EventEmitter {
    * @param {string} data   image_data
    */
   public async WXSendImage (to: string, data: string): Promise<void> {
-    await this.rpcCall('WXSendImage', to, data)
+    const result = await this.rpcCall('WXSendImage', to, data)
+    this.replayImageMsg(result.msg_id, to, data)
   }
 
   /**
@@ -920,7 +987,7 @@ export class PadchatRpc extends EventEmitter {
     log.silly('PadchatRpc', 'WXGetContact(%s) result: %s', id, JSON.stringify(result))
 
     if (!result.user_name) {
-      log.warn('PadchatRpc', 'WXGetContact cannot get user_name, id: %s, "%s"', id, JSON.stringify(result))
+      log.silly('PadchatRpc', 'WXGetContact cannot get user_name, id: %s, "%s"', id, JSON.stringify(result))
     }
     return result
   }
@@ -1185,9 +1252,16 @@ export class PadchatRpc extends EventEmitter {
       this.rpcCall('WXSyncMessage').then((result) => {
         log.silly('PadchatRpc', 'WXSyncMessage result: %s', JSON.stringify(result))
         if (!result || !result[0] || (result[0].status !== 1 && result[0].status !== -1)) {
-          return []
+          resolve()
+        } else {
+          const tencentPayloadList: PadchatMessagePayload[] = padchatDecode(result)
+          if (!Array.isArray(tencentPayloadList)) {
+            log.warn('PadchatRpc', 'WXSyncMessage() parsed data is not an array: %s', JSON.stringify(tencentPayloadList))
+            reject('parsed-data-not-array')
+          }
+          this.onSocketTencent(tencentPayloadList)
+          resolve()
         }
-        resolve(result[0])
       }).catch(reject)
 
       const timer = setTimeout(() => {
@@ -1207,11 +1281,12 @@ export class PadchatRpc extends EventEmitter {
     }
 
     if (result.status === WXSearchContactTypeStatus.Searchable) {
-      log.info('PadchatRpc', 'WXSearchContact wxid: %s can be searched', id)
+      log.verbose('PadchatRpc', 'WXSearchContact wxid: %s can be searched', id)
     }
 
     if (result.status === WXSearchContactTypeStatus.UnSearchable) {
-      log.info('PadchatRpc', 'WXSearchContact wxid: %s cannot be searched', id)
+      log.verbose('PadchatRpc', 'WXSearchContact wxid: %s cannot be searched', id)
+      throw Error(`ContactId ${id} is not searchable`)
     }
     return result
   }
@@ -1408,16 +1483,6 @@ export class PadchatRpc extends EventEmitter {
     return result
   }
 
-  // TODO: check if this WXGetMsgEmoticon exist in protocol, Huan LI 201806
-  public async WXGetMsgEmoticon (msg: string): Promise<any> {
-    const result = await this.rpcCall('WXGetMsgEmoticon', msg)
-    log.silly('PadchatRpc', 'WXGetMsgEmoticon(), result: %s', JSON.stringify(result))
-    if (!result || result.status !== 0) {
-      throw Error('WXGetMsgEmoticon error! canot get result from websocket server')
-    }
-    return result
-  }
-
   // TODO check any
   // 获取消息图片 （应该是查看原图）
   // msg			收到的整个图片消息
@@ -1592,6 +1657,7 @@ export class PadchatRpc extends EventEmitter {
     if (!result || result.status !== 0) {
       throw Error('WXSendAppMsg , stranger,error! canot get result from websocket server')
     }
+    this.replayAppMsg(result.msg_id, user, content)
     return result
   }
 
@@ -1729,6 +1795,7 @@ export class PadchatRpc extends EventEmitter {
     if (!result || result.status !== 0) {
       throw Error('WXSendVoice , stranger,error! canot get result from websocket server')
     }
+    // TODO: replay voice message
     return result
   }
 
@@ -1770,16 +1837,4 @@ export class PadchatRpc extends EventEmitter {
     console.log('WXSetChatroomAnnouncement result:', result)
     return result
   }
-
-  // FIXME: does Get exist?
-  // FIXME2: what's the structure of result? result.data???
-  public async WXGetChatroomAnnouncement (chatroom: string): Promise<string> {
-    const result = await this.rpcCall('WXGetChatroomAnnouncement', chatroom)
-    log.silly('PadchatRpc', 'WXGetChatroomAnnouncement ,result: %s', JSON.stringify(result))
-    if (!result || result.status !== 0) {
-      throw Error('WXGetChatroomAnnouncement , error! canot get result from websocket server')
-    }
-    return result.data
-  }
-
 }

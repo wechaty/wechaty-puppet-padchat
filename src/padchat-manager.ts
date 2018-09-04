@@ -8,10 +8,12 @@ import { MemoryCard }         from 'memory-card'
 import { DelayQueueExector }  from 'rx-queue'
 import { Subscription }       from 'rxjs'
 import { StateSwitch }        from 'state-switch'
+import { ContactGender }      from 'wechaty-puppet'
 
 import {
   PadchatContactMsgType,
   PadchatContactPayload,
+  PadchatContactRoomStatus,
   PadchatContinue,
 
   PadchatRoomInvitationPayload,
@@ -292,6 +294,8 @@ export class PadchatManager extends PadchatRpc {
     this.userId          = undefined
     this.loginScanQrcode = undefined
     this.loginScanStatus = undefined
+    this.contactListSynced = false
+    this.roomNeedsToBeSync = 0
 
     this.state.off(true)
   }
@@ -300,7 +304,7 @@ export class PadchatManager extends PadchatRpc {
     log.verbose('PuppetPadchatManager', `login(%s)`, userId)
 
     if (this.userId) {
-      log.info('PuppetPadchatManager', 'reconnected(%s)', userId)
+      log.verbose('PuppetPadchatManager', 'reconnected(%s)', userId)
       return
     }
     this.userId = userId
@@ -340,6 +344,13 @@ export class PadchatManager extends PadchatRpc {
     if (!this.userId) {
       log.warn('PuppetPadchatManager', 'logout() userId not exist, already logout-ed')
       return
+    }
+
+    if (this.delayQueueExecutorSubscription) {
+      this.delayQueueExecutorSubscription.unsubscribe()
+      this.delayQueueExecutorSubscription = undefined
+    } else {
+      log.warn('PuppetPadchatManager', 'logout() subscript not exist')
     }
 
     this.userId = undefined
@@ -443,6 +454,13 @@ export class PadchatManager extends PadchatRpc {
 
           case WXCheckQRCodeStatus.Cancel:
             log.silly('PuppetPadchatManager', 'user cancel')
+            this.loginScanQrcode = undefined
+            this.loginScanStatus = undefined
+            waitUserResponse = false
+            break
+
+          case WXCheckQRCodeStatus.Ignore:
+            log.silly('PuppetPadchatManager', 'ignore status -2')
             this.loginScanQrcode = undefined
             this.loginScanStatus = undefined
             waitUserResponse = false
@@ -841,6 +859,38 @@ export class PadchatManager extends PadchatRpc {
     for (const memberPayload of memberListPayload.member) {
       const      contactId  = memberPayload.user_name
       memberDict[contactId] = memberPayload
+      const contact: PadchatContactPayload = {
+        big_head: memberPayload.big_head,
+        city: '',
+        country: '',
+        intro: '',
+        label: '',
+        nick_name: memberPayload.nick_name,
+        provincia: '',
+        py_initial: '',
+        remark: '',
+        remark_py_initial: '',
+        remark_quan_pin: '',
+        sex: ContactGender.Unknown,
+        signature: '',
+
+        small_head: memberPayload.small_head,
+        status: PadchatContactRoomStatus.Sync,
+        stranger: '',
+        ticket: '',
+        user_name: memberPayload.user_name,
+
+        message: '',
+        quan_pin: '',
+      }
+      if (!this.cacheContactRawPayload) {
+        throw new Error('cache not inited')
+      }
+
+      if (!this.cacheContactRawPayload.has(contactId)) {
+        log.silly('PadchatManager', `syncRoomMember() adding room member ${contactId} into contact cache`)
+        this.cacheContactRawPayload.set(contactId, contact)
+      }
     }
 
     if (!this.cacheRoomMemberRawPayload) {
@@ -1082,6 +1132,28 @@ export class PadchatManager extends PadchatRpc {
     // TODO: healthy check
     this.emit('dong')
     return
+  }
+
+  public async updateSelfName (newName: string): Promise<void> {
+    if (!this.userId) {
+      throw Error('Can not update user self name since no user id exist. Probably user not logged in yet')
+    }
+    const self = await this.contactRawPayload(this.userId)
+    const { signature, sex, country, provincia, city } = self
+
+    await this.WXSetUserInfo(newName, signature, sex.toString(), country, provincia, city)
+    this.contactRawPayloadDirty(this.userId)
+  }
+
+  public async updateSelfSignature (signature: string): Promise<void> {
+    if (!this.userId) {
+      throw Error('Can not update user self signature since no user id exist. Probably user not logged in yet')
+    }
+    const self = await this.contactRawPayload(this.userId)
+    const { nick_name, sex, country, provincia, city } = self
+
+    await this.WXSetUserInfo(nick_name, signature, sex.toString(), country, provincia, city)
+    this.contactRawPayloadDirty(this.userId)
   }
 }
 

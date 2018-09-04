@@ -15,31 +15,31 @@ import {
 
 test('roomJoinEventMessageParser() not detected', async t => {
   t.equal(
-    roomJoinEventMessageParser(undefined as any),
+    await roomJoinEventMessageParser(undefined as any),
     null,
     'should return null for undefined',
   )
 
   t.equal(
-    roomJoinEventMessageParser('null' as any),
+    await roomJoinEventMessageParser('null' as any),
     null,
     'should return null for null',
   )
 
   t.equal(
-    roomJoinEventMessageParser('test' as any),
+    await roomJoinEventMessageParser('test' as any),
     null,
     'should return null for string',
   )
 
   t.equal(
-    roomJoinEventMessageParser({} as any),
+    await roomJoinEventMessageParser({} as any),
     null,
     'should return null for empty object',
   )
 
   t.equal(
-    roomJoinEventMessageParser({ content: 'fsdfsfsdfasfas' } as PadchatMessagePayload ),
+    await roomJoinEventMessageParser({ content: 'fsdfsfsdfasfas' } as PadchatMessagePayload ),
     null,
     'should return null for PadchatMessagePayload with unknown content',
   )
@@ -61,5 +61,5 @@ test('roomJoinEventMessageParser() Recall Message', async t => {
     to_user     : 'wxid_5zj4i5htp9ih22',
     uin         : 1928023446,
   }
-  t.equal(roomJoinEventMessageParser(MESSAGE_PAYLOAD), null, 'should return null for a normal message recall payload')
+  t.equal(await roomJoinEventMessageParser(MESSAGE_PAYLOAD), null, 'should return null for a normal message recall payload')
 })

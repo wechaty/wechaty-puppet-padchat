@@ -1,4 +1,4 @@
-import { toJson } from 'xml2json'
+import { xmlToJson } from './xml-to-json'
 
 import {
   PadchatMessagePayload,
@@ -69,9 +69,9 @@ const ROOM_OTHER_INVITE_LIST_EN = [
   /"(.+)" invited you to join the group chat "(.+)"\. Enter to view details\./
 ]
 
-export const roomInviteEventMessageParser = (
+export const roomInviteEventMessageParser = async (
   rawPayload: PadchatMessagePayload,
-): null | PadchatRoomInviteEvent => {
+): Promise<null | PadchatRoomInviteEvent> => {
 
   if (!isPayload(rawPayload)) {
     return null
@@ -94,16 +94,16 @@ export const roomInviteEventMessageParser = (
 
   let jsonPayload: XmlSchema
   try {
-    jsonPayload = toJson(tryXmlText, { object: true }) as XmlSchema
+    jsonPayload = await xmlToJson(tryXmlText) as XmlSchema
   } catch (e) {
     return null
   }
 
   // If no title or des, it is not a room invite event, skip further process
-  // tslint:disable-next-line:strict-type-predicates
-  if (!jsonPayload.msg.appmsg.title || typeof jsonPayload.msg.appmsg.title !== 'string'
-  // tslint:disable-next-line:strict-type-predicates
-    || !jsonPayload.msg.appmsg.des || typeof jsonPayload.msg.appmsg.des !== 'string') {
+
+  if (!jsonPayload.msg || !jsonPayload.msg.appmsg || !jsonPayload.msg.appmsg.title || !jsonPayload.msg.appmsg.des
+    // tslint:disable-next-line:strict-type-predicates
+    || typeof jsonPayload.msg.appmsg.title !== 'string' ||  typeof jsonPayload.msg.appmsg.des !== 'string') {
     return null
   }
 
