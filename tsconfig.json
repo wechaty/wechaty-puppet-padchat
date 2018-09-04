@@ -9,6 +9,7 @@
     , "traceResolution": false
     , "esModuleInterop" : true
     , "resolveJsonModule": true
+    , "skipLibCheck"    : true
     , "lib": [
       "dom",
       "esnext"
