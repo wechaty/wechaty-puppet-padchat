@@ -82,7 +82,7 @@
   },
   "homepage": "https://github.com/lijiarui/wechaty-puppet-padchat#readme",
   "dependencies": {
-    "@babel/runtime": "7.0.0",
+    "@babel/runtime": "7.0.0-beta.39",
     "array-flatten": "^2.1.1",
     "flash-store": "^0.11.4",
     "fs-extra": "^7.0.0",
