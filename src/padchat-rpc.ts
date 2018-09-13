@@ -1091,7 +1091,9 @@ export class PadchatRpc extends EventEmitter {
       log.warn('PadchatRpc', 'WXQRCodeLogin, redirect 301')
       return this.WXQRCodeLogin(username, password)
     }
-    throw Error('PadchatRpc, WXQRCodeLogin, unknown status: ' + result.status)
+    throw Error(`PadchatRpc, WXQRCodeLogin,
+    If the status is -106, please refer to https://github.com/botorange/puppet-padchat-patch for a temporary solution
+    unknown status: ${result.status}, for username: ${username}`)
   }
 
   public async WXSetUserRemark (id: string, remark: string): Promise<StandardType> {
