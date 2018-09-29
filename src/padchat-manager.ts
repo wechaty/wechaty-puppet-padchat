@@ -507,18 +507,21 @@ export class PadchatManager extends PadchatRpc {
     const currentUserId = memorySlot.currentUserId
     if (!currentUserId) {
       log.silly('PuppetPadchatManager', 'tryAutoLogin() currentUserId not found in memorySlot')
+      await this.emitLoginQrcode()
       return false
     }
 
     const deviceInfo = memorySlot.device[currentUserId]
     if (!deviceInfo) {
       log.silly('PuppetPadchatManager', 'tryAutoLogin() deviceInfo not found for userId "%s"', currentUserId)
+      await this.emitLoginQrcode()
       return false
     }
 
     const token = deviceInfo.token
     if (!token) {
       log.silly('PuppetPadchatManager', 'tryAutoLogin() token not found for userId "%s"', currentUserId)
+      await this.emitLoginQrcode()
       return false
     }
 
@@ -574,6 +577,15 @@ export class PadchatManager extends PadchatRpc {
       await this.options.memory.save()
 
       await this.emitLoginQrcode()
+      return false
+    }
+
+    if (autoLoginResult.status === -2023) {
+      delete deviceInfo.token
+      await this.options.memory.set(MEMORY_SLOT_NAME, memorySlot)
+      await this.options.memory.save()
+
+      this.emit('reset')
       return false
     }
 
