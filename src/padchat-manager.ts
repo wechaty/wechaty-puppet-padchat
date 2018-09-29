@@ -507,21 +507,18 @@ export class PadchatManager extends PadchatRpc {
     const currentUserId = memorySlot.currentUserId
     if (!currentUserId) {
       log.silly('PuppetPadchatManager', 'tryAutoLogin() currentUserId not found in memorySlot')
-      await this.emitLoginQrcode()
       return false
     }
 
     const deviceInfo = memorySlot.device[currentUserId]
     if (!deviceInfo) {
       log.silly('PuppetPadchatManager', 'tryAutoLogin() deviceInfo not found for userId "%s"', currentUserId)
-      await this.emitLoginQrcode()
       return false
     }
 
     const token = deviceInfo.token
     if (!token) {
       log.silly('PuppetPadchatManager', 'tryAutoLogin() token not found for userId "%s"', currentUserId)
-      await this.emitLoginQrcode()
       return false
     }
 
