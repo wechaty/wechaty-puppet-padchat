@@ -817,7 +817,7 @@ export class PadchatRpc extends EventEmitter {
       msg_type: PadchatMessageMsgType.Five,
       status: PadchatMessageStatus.One,
       sub_type: PadchatMessageType.App,
-      timestamp: new Date().getTime(),
+      timestamp: new Date().getTime() / 1000,
       to_user: to,
       uin: 0
     }
