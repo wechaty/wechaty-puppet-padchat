@@ -9,19 +9,19 @@ Answer:
 - What is your wechaty-puppet-padchat version?
 Answer:
 
-### 1. Expected behavior
+### 2. Expected behavior
 
 **Question: What behavior do you expect?**
 
 Answer:
 
-### 2. Actual behavior
+### 3. Actual behavior
 
 **Question: What actual behavior did you experience?**
 
 Answer:
 
-### 3. Steps to reproduce your problem (and fixes, if any)
+### 4. Steps to reproduce your problem (and fixes, if any)
 
 This part is very important: if you can not provide any reproduce steps, then the problem will be very hard to be recognized.
 
@@ -29,7 +29,7 @@ This part is very important: if you can not provide any reproduce steps, then th
 
 Answer:
 
-### 4. Full Output Logs
+### 5. Full Output Logs
 
 <details>
 <summary>
