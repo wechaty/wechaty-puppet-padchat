@@ -2,6 +2,13 @@
 
 Please search in the issue first, and make sure your problem had not been reported before.
 
+### 1. Provide Your Package Version
+- What is your wechaty version?
+Answer:
+
+- What is your wechaty-puppet-padchat version?
+Answer:
+
 ### 1. Expected behavior
 
 **Question: What behavior do you expect?**
