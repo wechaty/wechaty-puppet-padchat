@@ -1489,10 +1489,12 @@ export class PuppetPadchat extends Puppet {
 
     // Issue #1252 : what's wrong here?, Trying to fix now...
 
+    const isPhoneNumber = contactId.match(/^(?=\d{11}$)^1(?:3\d|4[57]|5[^4\D]|66|7[^249\D]|8\d|9[89])\d{8}$/)
+
     await this.padchatManager.WXAddUser(
       strangerV1 || '',
       strangerV2 || '',
-      WXSearchContactTypeStatus.WXID, // default
+      isPhoneNumber ? WXSearchContactTypeStatus.MOBILE : WXSearchContactTypeStatus.WXID, // default
       hello,
     )
   }
