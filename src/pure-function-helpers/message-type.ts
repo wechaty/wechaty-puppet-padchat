@@ -50,6 +50,10 @@ export function messageType (
       type = MessageType.Contact
       break
 
+    case PadchatMessageType.Location:
+      type = MessageType.Location
+      break
+
     case PadchatMessageType.VoipMsg:
     case PadchatMessageType.Recalled:
     case PadchatMessageType.StatusNotify:
