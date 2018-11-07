@@ -11,27 +11,17 @@ npm install
 
 ### 1. 提供你的包版本信息
 - wechaty 版本：
-Answer:
-
 - wechaty-puppet-padchat 版本：
-Answer:
-
 - node 版本： (运行 `node --version` 获取版本)
-Answer:
 
 ### 2. 期待程序运行的结果
 
-Answer:
-
 ### 3. 程序实际运行的结果
-
-Answer:
 
 ### 4. 复现的步骤 (或者解决的步骤)
 
 **这一部分非常重要，如果你无法给出复现步骤，我们也很难提供相应的解决办法：**
-
-Answer:
+例子:
 - 第一步：
 - 第二步：
 - 。。。
