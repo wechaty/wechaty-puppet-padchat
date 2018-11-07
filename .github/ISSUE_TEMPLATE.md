@@ -1,47 +1,42 @@
-### 0. Report Issue Guide
+### 0. 发 Issue 指南
 
-1. Please search in the issue first, and make sure your problem had not been reported before.
-
-2. Please run the following command and check whether the problem has been fixed:
-
+1. 请运行下面的命令，看问题是否可以被解决：
 ```
 rm -rf package-lock.json
 rm -rf node_modules
 npm install
 ```
 
+2. 请先在issue 中搜关键信息，确认你要发的内容和之前的issue 不重复。
 
-### 1. Provide Your Package Version
-- What is your wechaty version?
+### 1. 提供你的包版本信息
+- wechaty 版本：
 Answer:
 
-- What is your wechaty-puppet-padchat version?
+- wechaty-puppet-padchat 版本：
 Answer:
 
-- What is your node version? (run `node --version`)
+- node 版本： (运行 `node --version` 获取版本)
 Answer:
 
-### 2. Expected behavior
-
-**Question: What behavior do you expect?**
-
-Answer:
-
-### 3. Actual behavior
-
-**Question: What actual behavior did you experience?**
+### 2. 期待程序运行的结果
 
 Answer:
 
-### 4. Steps to reproduce your problem (and fixes, if any)
-
-This part is very important: if you can not provide any reproduce steps, then the problem will be very hard to be recognized.
-
-**Question: What're the reproducible steps for us to see your problem?**
+### 3. 程序实际运行的结果
 
 Answer:
 
-### 5. Full Output Logs
+### 4. 复现的步骤 (或者解决的步骤)
+
+**这一部分非常重要，如果你无法给出复现步骤，我们也很难提供相应的解决办法：**
+
+Answer:
+- 第一步：
+- 第二步：
+- 。。。
+
+### 5. 完整的日志信息：
 
 <details>
 <summary>
@@ -51,7 +46,7 @@ Show Logs
 ```shell
 $ WECHATY_LOG=silly node yourbot.js
 
-Question: Paste your FULL(DO NOT ONLY PROVIDE FRAGMENTS) log messages
+Question: 完整的日志信息(不要只提供部分的日志内容！) 
 Answer:
 
 ```
