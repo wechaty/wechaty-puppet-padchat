@@ -27,7 +27,7 @@ npm install
 - 。。。
 
 ### 5. 完整的日志信息：
-
+**请提供完整的日志信息(不要只提供部分的日志内容！) **
 <details>
 <summary>
 Show Logs
@@ -35,9 +35,6 @@ Show Logs
 
 ```shell
 $ WECHATY_LOG=silly node yourbot.js
-
-Question: 完整的日志信息(不要只提供部分的日志内容！) 
-Answer:
 
 ```
 
