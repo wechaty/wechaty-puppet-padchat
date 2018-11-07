@@ -1,12 +1,24 @@
 ### 0. Report Issue Guide
 
-Please search in the issue first, and make sure your problem had not been reported before.
+1. Please search in the issue first, and make sure your problem had not been reported before.
+
+2. Please run the following command and check whether the problem has been fixed:
+
+```
+rm -rf package-lock.json
+rm -rf node_modules
+npm install
+```
+
 
 ### 1. Provide Your Package Version
 - What is your wechaty version?
 Answer:
 
 - What is your wechaty-puppet-padchat version?
+Answer:
+
+- What is your node version? (run `node --version`)
 Answer:
 
 ### 2. Expected behavior
