@@ -34,7 +34,7 @@ npm install wechaty
 npm install wechaty-puppet-padchat
 ```
 
-## SOURCE
+## 示例代码
 
 ```ts
 import { Wechaty } from 'wechaty'
@@ -54,13 +54,13 @@ const bot = new Wechaty({
 // You are all set
 ```
 
-## RUN
+## 运行
 
 ```shell
 ./node_modules/.bin/ts-node examples/wechaty-padchat-bot.ts
 ```
 
-Currently you can apply a Alpha Testing Padchat Token at here: [Wechaty Padchat Alpha Testing](https://github.com/Chatie/wechaty/issues/1296)
+[点击查看获取token的方法](https://github.com/lijiarui/wechaty-puppet-padchat/wiki/%E8%B4%AD%E4%B9%B0token)
 
 ## 文档
 

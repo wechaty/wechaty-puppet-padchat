@@ -41,7 +41,7 @@ const bot = new Wechaty({
 ./node_modules/.bin/ts-node examples/wechaty-padchat-bot.ts
 ```
 
-Currently you can apply a Alpha Testing Padchat Token at here: [Wechaty Padchat Alpha Testing](https://github.com/Chatie/wechaty/issues/1296)
+[How to get token](https://github.com/lijiarui/wechaty-puppet-padchat/wiki/Buy-Padchat-Token)
 
 ## AUTHOR
 
