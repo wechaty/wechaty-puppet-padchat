@@ -1,6 +1,8 @@
 # WECHATY-PUPPET-PADCHAT
 
 [![English Version](https://img.shields.io/badge/-English%20Version-blue.svg)](/README-en.md)
+
+
 [![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-blue.svg)](https://github.com/chatie/wechaty)
 [![NPM Version](https://badge.fury.io/js/wechaty-puppet-padchat.svg)](https://www.npmjs.com/package/wechaty-puppet-padchat)
 [![npm (tag)](https://img.shields.io/npm/v/wechaty-puppet-padchat/next.svg)](https://www.npmjs.com/package/wechaty-puppet-padchat?activeTab=versions)
@@ -28,7 +30,7 @@
 ## INSTALL
 
 ```shell
-npm install wechaty@next
+npm install wechaty
 npm install wechaty-puppet-padchat
 ```
 

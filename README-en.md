@@ -11,7 +11,7 @@ This module is a sub module of [Wechaty Puppet](https://github.com/Chatie/wechat
 ## INSTALL
 
 ```shell
-npm install wechaty@next
+npm install wechaty
 npm install wechaty-puppet-padchat
 ```
 
