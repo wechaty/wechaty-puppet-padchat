@@ -48,7 +48,12 @@ bot
 ./node_modules/.bin/ts-node examples/wechaty-padchat-bot.ts
 ```
 
-[How to get token](https://github.com/lijiarui/wechaty-puppet-padchat/wiki/Buy-Padchat-Token)
+## Get Token
+
+Scan the qrcode to contact us and ask for token
+[contact](./image/contact.gif)
+
+[More info about token](https://github.com/lijiarui/wechaty-puppet-padchat/wiki/Buy-Padchat-Token)
 
 ## AUTHOR
 

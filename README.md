@@ -68,7 +68,11 @@ bot
 ./node_modules/.bin/ts-node examples/wechaty-padchat-bot.ts
 ```
 
-[点击查看获取token的方法](https://github.com/lijiarui/wechaty-puppet-padchat/wiki/%E8%B4%AD%E4%B9%B0token)
+## 获取Token
+
+[contact](./image/contact.gif)
+
+[了解更多Token 相关内容](https://github.com/lijiarui/wechaty-puppet-padchat/wiki/%E8%B4%AD%E4%B9%B0token)
 
 ## 文档
 
