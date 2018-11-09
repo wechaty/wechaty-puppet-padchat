@@ -55,6 +55,9 @@ Scan the qrcode to contact us and ask for token
 
 [More info about token](https://github.com/lijiarui/wechaty-puppet-padchat/wiki/Buy-Padchat-Token)
 
+## Doc
+https://docs.chatie.io/wechaty
+
 ## AUTHOR
 
 Jiarui LI <rui@chatie.io>
