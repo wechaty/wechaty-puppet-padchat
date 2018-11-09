@@ -70,7 +70,7 @@ bot
 
 ## 获取Token
 
-[contact](./image/contact.gif)
+![contact](./image/contact.gif)
 
 [了解更多Token 相关内容](https://github.com/lijiarui/wechaty-puppet-padchat/wiki/%E8%B4%AD%E4%B9%B0token)
 
