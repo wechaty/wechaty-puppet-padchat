@@ -1,6 +1,7 @@
 import { xmlToJson } from './xml-to-json'
 
 import {
+  PadchatAppAttachPayload,
   PadchatAppMessagePayload,
   PadchatMessagePayload,
 }                       from '../padchat-schemas'
@@ -23,11 +24,13 @@ export async function appMessageParser (rawPayload: PadchatMessagePayload): Prom
         url: string,
         appattach: {
           totallen: string,
-          attachid: any,
-          emoticonmd5: any,
-          fileext: any,
-          cdnthumbaeskey: any,
-          aeskey: any
+          attachid: string,
+          emoticonmd5: string,
+          fileext: string,
+          cdnattachurl: string,
+          cdnthumbaeskey: string,
+          aeskey: string,
+          encryver: string
         },
         thumburl: string,
         md5: any,
@@ -45,9 +48,23 @@ export async function appMessageParser (rawPayload: PadchatMessagePayload): Prom
   try {
     const jsonPayload: XmlSchema = await xmlToJson(tryXmlText)
 
-    const { title, des, url, thumburl, type } = jsonPayload.msg.appmsg
+    const { title, des, url, thumburl, type, md5 } = jsonPayload.msg.appmsg
+    let appattach: PadchatAppAttachPayload | undefined
+    const tmp = jsonPayload.msg.appmsg.appattach
+    if (tmp) {
+      appattach = {
+        aeskey        : tmp.aeskey,
+        attachid      : tmp.attachid,
+        cdnattachurl  : tmp.cdnattachurl,
+        cdnthumbaeskey: tmp.cdnthumbaeskey,
+        emoticonmd5   : tmp.emoticonmd5,
+        encryver      : parseInt(tmp.encryver, 10),
+        fileext       : tmp.fileext,
+        totallen      : parseInt(tmp.totallen, 10),
+      }
+    }
 
-    return { title, des, url, thumburl, type: parseInt(type, 10) }
+    return { title, des, url, thumburl, md5, type: parseInt(type, 10), appattach }
   } catch (e) {
     return null
   }

@@ -97,7 +97,7 @@ import {
   WXSearchContactType,
   WXSearchContactTypeStatus,
 }                           from './padchat-rpc.type'
-import { generateAppXMLMessage } from './pure-function-helpers/app-message-generator'
+import { generateAppXMLMessage, generateAttachmentXMLMessageFromRaw } from './pure-function-helpers/app-message-generator'
 import { emojiPayloadParser } from './pure-function-helpers/message-emoji-payload-parser'
 
 let PADCHAT_COUNTER = 0 // PuppetPadchat Instance Counter
@@ -1039,10 +1039,36 @@ export class PuppetPadchat extends Puppet {
     const id = receiver.roomId || receiver.contactId
 
     if (!id) {
-      throw Error('no id')
+      throw new Error('There is no receiver id when trying to send url link.')
     }
 
     await this.padchatManager.WXSendAppMsg(id, generateAppXMLMessage(urlLinkPayload))
+  }
+
+  private async forwardAttachment (
+    receiver: Receiver,
+    messageId: string,
+  ): Promise<void> {
+    if (!this.padchatManager) {
+      throw new Error('no padchat manager')
+    }
+
+    const rawPayload = await this.messageRawPayload(messageId)
+    const payload    = await this.messagePayload(messageId)
+
+    // Send to the Room if there's a roomId
+    const id = receiver.roomId || receiver.contactId
+
+    if (!id) {
+      throw new Error('There is no receiver id when trying to forward attachment.')
+    }
+    const appPayload = await appMessageParser(rawPayload)
+    if (appPayload === null) {
+      throw new Error('Can not forward attachment, failed to parse xml message.')
+    }
+
+    const content = generateAttachmentXMLMessageFromRaw(appPayload)
+    await this.padchatManager.WXSendAppMsg(id, content)
   }
 
   public async messageForward (
@@ -1096,6 +1122,8 @@ export class PuppetPadchat extends Puppet {
         receiver,
         await this.messageUrl(messageId)
       )
+    } else if (payload.type === MessageType.Attachment) {
+      await this.forwardAttachment(receiver, messageId)
     } else {
       await this.messageSendFile(
         receiver,

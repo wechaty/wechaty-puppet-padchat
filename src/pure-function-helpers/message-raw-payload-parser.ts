@@ -202,8 +202,16 @@ export async function messageRawPayloadParser (
         case WechatAppMessageType.MiniProgram:
           payload.type = MessageType.MiniProgram
           break
+        case WechatAppMessageType.RedEnvelopes:
+        case WechatAppMessageType.Transfers:
+          payload.type = MessageType.Money
+          break
+        case WechatAppMessageType.RealtimeShareLocation:
+          payload.type = MessageType.Location
+          break
 
         default:
+          payload.type = MessageType.Unknown
           break
       }
     }
