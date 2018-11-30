@@ -946,8 +946,9 @@ export class PuppetPadchat extends Puppet {
   public async messageSendText (
     receiver : Receiver,
     text     : string,
+    mentionIdList?: string[],
   ): Promise<void> {
-    log.verbose('PuppetPadchat', 'messageSend(%s, %s)', JSON.stringify(receiver), text)
+    log.verbose('PuppetPadchat', 'messageSend(%s, %s, %s)', JSON.stringify(receiver), text, mentionIdList && mentionIdList.join(','))
 
     // Send to the Room if there's a roomId
     const id = receiver.roomId || receiver.contactId
@@ -958,7 +959,7 @@ export class PuppetPadchat extends Puppet {
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
     }
-    await this.padchatManager.WXSendMsg(id, text)
+    await this.padchatManager.WXSendMsg(id, text, mentionIdList && mentionIdList.join(','))
   }
 
   public async messageSendFile (
