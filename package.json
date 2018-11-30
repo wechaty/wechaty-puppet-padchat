@@ -1,6 +1,6 @@
 {
   "name": "wechaty-puppet-padchat",
-  "version": "0.19.2",
+  "version": "0.19.1",
   "description": "Padchat Puppet for Wechaty",
   "directories": {
     "example": "examples"
@@ -78,7 +78,7 @@
   },
   "peerDependencies": {
     "file-box": "^0.8.23",
-    "wechaty-puppet": "^0.14.1"
+    "wechaty-puppet": "^0.15.6"
   },
   "homepage": "https://github.com/lijiarui/wechaty-puppet-padchat#readme",
   "dependencies": {
