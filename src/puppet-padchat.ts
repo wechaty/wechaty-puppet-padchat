@@ -959,7 +959,7 @@ export class PuppetPadchat extends Puppet {
     if (!this.padchatManager) {
       throw new Error('no padchat manager')
     }
-    await this.padchatManager.WXSendMsg(id, text, mentionIdList && mentionIdList.join(','))
+    await this.padchatManager.WXSendMsg(id, text, mentionIdList && mentionIdList)
   }
 
   public async messageSendFile (

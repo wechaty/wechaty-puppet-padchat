@@ -951,9 +951,9 @@ export class PadchatRpc extends EventEmitter {
    * @param {string} to       user_name
    * @param {string} content  text
    */
-  public async WXSendMsg (to: string, content: string, at = ''): Promise<WXSendMsgType> {
+  public async WXSendMsg (to: string, content: string, at?: string[]): Promise<WXSendMsgType> {
     if (to) {
-      const result = await this.rpcCall('WXSendMsg', to, content, at)
+      const result = await this.rpcCall('WXSendMsg', to, content, at ? JSON.stringify(at) : '')
       if (!result || result.status !== 0) {
         throw Error('WXSendMsg error! canot get result from websocket server')
       }
