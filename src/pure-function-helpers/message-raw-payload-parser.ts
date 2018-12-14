@@ -18,6 +18,9 @@ import {
   messageFileName,
 }                         from './message-file-name'
 import {
+  messageSourceParser
+}                         from './message-source-parser'
+import {
   messageType,
 }                         from './message-type'
 
@@ -56,6 +59,8 @@ export async function messageRawPayloadParser (
   let toId:   undefined | string
 
   let text:   undefined | string
+
+  let mentionIdList: undefined | string[]
 
   /**
    * 1. Set Room Id
@@ -141,6 +146,16 @@ export async function messageRawPayloadParser (
   }
 
   /**
+   * 6. Set mention list, only for room messages
+   */
+  if (roomId) {
+    const messageSource = await messageSourceParser(rawPayload.msg_source)
+    if (messageSource !== null && messageSource.atUserList) {
+      mentionIdList = messageSource.atUserList
+    }
+  }
+
+  /**
    * 6. Set Contact for ShareCard
    */
   // if (type === MessageType.Contact) {
@@ -170,6 +185,7 @@ export async function messageRawPayloadParser (
     payload = {
       ...payloadBase,
       fromId,
+      mentionIdList,
       roomId,
       text,
       toId,
@@ -178,6 +194,7 @@ export async function messageRawPayloadParser (
     payload = {
       ...payloadBase,
       fromId,
+      mentionIdList,
       roomId,
       text,
       toId,
