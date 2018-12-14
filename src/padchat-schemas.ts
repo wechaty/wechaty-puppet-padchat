@@ -553,3 +553,10 @@ export type FriendshipPayloadVerify = FriendshipPayloadBase & {
 export type FriendshipPayload = FriendshipPayloadConfirm
                                   | FriendshipPayloadReceive
                                   | FriendshipPayloadVerify
+
+export interface PadchatMessageSource {
+  silence?: boolean,
+  memberCount?: number,
+  imageFileName?: string,
+  atUserList?: string[],
+}

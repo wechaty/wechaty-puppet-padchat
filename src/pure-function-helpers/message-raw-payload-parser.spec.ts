@@ -79,13 +79,14 @@ test('sys', async t => {
     uin         : 1928023446,
   }
   const EXPECTED_MESSAGE_PAYLOAD_SYS: MessagePayload = {
-    fromId    : undefined,
-    id        : '6633562959389269859',
-    roomId    : '3453262102@chatroom',
-    text      : '李卓桓 invited you to a group chat with ',
-    timestamp : 1528653783,
-    toId      : 'wxid_5zj4i5htp9ih22',
-    type      : 0,
+    fromId       : undefined,
+    id           : '6633562959389269859',
+    mentionIdList: undefined,
+    roomId       : '3453262102@chatroom',
+    text         : '李卓桓 invited you to a group chat with ',
+    timestamp    : 1528653783,
+    toId         : 'wxid_5zj4i5htp9ih22',
+    type         : 0,
   }
 
   const payload = await messageRawPayloadParser(PADCHAT_MESSAGE_PAYLOAD_SYS)
@@ -111,13 +112,14 @@ test('status notify', async t => {
   }
 
   const EXPECTED_MESSAGE_PAYLOAD: MessagePayload = {
-    fromId    : 'lizhuohuan',
-    id        : '6102392425730186619',
-    roomId    : undefined,
-    text      : '<msg>\n<op id=\'2\'>\n<username>fanweixiao</username>\n</op>\n</msg>',
-    timestamp : 1528658339,
-    toId      : 'fanweixiao',
-    type      : 0,
+    fromId       : 'lizhuohuan',
+    id           : '6102392425730186619',
+    mentionIdList: undefined,
+    roomId       : undefined,
+    text         : '<msg>\n<op id=\'2\'>\n<username>fanweixiao</username>\n</op>\n</msg>',
+    timestamp    : 1528658339,
+    toId         : 'fanweixiao',
+    type         : 0,
   }
 
   const payload = await messageRawPayloadParser(MESSAGE_PAYLOAD)
@@ -127,28 +129,29 @@ test('status notify', async t => {
 
 test('room invitation created by bot', async t => {
   const MESSAGE_PAYLOAD: PadchatMessagePayload = {
-    content     : '3453262102@chatroom:\n<sysmsg type="delchatroommember">\n\t<delchatroommember>\n\t\t<plain><![CDATA[You invited . 李 卓 桓 .呵呵 to the group chat.   ]]></plain>\n\t\t<text><![CDATA[You invited . 李 卓 桓 .呵呵 to the group chat.   ]]></text>\n\t\t<link>\n\t\t\t<scene>invite</scene>\n\t\t\t<text><![CDATA[  Revoke]]></text>\n\t\t\t<memberlist>\n\t\t\t\t<username><![CDATA[wxid_a8d806dzznm822]]></username>\n\t\t\t</memberlist>\n\t\t</link>\n\t</delchatroommember>\n</sysmsg>\n',
-    continue    : 1,
-    description : '',
-    from_user   : '3453262102@chatroom',
-    msg_id      : '4030118997146183783',
-    msg_source  : '',
-    msg_type    : 5,
-    status      : 1,
-    sub_type    : 10002,
-    timestamp   : 1528755135,
-    to_user     : 'wxid_5zj4i5htp9ih22',
-    uin         : 1928023446,
+    content      : '3453262102@chatroom:\n<sysmsg type="delchatroommember">\n\t<delchatroommember>\n\t\t<plain><![CDATA[You invited . 李 卓 桓 .呵呵 to the group chat.   ]]></plain>\n\t\t<text><![CDATA[You invited . 李 卓 桓 .呵呵 to the group chat.   ]]></text>\n\t\t<link>\n\t\t\t<scene>invite</scene>\n\t\t\t<text><![CDATA[  Revoke]]></text>\n\t\t\t<memberlist>\n\t\t\t\t<username><![CDATA[wxid_a8d806dzznm822]]></username>\n\t\t\t</memberlist>\n\t\t</link>\n\t</delchatroommember>\n</sysmsg>\n',
+    continue     : 1,
+    description  : '',
+    from_user    : '3453262102@chatroom',
+    msg_id       : '4030118997146183783',
+    msg_source   : '',
+    msg_type     : 5,
+    status       : 1,
+    sub_type     : 10002,
+    timestamp    : 1528755135,
+    to_user      : 'wxid_5zj4i5htp9ih22',
+    uin          : 1928023446,
   }
 
   const EXPECTED_PAYLOAD: MessagePayload = {
-    fromId    : undefined,
-    id        : '4030118997146183783',
-    roomId    : '3453262102@chatroom',
-    text      : '<sysmsg type="delchatroommember">\n\t<delchatroommember>\n\t\t<plain><![CDATA[You invited . 李 卓 桓 .呵呵 to the group chat.   ]]></plain>\n\t\t<text><![CDATA[You invited . 李 卓 桓 .呵呵 to the group chat.   ]]></text>\n\t\t<link>\n\t\t\t<scene>invite</scene>\n\t\t\t<text><![CDATA[  Revoke]]></text>\n\t\t\t<memberlist>\n\t\t\t\t<username><![CDATA[wxid_a8d806dzznm822]]></username>\n\t\t\t</memberlist>\n\t\t</link>\n\t</delchatroommember>\n</sysmsg>\n',
-    timestamp : 1528755135,
-    toId      : 'wxid_5zj4i5htp9ih22',
-    type      : 0,
+    fromId       : undefined,
+    id           : '4030118997146183783',
+    mentionIdList: undefined,
+    roomId       : '3453262102@chatroom',
+    text         : '<sysmsg type="delchatroommember">\n\t<delchatroommember>\n\t\t<plain><![CDATA[You invited . 李 卓 桓 .呵呵 to the group chat.   ]]></plain>\n\t\t<text><![CDATA[You invited . 李 卓 桓 .呵呵 to the group chat.   ]]></text>\n\t\t<link>\n\t\t\t<scene>invite</scene>\n\t\t\t<text><![CDATA[  Revoke]]></text>\n\t\t\t<memberlist>\n\t\t\t\t<username><![CDATA[wxid_a8d806dzznm822]]></username>\n\t\t\t</memberlist>\n\t\t</link>\n\t</delchatroommember>\n</sysmsg>\n',
+    timestamp    : 1528755135,
+    toId         : 'wxid_5zj4i5htp9ih22',
+    type         : 0,
   }
 
   const payload = await messageRawPayloadParser(MESSAGE_PAYLOAD)
@@ -173,13 +176,14 @@ test('room ownership transfer message', async t => {
   }
 
   const EXPECTED_PAYLOAD: MessagePayload = {
-    fromId    : undefined,
-    id        : '3798725634572049107',
-    roomId    : '6350854677@chatroom',
-    text      : '你已成为新群主',
-    timestamp : 1527689361,
-    toId      : 'wxid_zj2cahpwzgie12',
-    type      : 0,
+    fromId       : undefined,
+    id           : '3798725634572049107',
+    mentionIdList: undefined,
+    roomId       : '6350854677@chatroom',
+    text         : '你已成为新群主',
+    timestamp    : 1527689361,
+    toId         : 'wxid_zj2cahpwzgie12',
+    type         : 0,
   }
 
   const payload = await messageRawPayloadParser(MESSAGE_PAYLOAD)
@@ -202,13 +206,14 @@ test('StatusNotify to roomId', async t => {
     uin: 1928023446,
   }
   const EXPECTED_PAYLOAD = {
-    fromId    : 'wxid_5zj4i5htp9ih22',
-    id        : '179056144527271247',
-    roomId    : '5367653125@chatroom',
-    text      : '<msg>\n<op id=\'5\'>\n<username>5367653125@chatroom</username>\n</op>\n</msg>',
-    timestamp : 1528920139,
-    toId      : undefined,
-    type      : 0,
+    fromId       : 'wxid_5zj4i5htp9ih22',
+    id           : '179056144527271247',
+    mentionIdList: undefined,
+    roomId       : '5367653125@chatroom',
+    text         : '<msg>\n<op id=\'5\'>\n<username>5367653125@chatroom</username>\n</op>\n</msg>',
+    timestamp    : 1528920139,
+    toId         : undefined,
+    type         : 0,
   }
 
   const payload = await messageRawPayloadParser(MESSAGE_PAYLOAD)
@@ -231,13 +236,14 @@ test('share card peer to peer', async t => {
     uin         : 1928023446,
   }
   const EXPECTED_PAYLOAD: MessagePayload = {
-    fromId    : 'lizhuohuan',
-    id        : '5911987709823889005',
-    roomId    : undefined,
-    text      : '<?xml version="1.0"?>\n<msg bigheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/27zgBIIcxGmtINOWjoXPZ7yIsvfuIzGepXbcWUFyUHSK2N8MA2x1VkTZLzk9iaQca6CtPR6ooUZWR52icTwnia51A/0" smallheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/27zgBIIcxGmtINOWjoXPZ7yIsvfuIzGepXbcWUFyUHSK2N8MA2x1VkTZLzk9iaQca6CtPR6ooUZWR52icTwnia51A/132" username="v1_cebe1d0a6ff469f5d1bc136ffd69929605f8e90cbefc2a42a81f53b3c90ee264@stranger" nickname="李佳芮" fullpy="李佳芮" shortpy="LJR" alias="" imagestatus="0" scene="17" province="北京" city="海淀" sign="" sex="2" certflag="0" certinfo="" brandIconUrl="" brandHomeUrl="" brandSubscriptConfigUrl="" brandFlags="0" regionCode="CN_Beijing_Haidian" antispamticket="v2_93b56e18c355bdbec761e459231b7e6ded4b0c4861a88f3ead9b2c89bce028fa56f345d8e7cf5479dc94a6e13b5b42ec@stranger" />\n',
-    timestamp : 1528959169,
-    toId      : 'wxid_5zj4i5htp9ih22',
-    type      : 3,
+    fromId       : 'lizhuohuan',
+    id           : '5911987709823889005',
+    mentionIdList: undefined,
+    roomId       : undefined,
+    text         : '<?xml version="1.0"?>\n<msg bigheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/27zgBIIcxGmtINOWjoXPZ7yIsvfuIzGepXbcWUFyUHSK2N8MA2x1VkTZLzk9iaQca6CtPR6ooUZWR52icTwnia51A/0" smallheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/27zgBIIcxGmtINOWjoXPZ7yIsvfuIzGepXbcWUFyUHSK2N8MA2x1VkTZLzk9iaQca6CtPR6ooUZWR52icTwnia51A/132" username="v1_cebe1d0a6ff469f5d1bc136ffd69929605f8e90cbefc2a42a81f53b3c90ee264@stranger" nickname="李佳芮" fullpy="李佳芮" shortpy="LJR" alias="" imagestatus="0" scene="17" province="北京" city="海淀" sign="" sex="2" certflag="0" certinfo="" brandIconUrl="" brandHomeUrl="" brandSubscriptConfigUrl="" brandFlags="0" regionCode="CN_Beijing_Haidian" antispamticket="v2_93b56e18c355bdbec761e459231b7e6ded4b0c4861a88f3ead9b2c89bce028fa56f345d8e7cf5479dc94a6e13b5b42ec@stranger" />\n',
+    timestamp    : 1528959169,
+    toId         : 'wxid_5zj4i5htp9ih22',
+    type         : 3,
   }
 
   const payload = await messageRawPayloadParser(MESSAGE_PAYLOAD)
@@ -261,13 +267,14 @@ test('share card in room', async t => {
   }
 
   const EXPECTED_PAYLOAD: MessagePayload = {
-    fromId    : 'lizhuohuan',
-    id        : '7332176666514216982',
-    roomId    : '3453262102@chatroom',
-    text      : '<?xml version="1.0"?>\n<msg bigheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/27zgBIIcxGmtINOWjoXPZ7yIsvfuIzGepXbcWUFyUHSK2N8MA2x1VkTZLzk9iaQca6CtPR6ooUZWR52icTwnia51A/0" smallheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/27zgBIIcxGmtINOWjoXPZ7yIsvfuIzGepXbcWUFyUHSK2N8MA2x1VkTZLzk9iaQca6CtPR6ooUZWR52icTwnia51A/132" username="v1_cebe1d0a6ff469f5d1bc136ffd69929605f8e90cbefc2a42a81f53b3c90ee264@stranger" nickname="李佳芮" fullpy="李佳芮" shortpy="LJR" alias="" imagestatus="0" scene="17" province="北京" city="海淀" sign="" sex="2" certflag="0" certinfo="" brandIconUrl="" brandHomeUrl="" brandSubscriptConfigUrl="" brandFlags="0" regionCode="CN_Beijing_Haidian" antispamticket="v2_93b56e18c355bdbec761e459231b7e6db1ed42e77e0315ea11fb27d92b0641b586bd45a67c9c282b7a6c17430f15c0c3@stranger" />\n',
-    timestamp : 1528961383,
-    toId      : 'wxid_5zj4i5htp9ih22',
-    type      : 3,
+    fromId       : 'lizhuohuan',
+    id           : '7332176666514216982',
+    mentionIdList: undefined,
+    roomId       : '3453262102@chatroom',
+    text         : '<?xml version="1.0"?>\n<msg bigheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/27zgBIIcxGmtINOWjoXPZ7yIsvfuIzGepXbcWUFyUHSK2N8MA2x1VkTZLzk9iaQca6CtPR6ooUZWR52icTwnia51A/0" smallheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/27zgBIIcxGmtINOWjoXPZ7yIsvfuIzGepXbcWUFyUHSK2N8MA2x1VkTZLzk9iaQca6CtPR6ooUZWR52icTwnia51A/132" username="v1_cebe1d0a6ff469f5d1bc136ffd69929605f8e90cbefc2a42a81f53b3c90ee264@stranger" nickname="李佳芮" fullpy="李佳芮" shortpy="LJR" alias="" imagestatus="0" scene="17" province="北京" city="海淀" sign="" sex="2" certflag="0" certinfo="" brandIconUrl="" brandHomeUrl="" brandSubscriptConfigUrl="" brandFlags="0" regionCode="CN_Beijing_Haidian" antispamticket="v2_93b56e18c355bdbec761e459231b7e6db1ed42e77e0315ea11fb27d92b0641b586bd45a67c9c282b7a6c17430f15c0c3@stranger" />\n',
+    timestamp    : 1528961383,
+    toId         : 'wxid_5zj4i5htp9ih22',
+    type         : 3,
   }
 
   const payload = await messageRawPayloadParser(MESSAGE_PAYLOAD)
