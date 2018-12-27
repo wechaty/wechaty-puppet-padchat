@@ -482,7 +482,20 @@ export interface PadchatAppMessagePayload {
   thumburl?: string,
   title: string,
   url: string,
+  appattach?: PadchatAppAttachPayload,
   type: WechatAppMessageType,
+  md5?: string,
+}
+
+export interface PadchatAppAttachPayload {
+  totallen?      : number,
+  attachid?      : string,
+  emoticonmd5?   : string,
+  fileext?       : string,
+  cdnattachurl?  : string,
+  aeskey?        : string,
+  cdnthumbaeskey?: string,
+  encryver?      : number,
 }
 
 export interface PadchatEmojiMessagePayload {
@@ -540,3 +553,10 @@ export type FriendshipPayloadVerify = FriendshipPayloadBase & {
 export type FriendshipPayload = FriendshipPayloadConfirm
                                   | FriendshipPayloadReceive
                                   | FriendshipPayloadVerify
+
+export interface PadchatMessageSource {
+  silence?: boolean,
+  memberCount?: number,
+  imageFileName?: string,
+  atUserList?: string[],
+}

@@ -2,7 +2,6 @@
 
 [![English Version](https://img.shields.io/badge/-English%20Version-blue.svg)](/README-en.md)
 
-
 [![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-blue.svg)](https://github.com/chatie/wechaty)
 [![NPM Version](https://badge.fury.io/js/wechaty-puppet-padchat.svg)](https://www.npmjs.com/package/wechaty-puppet-padchat)
 [![npm (tag)](https://img.shields.io/npm/v/wechaty-puppet-padchat/next.svg)](https://www.npmjs.com/package/wechaty-puppet-padchat?activeTab=versions)
@@ -24,8 +23,6 @@
 * ... 请自行开脑洞
 
 详情请看[Wechaty](https://github.com/chatie/wechaty)项目 [![NPM Version](https://badge.fury.io/js/wechaty.svg)](https://badge.fury.io/js/wechaty) [![Docker Pulls](https://img.shields.io/docker/pulls/zixia/wechaty.svg?maxAge=2592000)](https://hub.docker.com/r/zixia/wechaty/) [![TypeScript](https://img.shields.io/badge/<%2F>-TypeScript-blue.svg)](https://www.typescriptlang.org/) [![Greenkeeper badge](https://badges.greenkeeper.io/Chatie/wechaty.svg)](https://greenkeeper.io/)
-
-
 
 ## 安装
 
@@ -76,7 +73,7 @@ bot
 
 ## 文档
 
-http://wechaty.botorange.com
+[http://wechaty.botorange.com](http://wechaty.botorange.com)
 
 ## AUTHOR
 

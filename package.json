@@ -1,6 +1,6 @@
 {
   "name": "wechaty-puppet-padchat",
-  "version": "0.17.21",
+  "version": "0.19.3",
   "description": "Padchat Puppet for Wechaty",
   "directories": {
     "example": "examples"
@@ -53,7 +53,7 @@
     "@types/raven": "^2.5.1",
     "@types/read-pkg-up": "^3.0.1",
     "@types/semver": "^5.5.0",
-    "@types/sinon": "^5.0.1",
+    "@types/sinon": "^7.0.0",
     "@types/ws": "^6.0.0",
     "@types/xml2js": "^0.4.3",
     "blue-tape": "^1.0.0",
@@ -69,7 +69,7 @@
     "tslint": "^5.11.0",
     "tslint-config-standard": "^8.0.1",
     "typescript": "^3.0.1",
-    "wechaty-puppet": "^0.14.1"
+    "wechaty-puppet": "^0.15.6"
   },
   "git": {
     "scripts": {
@@ -78,7 +78,7 @@
   },
   "peerDependencies": {
     "file-box": "^0.8.23",
-    "wechaty-puppet": "^0.14.1"
+    "wechaty-puppet": "^0.15.6"
   },
   "homepage": "https://github.com/lijiarui/wechaty-puppet-padchat#readme",
   "dependencies": {
@@ -89,13 +89,13 @@
     "jimp": "^0.4.0",
     "json-rpc-peer": "^0.15.3",
     "jsqr": "^1.1.0",
-    "lru-cache": "^4.1.3",
+    "lru-cache": "^5.0.0",
     "promise-retry": "^1.1.1",
     "qr-image": "^3.2.0",
     "read-pkg-up": "^4.0.0",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
-    "rx-queue": "^0.4.26",
+    "rx-queue": "^0.6.1",
     "rxjs": "^6.2.1",
     "ws": "^6.0.0",
     "xml2js": "^0.4.19"
