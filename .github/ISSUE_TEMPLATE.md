@@ -7,7 +7,7 @@ rm -rf node_modules
 npm install
 ```
 
-2. 请在 [FAQ 清单](https://wechaty.botorange.com/faq) 看是否已有解决办法。
+2. 请在 [FAQ 清单](https://docs.chatie.io/v/zh/faq) 看是否已有解决办法。
 
 3. 请先在issue 中搜关键信息，确认你要发的内容和之前的issue 不重复。
 
