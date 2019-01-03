@@ -47,7 +47,7 @@
     "@types/lru-cache": "^4.1.1",
     "@types/node": "^10.5.1",
     "@types/normalize-package-data": "^2.4.0",
-    "@types/promise-retry": "^1.1.2",
+    "@types/promise-retry": "1.1.2",
     "@types/puppeteer": "^1.5.0",
     "@types/qr-image": "^3.2.1",
     "@types/raven": "^2.5.1",
