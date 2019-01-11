@@ -29,6 +29,7 @@ npm install
 - 。。。
 
 ### 5. 完整的日志信息：
+通过`WECHATY_LOG=silly`设定环境变量，将设置log 等级为 silly，获取最详细的日志信息（默认log 等级为 info）
 **请提供完整的日志信息(不要只提供部分的日志截图，请复制粘贴日志内容！)**
 <details>
 <summary>
