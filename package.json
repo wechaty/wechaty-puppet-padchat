@@ -88,7 +88,7 @@
     "fs-extra": "^7.0.0",
     "jimp": "^0.4.0",
     "json-rpc-peer": "^0.15.3",
-    "jsqr": "^1.1.0",
+    "jsqr": "^1.2.0",
     "lru-cache": "^5.0.0",
     "promise-retry": "^1.1.1",
     "qr-image": "^3.2.0",
