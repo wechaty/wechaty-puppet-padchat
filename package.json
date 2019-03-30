@@ -95,7 +95,7 @@
     "read-pkg-up": "^4.0.0",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
-    "rx-queue": "^0.6.1",
+    "rx-queue": "^0.8.1",
     "rxjs": "^6.2.1",
     "ws": "^6.0.0",
     "xml2js": "^0.4.19"
