@@ -86,7 +86,7 @@
     "array-flatten": "^2.1.1",
     "flash-store": "^0.7.1",
     "fs-extra": "^7.0.0",
-    "jimp": "^0.4.0",
+    "jimp": "^0.6.3",
     "json-rpc-peer": "^0.15.3",
     "jsqr": "^1.1.0",
     "lru-cache": "^5.0.0",
