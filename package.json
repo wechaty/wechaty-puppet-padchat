@@ -41,7 +41,7 @@
     "url": "https://github.com/lijiarui/wechaty-puppet-padchat/issues"
   },
   "devDependencies": {
-    "@types/blue-tape": "^0.1.31",
+    "@types/blue-tape": "0.1.32",
     "@types/express": "^4.16.0",
     "@types/fs-extra": "^5.0.3",
     "@types/lru-cache": "^4.1.1",
