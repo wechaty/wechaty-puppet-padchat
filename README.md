@@ -73,7 +73,7 @@ bot
 
 ## 文档
 
-[http://wechaty.botorange.com](http://wechaty.botorange.com)
+[https://docs.chatie.io](https://docs.chatie.io)
 
 ## AUTHOR
 
