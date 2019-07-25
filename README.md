@@ -67,7 +67,8 @@ bot
 
 ## 购买Token
 
-https://token.juzi.bot/info
+- [点击购买](https://token.juzi.bot/info)
+- [了解更多Token 相关内容](https://github.com/lijiarui/wechaty-puppet-padchat/wiki/%E8%B4%AD%E4%B9%B0token)
 
 ## 文档
 
