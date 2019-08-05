@@ -1,4 +1,4 @@
-# WECHATY-PUPPET-PADCHAT
+# WECHATY-PUPPET-PADCHAT (DEPRECATED)
 
 [![English Version](https://img.shields.io/badge/-English%20Version-blue.svg)](/README-en.md)
 
@@ -7,6 +7,14 @@
 [![npm (tag)](https://img.shields.io/npm/v/wechaty-puppet-padchat/next.svg)](https://www.npmjs.com/package/wechaty-puppet-padchat?activeTab=versions)
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-blue.svg)](https://www.typescriptlang.org/)
 [![Linux/Mac Build Status](https://travis-ci.com/lijiarui/wechaty-puppet-padchat.svg?branch=master)](https://travis-ci.com/lijiarui/wechaty-puppet-padchat) [![Greenkeeper badge](https://badges.greenkeeper.io/lijiarui/wechaty-puppet-padchat.svg)](https://greenkeeper.io/)
+
+# 已不再维护
+
+这个项目之后不再继续维护，需要通过iPad方式接入微信的开发者们请移步 [`wechaty-puppet-padpro`](https://github.com/botorange/wechaty-puppet-padpro)
+
+`wechaty-puppet-padpro`是本项目的升级版，支持更多的功能，提供更稳定的服务
+
+---
 
 这个模块是是通过WebSocket 连接一个协议服务器来控制iPad 微信，实现个人号的微信接口。
 
