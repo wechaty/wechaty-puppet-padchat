@@ -54,7 +54,7 @@
     "@types/read-pkg-up": "^3.0.1",
     "@types/semver": "^5.5.0",
     "@types/sinon": "^7.0.0",
-    "@types/ws": "^6.0.0",
+    "@types/ws": "^6.0.2",
     "@types/xml2js": "^0.4.3",
     "blue-tape": "^1.0.0",
     "cuid": "^2.1.2",
