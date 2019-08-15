@@ -84,7 +84,7 @@
   "dependencies": {
     "@babel/runtime": "7.0.0-beta.39",
     "array-flatten": "^2.1.1",
-    "flash-store": "^0.7.1",
+    "flash-store": "^0.16.5",
     "fs-extra": "^7.0.0",
     "jimp": "^0.4.0",
     "json-rpc-peer": "^0.15.3",
