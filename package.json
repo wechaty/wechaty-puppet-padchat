@@ -98,7 +98,7 @@
     "rx-queue": "^0.6.1",
     "rxjs": "^6.2.1",
     "ws": "^6.0.0",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.22"
   },
   "greenkeeper": {
     "ignore": [
