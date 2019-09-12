@@ -8,9 +8,7 @@
 
 # DEPRECATED
 
-This project is no longer maintained and supported, for people who need to use iPad way connect to wechat, please check [`wechaty-puppet-padpro`](https://github.com/botorange/wechaty-puppet-padpro)
-
-`wechaty-puppet-padpro` is an upgrade version of this project, provides more features and more stable service. 
+This project is no longer maintained and supported.
 
 ---
 
