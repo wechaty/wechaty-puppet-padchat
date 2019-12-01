@@ -10,3 +10,4 @@
 
 This project is no longer maintained and supported.
 
+Please visit [Wechaty Puppet](https://github.com/wechaty/wechaty-puppet) to learn about other Puppet Providers.
